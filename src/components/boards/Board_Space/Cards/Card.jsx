@@ -23,7 +23,7 @@ let Card = (props) => {
     const userId = useSelector(state => state.user.currentUser.id)
     
     let mytasks = [];    
-
+    // dsagas
 
     useEffect(() => {
         dispatch(getAllTasks(props.cardId));      
