@@ -1,0 +1,191 @@
+*{
+    margin: 0;
+    padding: 0;
+    
+}
+
+body{
+    overflow-y: overlay;
+}
+
+.main{
+    
+}
+
+
+.about{
+    height: 100vh;
+}
+
+/* .about_img{
+    position: absolute;
+    left: 45%;
+    top: 20%;
+    
+    z-index: -1;
+    width: 70%;
+    height: 70%;
+    background-image: url("https://lukaszadam.com/assets/downloads/storefront_illustration.svg");
+    background-repeat: no-repeat;
+} */
+
+
+
+
+.about_left{
+    width: 70%;
+    height: 100%;
+    text-align: left;
+    animation: create 1s ease;
+    
+}
+
+@keyframes create{
+    0% {transform: translateY(150%);}
+  70% {transform: translateY(-5%);}
+  100% {transform: translateY(0);}
+}
+
+.about_inner{
+    padding-top: 15%;
+}
+
+.about::before{
+    content: "";
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: -1;
+    
+    background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+     
+    filter: contrast(30%);
+    filter: brightness(30%);
+}
+
+.appname{
+    color:#ff3030;
+    font-weight: bold;
+    
+}
+
+.btn_reg{
+    margin-top: 15%;
+    color:blue;
+}
+
+
+.head{
+    font-weight: bold;
+}
+
+
+
+
+.start_left{
+    height: 65vh;
+    color: black;
+    background-color: rgb(255, 255, 255);
+    animation: create 1s ease;
+}
+
+@keyframes create{
+    0% {transform: translateY(150%);}
+  70% {transform: translateY(-5%);}
+  100% {transform: translateY(0);}
+}
+
+.start_right{
+    height: 65vh;
+    color: black;
+    background-color: #f5f5f5;
+}
+
+.start_cont{
+    max-width: 1200px;
+    box-sizing: border-box;
+    margin: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+    padding: 1%;
+    overflow: hidden;
+}
+
+.start_one{
+    width: 48%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.start_one img{
+    width: 100%;
+    object-fit: contain;
+}
+
+.start_two{
+    width: 48%;
+    text-align: left;
+    align-self: center;
+
+}
+
+
+@media screen and (max-width: 1050px){
+    .start_one{
+        order: 2;
+        width: 100%;
+        height: 50%;
+    
+    }
+    
+    .start_two{
+        order: 1;
+        text-align: center;
+        width: 100%;
+        height: 50%;
+        padding-top: 3%;
+    }
+
+    .about_left{
+        margin-top: 20%;
+        margin: 20% auto;
+        text-align: center;
+    }
+}
+
+@media screen and (max-width: 1200px){
+    .about_left{
+        margin-top: 20%;
+        margin: 20% auto;
+        text-align: center;
+    }
+
+    .start_one{
+        margin-top:10%;
+    }
+}
+
+
+
+
+.footer{
+    height: 20vh;
+    text-align: center;
+    background-color: #f5f5f5;
+    padding: 2%
+}
+
+.footer_links{
+    display: flex;
+    justify-content: space-between;
+}
+
+.links{
+    color: #9893a4;
+}

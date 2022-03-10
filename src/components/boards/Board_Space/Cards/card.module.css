@@ -1,0 +1,64 @@
+.card{
+    min-width: 350px;
+    margin: .5%;
+    padding: 1%;
+    background-color: #ebecf0;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.btn_add{
+    width: 100%;
+    color: black;
+}
+
+.create_task{
+    margin: 1%;
+    height: 40px;
+}
+
+.menucard{
+    width: 30px;
+    height: 30px;
+    color: black;
+    
+}
+
+.topcard{
+    display: flex;
+    justify-content: space-between;
+}
+
+.nameText{
+    cursor: pointer;
+}
+
+.tasks{
+    overflow-y: auto;
+    overflow-x:hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 2%;
+}
+
+.create_task_form{
+    display: flex;
+    justify-content: space-around;
+}
+
+.send_icon{
+    
+}
+
+.create_btn{
+    margin: 1%;
+}
+
+.create_textfield{
+    margin: 1%;
+    width: 100%;
+}

@@ -1,0 +1,224 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+
+.boards_inner{
+    margin: 0 2%;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    padding: .5%;
+    justify-content:left;
+}
+
+.createBoard_btn{
+    background-color: #a3abb8;
+    width: 200px;
+    height: 100px;
+    margin: 1%;
+    padding: 1%;
+    border-radius: 5px;
+    transition: .3s ease;
+    cursor: pointer;
+    display: flex;
+    color:white;
+    user-select: none;
+}
+
+.createBoard_inner{
+    margin: auto;
+    text-transform: uppercase;
+    position: relative;
+}
+
+.createBoard_btn:hover{
+    box-shadow:
+        0px 1px #ff9100,
+        0px 2px #ff9100,
+        0px 3px #ff9100,
+        0px 4px #ff9100,
+        0px 5px #ff9100;
+    filter: brightness(110%);
+    transform: translateY(-7px);
+    color:black;
+}
+
+.createBoard_btn:hover .createBoard_popup{
+}
+
+.createBoard_popup{
+    z-index: 55555;
+    position: absolute;
+    min-width: 20vw;
+    min-height: 70vh;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    padding: 5%;
+    text-align: center;
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    left: -25%;
+    justify-content: space-between;
+}
+
+.bg_blur{
+    position: absolute;
+    z-index: 55;
+    backdrop-filter: blur(5px);
+    background-color: rgba(0, 0, 0, 0.534);
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    
+}
+
+/* .createBoard_btn *{
+    margin-top: 5%;
+} */
+
+
+.color_picker_group{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.color{
+    width: 50px;
+    height: 50px;
+    margin: .7%;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+}
+
+.select_color{
+    color: black;
+    margin: auto;
+    visibility: hidden;
+}
+
+.color:hover{
+    filter: brightness(70%);
+}
+
+.purple{
+    background: #b867c6;
+}
+.indigo{
+    background: #7b88cc;
+}
+.blue{
+    background: #4fc3f7;
+}
+.teal{
+    background: #4db6ac;
+}
+.green{
+    background: #81c784;
+}
+.lime{
+    background: #dce775;
+}
+.yellow{
+    background: #ffd54f;
+}
+.orange{
+    background: #ff8a65;
+}
+.brown{
+    background: #a1887f;
+}
+.gray{
+    background: #e0e0e0;
+}
+
+.color_active{
+    visibility: visible;
+}
+
+
+.board_name{
+    width: 100%;
+}
+
+.toggleButton_group{
+    display: flex;
+    text-align: left;
+    justify-content: center;
+
+}
+
+.toggleButton_group *{
+    padding: 0 2%;
+    align-self: center;
+}
+
+.toggleButton_description{
+    display: flex;
+}
+
+
+.toggleButton{
+    min-width: 15%;
+    display: flex;
+    text-align: left;
+    height: 30%;
+}
+
+.toggleButton_Lock , .toggleButton_Private{
+    align-self: center;
+    margin-right: 5%;
+}
+
+.toggleButton_text *{
+    line-height: 100%;
+}
+
+.toggleButton_text h5{
+    margin-bottom: 2%;
+    font-weight: bold;
+}
+
+.btn_create{
+    width: 100%;
+}
+
+.createVisible{
+    visibility: visible;
+    left: -25%;
+}
+
+.createHidden{
+    visibility: hidden;
+    left: -999%;
+}
+
+
+
+@media screen and (max-width: 1200px){
+    .createBoard_popup{
+        max-width: 35vw;
+    }
+}
+
+
+@media screen and (max-width: 1000px){
+    .createBoard_popup{
+        max-width: 45vw;
+    }
+}
+
+
+@media screen and (max-width: 700px){
+    .createBoard_popup{
+        max-width: 65vw;
+    }
+}
