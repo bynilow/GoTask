@@ -1,7 +1,8 @@
 .card{
     min-width: 350px;
-    margin: .5%;
-    padding: 1%;
+    max-height: 500px;
+    margin: 10px;
+    padding: 20px;
     background-color: #ebecf0;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
@@ -37,7 +38,7 @@
 }
 
 .tasks{
-    overflow-y: auto;
+    overflow-y:auto;
     overflow-x:hidden;
     display: flex;
     flex-direction: column;

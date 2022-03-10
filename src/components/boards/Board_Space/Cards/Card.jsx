@@ -1,10 +1,10 @@
 import { Button, IconButton, TextField, Typography } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import s from './card.module.css'
 import MenuIcon from '@mui/icons-material/Menu';
 import { addTask, changeCardName } from "../../../../actions/boards";
 import Task from "./task_card/Task";
-import {getAllTasks} from '../../../../actions/boards'
+import { getAllTasks } from '../../../../actions/boards'
 import { useDispatch, useSelector } from "react-redux";
 
 
@@ -12,7 +12,7 @@ let Card = (props) => {
 
     const dispatch = useDispatch();
 
-    
+
 
     const [nameCard, setNameCard] = React.useState(props.name);
     const [createTaskText, setCreateTaskText] = React.useState("");
@@ -20,28 +20,39 @@ let Card = (props) => {
     const [toggleCreateTask, setToggleCreateTask] = React.useState(true);
 
     const tasks = useSelector(state => state.boards.tasks);
-    const userId = useSelector(state => state.user.currentUser.id)
-    
-    let mytasks = [];    
-    // dsagas
+    const userId = useSelector(state => state.user.currentUser.id);
+
+    const divRef = useRef(null);
+
+    let mytasks = [];
+    let idtasks = [];
+
+    let goDown = () => {
+        divRef.current.scrollTop = divRef.current.scrollHeight * 2;
+    }
 
     useEffect(() => {
-        dispatch(getAllTasks(props.cardId));      
+        dispatch(getAllTasks(props.cardId));
+        goDown();
     }, [])
 
 
     if (tasks != null) {
         tasks.map(c => {
-            c.map((cc,ind) => {
-                if (cc.cardId == props.cardId) {
+            c.map((cc, ind) => {
+                // if(mytasks.length != 0){
+                //     console.log(mytasks[mytasks.length].id)
+                // }
+                if (idtasks.length == 0) {
+                    idtasks.push(cc.id);
+                }
+                if (cc.cardId == props.cardId && idtasks.indexOf(cc.id) === -1) {
                     mytasks.push(cc);
+                    idtasks.push(cc.id);
                 }
             })
         })
     }
-
-
-
 
 
     let clickedName = (inputText) => {
@@ -57,22 +68,34 @@ let Card = (props) => {
     }
 
     let blurInput = () => {
-        setInputText(true);
-        changeCardName(props.cardId, nameCard, props.boardsId);
+        if (nameCard.length > 0) {
+            setInputText(true);
+            changeCardName(props.cardId, nameCard, props.boardsId, goDown);
+        }
+        else {
+            setInputText(true);
+            changeCardName(props.cardId, "e", props.boardsId);
+            setNameCard("e");
+        }
     }
 
     let keyDownName = (e) => {
         if (e.key == "Enter" || e.key == 13) {
-            setInputText(true);
-            changeCardName(props.cardId, nameCard, props.boardsId);
+            blurInput();
         }
     }
 
     let createTask = (e) => {
         if (e.key == "Enter" || e.key == 13) {
-            dispatch(addTask(createTaskText, props.cardId, userId))
+            if (createTaskText.length > 0) {
+                dispatch(addTask(createTaskText, props.cardId, userId));
+                setCreateTaskText("");
+            }
         }
     }
+
+
+
 
     return (
         <div className={s.card}>
@@ -94,17 +117,16 @@ let Card = (props) => {
 
                 <Button className={s.menucard}><MenuIcon /></Button>
             </div>
-            <div className={s.tasks}>
+            <div className={s.tasks} ref={divRef}>
                 {
-                    
-                    mytasks.map((c, ind) => <Task key={ind} taskId={c.id} cardId={props.cardId} name={c.name} /> )
+                    mytasks.map((c, ind) => <Task key={ind} taskId={c.id} cardId={props.cardId} name={c.name} />)
                 }
             </div>
 
             <div className={s.create_task}>
                 {
                     toggleCreateTask
-                        ? <Button onClick={() => setToggleCreateTask(false) } className={s.btn_add}>+ Добавить задачу</Button>
+                        ? <Button onClick={() => setToggleCreateTask(false)} className={s.btn_add}>+ Добавить задачу</Button>
                         : <div className={s.create_task_form}>
                             <TextField
                                 label="Введите заголовок задачи"
@@ -116,7 +138,7 @@ let Card = (props) => {
                                 onKeyDown={createTask}
                                 placeholder="Нажмите Enter для сохранения"
                                 className={s.create_textfield} />
-                            
+
                         </div>
                 }
             </div>
