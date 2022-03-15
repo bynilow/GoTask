@@ -106,7 +106,19 @@ export const addTask = (nameTask, cardId, creatorId) => {
         const response2 = await axios.post("http://localhost:4850/api/card/cards", {
                 cardId
         });
-        dispatch(setTasksAC(response2.data.values))
+        dispatch(setTasksAC(response2.data.values));
     }
 }
 
+export const moveTask = (taskId, cardId) => {
+    return async dispatch => {
+        const response = await axios.post("http://localhost:4850/api/task/move", {
+            taskId, cardId
+        });
+        const response2 = await axios.post("http://localhost:4850/api/card/cards", {
+                cardId
+        });
+        dispatch(setTasksAC(response2.data.values));
+
+    }
+}
