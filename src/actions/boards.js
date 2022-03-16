@@ -33,6 +33,7 @@ export const getCardsFromBoardId = (boardId) => {
         const response = await axios.post("http://localhost:4850/api/boards/cards", {
             boardId
         });
+        console.log("dispatched")
         dispatch(setCardsAC(response.data.values))
     }
 }
@@ -84,11 +85,11 @@ export const changeCardName = async (cardId, nameCard, boardId) => {
 
 }
 
-export const getAllTasks = (cardId) => {
+export const getAllTasks = (cardsId) => {
     return async dispatch => {
         try {
             const response = await axios.post("http://localhost:4850/api/card/cards", {
-                cardId
+                cardsId
             });
             dispatch(setTasksAC(response.data.values))
         }
@@ -110,15 +111,16 @@ export const addTask = (nameTask, cardId, creatorId) => {
     }
 }
 
-export const moveTask = (taskId, cardId) => {
+export const moveTask = (taskId, cardId, cardsId) => {
     return async dispatch => {
         const response = await axios.post("http://localhost:4850/api/task/move", {
             taskId, cardId
         });
         const response2 = await axios.post("http://localhost:4850/api/card/cards", {
-                cardId
+                cardsId
         });
         dispatch(setTasksAC(response2.data.values));
 
+        
     }
 }

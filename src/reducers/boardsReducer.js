@@ -7,6 +7,7 @@ const SET_CARDS = "SET_CARDS"
 const CREATE_CARD = "CREATE_CARD"
 const SET_TASKS = "SET_TASKS"
 const ADD_TASK = "ADD_TASK"
+const DELETE_TASKS = "DELETE_TASKS"
 
 const SET_DRAGGABLE_TASK = "SET_DRAGGABLE_TASK"
 
@@ -59,12 +60,23 @@ export default function boardsReducer(state = defaultState, action) {
         case SET_TASKS:
             return {
                 ...state,
-                tasks: [...state.tasks, action.tasks]
+                tasks: action.tasks
             }
         case SET_DRAGGABLE_TASK:
             return{
                 ...state,
                 draggableTask: action.taskId
+            }
+        case DELETE_TASKS:
+            return{
+                ...state,
+                tasks: state.tasks.map(el => {
+                    el.map(el2 => {
+                        if (el2.id == action.task) {
+                            
+                        }
+                    })
+                })
             }
         
         default:
@@ -115,4 +127,9 @@ export const addTask = (task) => ({
 export const setDraggableTask = (taskId) => ({
     type: SET_DRAGGABLE_TASK,
     taskId
+})
+
+export const deleteTasks = (task) => ({
+    type: DELETE_TASKS,
+    task
 })

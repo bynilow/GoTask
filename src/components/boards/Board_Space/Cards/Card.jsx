@@ -2,11 +2,11 @@ import { Button, IconButton, TextField, Typography } from "@mui/material";
 import React, { useEffect, useRef } from "react";
 import s from './card.module.css'
 import MenuIcon from '@mui/icons-material/Menu';
-import { addTask, changeCardName, moveTask } from "../../../../actions/boards";
+import { addTask, changeCardName, getCardsFromBoardId, moveTask } from "../../../../actions/boards";
 import Task from "./task_card/Task";
 import { getAllTasks } from '../../../../actions/boards'
 import { useDispatch, useSelector } from "react-redux";
-import { setDraggableTask } from "../../../../reducers/boardsReducer";
+import { deleteTasks, setDraggableTask } from "../../../../reducers/boardsReducer";
 
 
 let Card = (props) => {
@@ -20,7 +20,6 @@ let Card = (props) => {
 
     let [currentTask, setCurrentTask] = React.useState(-1);
 
-    const tasks = useSelector(state => state.boards.tasks);
     const userId = useSelector(state => state.user.currentUser.id);
     const draggableTaskId = useSelector(state => state.boards.draggableTask);
 
@@ -34,25 +33,33 @@ let Card = (props) => {
     }
 
     useEffect(() => {
-        dispatch(getAllTasks(props.cardId));
         goDown();
     }, [])
 
+    const tasksFromProps = props.tasks;
+    console.log(tasksFromProps)
 
-    if (tasks != null) {
-        tasks.map(c => {
-            c.map((cc, ind) => {
-                // if(mytasks.length != 0){
-                //     console.log(mytasks[mytasks.length].id)
-                // }
-                if (idtasks.length == 0) {
-                    idtasks.push(cc.id);
+    if (tasksFromProps != null) {
+        tasksFromProps.map(c => {
+            if (c != null) {
+                if (c.cardId == props.cardId) {
+                    mytasks.push(c);
+                    idtasks.push(c.id);
                 }
-                if (cc.cardId == props.cardId && idtasks.indexOf(cc.id) === -1) {
-                    mytasks.push(cc);
-                    idtasks.push(cc.id);
-                }
-            })
+                // c.map((cc, ind) => {
+                //     // if(mytasks.length != 0){
+                //     //     console.log(mytasks[mytasks.length].id)
+                //     // }
+                //     if (idtasks.length == 0) {
+                //         idtasks.push(cc.id);
+                //     }
+                //     if (cc.cardId == props.cardId && idtasks.indexOf(cc.id) === -1) {
+                //         mytasks.push(cc);
+                //         idtasks.push(cc.id);
+                //     }
+                // })
+            }
+            
         })
     }
 
@@ -119,10 +126,11 @@ let Card = (props) => {
         e.preventDefault();
         e.target.style.boxShadow = '0 0 2px rgba(0, 0, 0, 0.5)';
         console.log("Dragged taskID: "+draggableTaskId+" ;"+"Drag drop cardID: "+e.target.getAttribute("cardId"));
-        dispatch(moveTask(draggableTaskId, e.target.getAttribute("cardId")));
+        dispatch(moveTask(draggableTaskId, e.target.getAttribute("cardId"), props.cardsId));
+        // props.getCards();
     }
 
-    console.log(currentTask)
+    console.log(props.cardsId)
 
     return (
         <div className={s.card}>
