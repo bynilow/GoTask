@@ -10,6 +10,7 @@ const ADD_TASK = "ADD_TASK"
 const DELETE_TASKS = "DELETE_TASKS"
 
 const SET_DRAGGABLE_TASK = "SET_DRAGGABLE_TASK"
+const SET_CARDID_DND = "SET_CARDID_DND"
 
 
 const defaultState = {
@@ -20,7 +21,8 @@ const defaultState = {
     cards: [],
     createdCard: {},
     tasks: [],
-    draggableTask: null
+    draggableTask: null,
+    cardIdDND: null
 }
 
 export default function boardsReducer(state = defaultState, action) {
@@ -78,7 +80,11 @@ export default function boardsReducer(state = defaultState, action) {
                     })
                 })
             }
-        
+        case SET_CARDID_DND:
+            return{
+                ...state,
+                cardIdDND: action.cardId
+            }
         default:
             return state
     }
@@ -132,4 +138,9 @@ export const setDraggableTask = (taskId) => ({
 export const deleteTasks = (task) => ({
     type: DELETE_TASKS,
     task
+})
+
+export const setCardIdDndAC = (cardId) =>({
+    type: SET_CARDID_DND,
+    cardId
 })

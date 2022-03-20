@@ -6,7 +6,7 @@ import { addTask, changeCardName, getCardsFromBoardId, moveTask } from "../../..
 import Task from "./task_card/Task";
 import { getAllTasks } from '../../../../actions/boards'
 import { useDispatch, useSelector } from "react-redux";
-import { deleteTasks, setDraggableTask } from "../../../../reducers/boardsReducer";
+import { deleteTasks, setCardIdDndAC, setDraggableTask } from "../../../../reducers/boardsReducer";
 
 
 let Card = (props) => {
@@ -17,11 +17,13 @@ let Card = (props) => {
     const [createTaskText, setCreateTaskText] = React.useState("");
     const [inputText, setInputText] = React.useState(true);
     const [toggleCreateTask, setToggleCreateTask] = React.useState(true);
+    const [isHoveredWithTask, setIsHoveredWithTask] = React.useState(true);
 
     let [currentTask, setCurrentTask] = React.useState(-1);
 
     const userId = useSelector(state => state.user.currentUser.id);
     const draggableTaskId = useSelector(state => state.boards.draggableTask);
+    const cardIdDND = useSelector(state => state.boards.cardIdDND);
 
     const divRef = useRef(null);
 
@@ -37,7 +39,6 @@ let Card = (props) => {
     }, [])
 
     const tasksFromProps = props.tasks;
-    console.log(tasksFromProps)
 
     if (tasksFromProps != null) {
         tasksFromProps.map(c => {
@@ -103,10 +104,15 @@ let Card = (props) => {
         }
     }
 
+
     const dragOverHandler = (e, card, task) =>{
         e.preventDefault();
         if(e.target.className == s.task){
             e.target.style.boxShadow = '0 2px 0px red';
+        }
+        if(e.target.className == s.card){
+            console.log(true)
+            setIsHoveredWithTask(true);
         }
         
     }
@@ -125,15 +131,27 @@ let Card = (props) => {
     const dropHandler = (e) =>{
         e.preventDefault();
         e.target.style.boxShadow = '0 0 2px rgba(0, 0, 0, 0.5)';
-        console.log("Dragged taskID: "+draggableTaskId+" ;"+"Drag drop cardID: "+e.target.getAttribute("cardId"));
-        dispatch(moveTask(draggableTaskId, e.target.getAttribute("cardId"), props.cardsId));
+        dispatch(moveTask(draggableTaskId, e.target.getAttribute('cardId'), props.cardsId));
         // props.getCards();
     }
 
-    console.log(props.cardsId)
+    const dropTaskToCardHandler = (e) =>{
+        e.preventDefault();
+        
+        dispatch(moveTask(draggableTaskId, props.cardId, props.cardsId));
+    }
+
+    const onMouseOnCard = (card) => {
+        dispatch(setCardIdDndAC(card));
+    }
+
 
     return (
-        <div className={s.card}>
+        <div
+            className={s.card}
+            onMouseEnter={() => onMouseOnCard(props.cardId)} 
+            onDragOver={e => dragOverHandler(e)}
+            onDrop={e => dropTaskToCardHandler(e)}>
             <div className={s.topcard}>
                 {
                     inputText

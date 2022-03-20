@@ -13,6 +13,7 @@ let BoardSpace = (props) => {
     const [clickedCreate, setClickedCreate] = useState(false);
 
     const postQuery = searchParams.get('id');
+    
     const dispatch = useDispatch()
     const thisBoard = useSelector(state => state.boards.foundBoard)
     const cards = useSelector(state => state.boards.cards)
@@ -62,7 +63,6 @@ let BoardSpace = (props) => {
     const getCards = () =>{
         if (thisBoard.length == null) {
             if (isAuth) {
-                
                 dispatch(getBoardFromId(postQuery, userId));
             }
         }
