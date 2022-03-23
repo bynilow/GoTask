@@ -99,22 +99,28 @@ export const getAllTasks = (cardsId) => {
     }
 }
 
-export const addTask = (nameTask, cardId, creatorId) => {
+export const addTask = (nameTask, cardId, creatorId, cardsId) => {
     return async dispatch => {
-        const response = await axios.post("http://localhost:4850/api/task/create", {
-            nameTask, cardId, creatorId
-        });
-        const response2 = await axios.post("http://localhost:4850/api/card/cards", {
-                cardId
-        });
-        dispatch(setTasksAC(response2.data.values));
+        try{
+            const response = await axios.post("http://localhost:4850/api/task/create", {
+                nameTask, cardId, creatorId
+            });
+            const response2 = await axios.post("http://localhost:4850/api/card/cards", {
+                    cardsId
+            });
+            dispatch(setTasksAC(response2.data.values));
+        }
+        catch(e){
+            console.log(e)
+        }
+        
     }
 }
 
-export const moveTask = (taskId, cardId, cardsId) => {
+export const moveTask = (taskId, cardId, cardsId, beforeOrder, isThisCard, firstOrder) => {
     return async dispatch => {
         const response = await axios.post("http://localhost:4850/api/task/move", {
-            taskId, cardId
+            taskId, cardId, beforeOrder, isThisCard, firstOrder
         });
         const response2 = await axios.post("http://localhost:4850/api/card/cards", {
                 cardsId
