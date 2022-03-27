@@ -2,13 +2,15 @@ import { Button, IconButton, TextField, Typography } from "@mui/material";
 import React, { useEffect, useRef } from "react";
 import s from './card.module.css'
 import MenuIcon from '@mui/icons-material/Menu';
-import { addTask, changeCardName, getCardsFromBoardId, moveTask } from "../../../../actions/boards";
+import { addTask, changeCardName, getCardsFromBoardId, moveTask, renameTask } from "../../../../actions/boards";
 import Task from "./task_card/Task";
 import { getAllTasks } from '../../../../actions/boards'
 import { useDispatch, useSelector } from "react-redux";
 import { deleteTasks, setCardIdDndAC, setDraggableTask } from "../../../../reducers/boardsReducer";
 import Draggable from 'react-draggable';
 import EditIcon from '@mui/icons-material/Edit';
+import Divider from '@mui/material/Divider';
+import SpeedDialAction from '@mui/material/SpeedDialAction';
 
 let Card = (props) => {
 
@@ -19,6 +21,10 @@ let Card = (props) => {
     const [inputText, setInputText] = React.useState(true);
     const [toggleCreateTask, setToggleCreateTask] = React.useState(true);
     const [isHoveredWithTask, setIsHoveredWithTask] = React.useState(true);
+
+    const [isTitleEdit, setIsTitleEdit] = React.useState(true);
+    const [titleEditText, setTitleEditText] = React.useState("");
+    const [idTaskEditText, setIdTaskEditText] = React.useState(-1);
 
     let [currentTask, setCurrentTask] = React.useState(-1);
 
@@ -75,7 +81,10 @@ let Card = (props) => {
     }
 
     let onChangeCreateText = (event) => {
-        setCreateTaskText(event.target.value);
+        if(createTaskText.length < 99){
+            setCreateTaskText(event.target.value);
+        }
+        
     }
 
     let blurInput = () => {
@@ -101,6 +110,7 @@ let Card = (props) => {
             if (createTaskText.length > 0) {
                 dispatch(addTask(createTaskText, props.cardId, userId, props.cardsId));
                 setCreateTaskText("");
+                setToggleCreateTask(true)
             }
         }
     }
@@ -108,12 +118,12 @@ let Card = (props) => {
 
     const dragOverHandler = (e, card, task) => {
         e.preventDefault();
-        if (e.target.className == s.task || e.target.className.indexOf(s.name_title) > -1) {
+        if (e.target.className == s.task || e.target.parentNode.className == s.task) {
             if(e.target.className == s.task){
-                e.target.style.boxShadow = '0 2px 0px red';
+                e.target.style.borderBottom = '.5rem solid #ff9100';
             }
             if(e.target.className.indexOf(s.name_title) > -1){
-                e.target.parentNode.style.boxShadow = '0 2px 0px red';
+                e.target.parentNode.style.borderBottom = '.5rem solid #ff9100';
             }
             
         }
@@ -121,13 +131,11 @@ let Card = (props) => {
             // console.log(true)
             setIsHoveredWithTask(true);
         }
-        console.log(e.target.className.indexOf(s.name_title))
     }
     const dragLeaveHandler = (e) => {
-        if (e.target.className == s.task) {
-
-            e.target.style.boxShadow = '0 0 2px rgba(0, 0, 0, 0.5)';
-
+        if (e.target.className == s.task || e.target.parentNode.className == s.task) {
+            e.target.style.borderBottom = '0rem solid #ff9100';
+            console.log("leaved")
         }
 
     }
@@ -138,20 +146,24 @@ let Card = (props) => {
     }
     const dragEndHandler = (e) => {
         if(e.target.className == s.task){
-            e.target.style.boxShadow = '0 0 2px rgba(0, 0, 0, 0.5)';
+            e.target.style.borderBottom = '0rem solid #ff9100';
         }
     }
 
     const dropHandler = (e) => {
         e.preventDefault();
-        if(e.target.className == s.task){
-            e.target.style.boxShadow = '0 0 2px rgba(0, 0, 0, 0.5)';
+        if(e.target.className == s.task ){
+            e.target.style.borderBottom = '0rem solid #ff9100';
+        }
+        if(e.target.parentNode.className == s.task && e.target.parentNode != null){
+            console.log(e.target.style.parentNode)
+            e.target.parentNode.style.borderBottom = '0rem solid #ff9100';
         }
         let isThisCard = e.target.getAttribute('cardId') == cardIdDND;
         let beforeOrder = e.target.getAttribute('order');
         let firstOrder = draggableTask.order;
         let cardId = e.target.getAttribute('cardId');
-        if(e.target.className.indexOf(s.name_title) > -1){
+        if(e.target.parentNode.className == s.task){
             isThisCard = e.target.parentNode.getAttribute('cardId') == cardIdDND;
             beforeOrder = e.target.parentNode.getAttribute('order');
             firstOrder = draggableTask.order;
@@ -164,17 +176,48 @@ let Card = (props) => {
 
     const dropTaskToCardHandler = (e) => {
         e.preventDefault();
-        console.log("go " + e.target.getAttribute('class'))
         if(e.target.className == s.card || e.target.className == s.tasks || e.target.className == "MuiButton-root"){
-            
             dispatch(moveTask(draggableTask.id, props.cardId, props.cardsId, 0, false, 0));
         }
-        
+    }
+
+    const dropTaskToCardElementsHandler = (e) => {
+        e.preventDefault();
+        if(e.target.parentNode.className == s.card || e.target.parentNode.parentNode.className == s.card){
+            dispatch(moveTask(draggableTask.id, props.cardId, props.cardsId, 0, false, 0));
+        }
     }
 
     const onMouseOnCard = (card) => {
         dispatch(setCardIdDndAC(card));
     }
+
+    const setEditTitle = (e,edit) => {
+        setIdTaskEditText(e.target.getAttribute('taskId'))
+        setTitleEditText(e.target.innerText)
+    }
+
+    let onChangeTitle = (event) => {
+        setTitleEditText(event.target.value);
+    }
+
+    const keyDownTitle = (e) => {
+        if (e.key == "Enter" || e.key == 13) {
+            blurTitle(e);
+        }
+    }
+
+    let blurTitle = (e) => {
+        if(titleEditText.length > 0){
+            dispatch(renameTask(idTaskEditText, titleEditText, props.cardsId))
+            
+        }
+        else{
+            dispatch(renameTask(idTaskEditText, "e", props.cardsId))
+        }
+        setIdTaskEditText(-1);
+    }
+
 
 
     return (
@@ -184,10 +227,14 @@ let Card = (props) => {
                 onMouseEnter={() => onMouseOnCard(props.cardId)}
                 onDragOver={e => dragOverHandler(e)}
                 onDrop={e => dropTaskToCardHandler(e)}>
-                <div className={s.topcard}>
+                <div className={s.topcard}
+                onDrop={e => dropTaskToCardElementsHandler(e)} >
                     {
                         inputText
-                            ? <Typography className={s.nameText} onClick={() => clickedName(nameCard)}>{nameCard}</Typography>
+                            ? <Typography 
+                                className={s.nameText} 
+                                onClick={() => clickedName(nameCard)}
+                                onDrop={e => dropTaskToCardElementsHandler(e)} >{nameCard}</Typography>
                             : <TextField
                                 focused
                                 size="small"
@@ -200,7 +247,8 @@ let Card = (props) => {
                                 placeholder="" />
                     }
 
-                    <Button className={s.menucard}><MenuIcon /></Button>
+                    <Button className={s.menucard}
+                    onDrop={e => dropTaskToCardElementsHandler(e)} > <MenuIcon /> </Button>
                 </div>
                 <div className={s.tasks} ref={divRef}>
                     {
@@ -220,35 +268,66 @@ let Card = (props) => {
                                 onDragStart={e => dragStartHandler(e)}
                                 onDragEnd={e => dragEndHandler(e)}
                                 onDrop={e => dropHandler(e)}>
-
-                                <Typography
-                                    className={s.name_title}
-                                    draggable="false"
-                                    taskId={c.id}
-                                    order={c.order}
-                                    cardId={props.cardId}>
                                     {
-                                        c.name
+                                        isTitleEdit  && idTaskEditText != c.id
+                                        ? <Typography
+                                        className={s.name_title}
+                                        draggable="false"
+                                        taskId={c.id}
+                                        order={c.order}
+                                        cardId={props.cardId}
+                                        onClick={(e) => setEditTitle(e, false)} >
+                                        {
+                                            c.name
+                                        }
+                                    </Typography>
+                                        : <TextField 
+                                        size="small" 
+                                        value={titleEditText}
+                                        onChange={onChangeTitle}
+                                        onKeyDown={keyDownTitle}
+                                        onBlur={blurTitle}
+                                        autoFocus
+                                        margin="none"
+                                        fullWidth
+                                        placeholder="Поменяйте заголовок" > </TextField>
                                     }
-                                </Typography>
-                                <IconButton className={s.edit_btn} >
+                                
+                                
+                                <IconButton sx={{
+                                    position: 'absolute',
+                                    top:0,
+                                    right:0,
+                                    transform: 'scale(0)',
+                                    padding: '10px',
+                                    transition: '.2s ease',
+                                }} className={s.edit_btn}>
                                     <EditIcon  />
                                 </IconButton>
+                                
+                                
                                 
                             </div>)
                     }
                 </div>
 
                 <div className={s.create_task}>
-                    
                     {
                         toggleCreateTask
-                            ? <Button onClick={() => setToggleCreateTask(false)} className={s.btn_add}>+ Добавить задачу</Button>
+                            ? <Button 
+                            sx={{color: 'black'}}
+                            onClick={() => setToggleCreateTask(false)} 
+                            className={s.btn_add}
+                            onDrop={e => dropTaskToCardElementsHandler(e)} >
+                                + Добавить задачу
+                              </Button>
                             : <div className={s.create_task_form}>
                                 <TextField
                                     label="Введите заголовок задачи"
                                     onBlur={() => setToggleCreateTask(true)}
                                     autoFocus
+                                    multiline
+                                    maxRows={3}
                                     size="small"
                                     value={createTaskText}
                                     onChange={onChangeCreateText}

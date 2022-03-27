@@ -1,3 +1,4 @@
+
 .card{
     min-width: 350px;
     max-height: 500px;
@@ -10,6 +11,13 @@
     flex-direction: column;
     justify-content: space-between;
     transition: .1s ease;
+    
+}
+
+.card .create_task, .tasks, .topcard{
+    margin-top: 5px;
+    margin-bottom: 5px;
+    
 }
 
 .card:hover{
@@ -39,7 +47,6 @@
 }
 
 .create_task{
-    margin: 1%;
     height: 40px;
 }
 
@@ -53,6 +60,8 @@
 .topcard{
     display: flex;
     justify-content: space-between;
+    width: 95%;
+    align-self: center;
 }
 
 .nameText{
@@ -65,15 +74,33 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px;
-
+    
 }
 
+.tasks::-webkit-scrollbar{
+    width: 8px;
 
+}
+.tasks::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2); 
+    border-radius: 5px;
+  }
+.tasks::-webkit-scrollbar-thumb {
+    background-color: #7e57c2;
+    border-radius: 5px;
+  }
+
+
+.create_task{
+    width: 95%;
+    align-self: center;
+    height: 30%;
+}
 
 .create_task_form{
     display: flex;
     justify-content: space-around;
+    
 }
 
 .send_icon{
@@ -90,7 +117,7 @@
 }
 
 .task{
-    width: 100%;
+    width: 95%;
     margin: 5px;
     padding: 10px;
     border-radius: 5px;
@@ -98,10 +125,14 @@
     transition: .1s ease;
     z-index: 99;
     position: relative;
+    
 }
 
 .task:hover{
-    transform: scale(1.02);
+}
+
+.task:hover .edit_btn{
+    transform: scale(1);
 }
 
 .edit_icon{
@@ -109,10 +140,9 @@
 }
 
 .edit_btn{
-    right: 0;
-    top: 0;
-    position: absolute;
+
 }
+
 
 .name_title{
     

@@ -126,7 +126,18 @@ export const moveTask = (taskId, cardId, cardsId, beforeOrder, isThisCard, first
                 cardsId
         });
         dispatch(setTasksAC(response2.data.values));
-
         
+    }
+}
+
+export const renameTask = (taskId, taskText, cardsId) => {
+    return async dispatch => {
+        const response = await axios.post("http://localhost:4850/api/task/rename", {
+            taskId, taskText
+        })
+        const response2 = await axios.post("http://localhost:4850/api/card/cards", {
+                cardsId
+        });
+        dispatch(setTasksAC(response2.data.values));
     }
 }
