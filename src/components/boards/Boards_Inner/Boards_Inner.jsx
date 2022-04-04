@@ -12,13 +12,25 @@ import { toggleIsFetchingAC } from "../../../reducers/boardsReducer";
 
 let Boards_Inner = () => {
 
-    const boards = useSelector(state => state.boards.boards)
+    let boards = useSelector(state => state.boards.boards)
     const userId = useSelector(state => state.user.currentUser.id)
     const dispatch = useDispatch()
 
     console.log(boards)
     
-    if (boards == undefined || boards.length == 0){
+    // if (boards === undefined){
+    //     dispatch(getBoards(userId))
+    //     dispatch(toggleIsFetchingAC(true))
+    //     if(boards === undefined){
+    //         boards = null;
+    //     }
+    // }
+
+    useEffect(()=>{
+        
+    },[])
+
+    if(boards.length === 0 && boards !== null){
         dispatch(getBoards(userId))
         dispatch(toggleIsFetchingAC(true))
     }
@@ -152,7 +164,6 @@ let Boards_Inner = () => {
                         type="text"
                         autoFocus
                         className={s.board_name}
-                        type="text"
                         label="Название доски"
                         value={inputText}
                         onChange={inputChanged} />

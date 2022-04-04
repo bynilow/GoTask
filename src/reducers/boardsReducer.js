@@ -56,8 +56,7 @@ export default function boardsReducer(state = defaultState, action) {
         case CREATE_CARD:
             return {
                 ...state,
-                createdCard: action.card,
-                cards: [...state.cards, ...action.card]
+                createdCard: action.card
             }
         case SET_TASKS:
             return {

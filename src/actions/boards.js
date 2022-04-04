@@ -7,7 +7,6 @@ export const getBoards = (userId) => {
         const response = await axios.post("http://localhost:4850/api/boards/boards", {
             userId
         });
-
         dispatch(setBoardsAC(response.data.values))
         dispatch(toggleIsFetchingAC(false))
 
@@ -29,13 +28,25 @@ export const getBoardFromId = (boardId, userId) => {
 }
 
 export const getCardsFromBoardId = (boardId) => {
-    return async dispatch => {
-        const response = await axios.post("http://localhost:4850/api/boards/cards", {
-            boardId
-        });
-        console.log("dispatched")
-        dispatch(setCardsAC(response.data.values))
+    try{
+        return async dispatch => {
+            const response = await axios.post("http://localhost:4850/api/boards/cards", {
+                boardId
+            });
+            if(response.data.values.length == 0){
+                
+                dispatch(setCardsAC([{none: 1}]))
+            }
+            else{
+                dispatch(setCardsAC(response.data.values))
+            }
+            
+        }
     }
+    catch(e){
+        console.log(e)
+    }
+    
 }
 
 export const createBoard = (userId, name, color, visibility) => {
@@ -65,8 +76,12 @@ export const createCard = (boardId, userId) => {
                 boardId,
                 userId
             });
-            console.log(response.data.values)
+            const response2 = await axios.post("http://localhost:4850/api/boards/cards", {
+                boardId
+            });
+            dispatch(setCardsAC(response2.data.values))
             dispatch(createCardAC(response.data.values))
+            
         }
         catch (e) {
             console.log("hehe " + e)
@@ -88,12 +103,20 @@ export const changeCardName = async (cardId, nameCard, boardId) => {
 export const getAllTasks = (cardsId) => {
     return async dispatch => {
         try {
+            console.log('here')
             const response = await axios.post("http://localhost:4850/api/card/cards", {
                 cardsId
             });
-            dispatch(setTasksAC(response.data.values))
+            if(response.data.values == null){
+                dispatch(setTasksAC({none: -1}))
+            }
+            else{
+                dispatch(setTasksAC(response.data.values))
+            }
+            
         }
         catch (e) {
+            console.log()
             console.log(e)
         }
     }
