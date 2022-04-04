@@ -95,8 +95,7 @@ let BoardSpace = (props) => {
     let createColumn = () => {
         dispatch(createCard(thisBoard[0].boardsId, userId))
     }
-
-
+   
     if (thisBoard.length == null) {
         return (
             <div>
@@ -106,20 +105,24 @@ let BoardSpace = (props) => {
     }
     return (
         <div className={s.boardspace}>
-            <Typography>hhhhh {thisBoard[0].tittle}</Typography>
+            <Typography>{thisBoard[0].tittle}</Typography>
             <div style={{ backgroundColor: thisBoard[0].background }} className={s.bg}></div>
             <div className={s.cards}>
                 {cards.map((c, ind) => {
-                    if (!c.none) {
-                        <Card
-                            key={ind}
-                            cardId={c.id}
-                            boardId={thisBoard[0].boardsId}
-                            name={c.name}
-                            tasks={tasks}
-                            getCards={null}
-                            cardsId={cardsId} />
+                    if (typeof cards[0].none === 'undefined') {
+                        return (
+                            <Card
+                                key={ind}
+                                cardId={c.id}
+                                boardId={thisBoard[0].boardsId}
+                                name={c.name}
+                                tasks={tasks}
+                                getCards={null}
+                                cardsId={cardsId} />
+                        )
+
                     }
+
                 }
 
                 )}
