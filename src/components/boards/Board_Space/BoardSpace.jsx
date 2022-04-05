@@ -11,6 +11,7 @@ import CreateCard from "./Cards/CreateCard";
 let BoardSpace = (props) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [clickedCreate, setClickedCreate] = useState(false);
+    const [updater, setUpdater] = useState(0)
 
     const postQuery = searchParams.get('id');
     
@@ -20,32 +21,48 @@ let BoardSpace = (props) => {
     const isAuth = useSelector(state => state.user.isAuth)
     const userId = useSelector(state => state.user.currentUser.id)
     const tasks = useSelector(state => state.boards.tasks);
+    
 
     const cardsId = [];
     if (cards.length !== 0) {
         cards.map(e => {
             cardsId.push(e.id);
         })
+        // dispatch(getAllTasks(cardsId));
     }
 
+
     useEffect(() => {
-        
         if(typeof thisBoard[0] !== 'undefined'){
             if(isAuth){
-                if (thisBoard[0].boardId != postQuery) {
+                if (thisBoard[0].boardsId != postQuery) {
                     dispatch(getBoardFromId(postQuery, userId));
+                    dispatch(getCardsFromBoardId(-1));
+                    dispatch(getCardsFromBoardId(postQuery));
+                    console.log(cards)
+                    if(cards > 0){
+                        dispatch(getAllTasks(-1));
+                        dispatch(getAllTasks(cardsId));
+                    }
+                }
+            
+                if(cards.length == 0 || cards[0].boardId != postQuery){
+                    dispatch(getCardsFromBoardId(thisBoard[0].boardsId));
+                    // setUpdater(1)
+                    // setUpdater(1)
+                }
+                
+                if(tasks.length == 0 || tasks[0].boardId != postQuery){
+                    console.log('get task')
+                    cards.map(e => {
+                        cardsId.push(e.id);
+                    })
+                    dispatch(getAllTasks(cardsId));
+                }
+                if(updater == 0){
                     
                 }
-                if(cards.length == 0){
-                    console.log("disp get cards")
-                    dispatch(getCardsFromBoardId(thisBoard[0].boardsId));
-                }
-                
-                // if(tasks.length == 0){
-                //     dispatch(getAllTasks(cardsId));
-                // }
-               
-                
+                console.log('updates: ' + updater)
             }
 
         }
@@ -58,8 +75,24 @@ let BoardSpace = (props) => {
         
     })
 
+    // if (typeof thisBoard[0] !== 'undefined') {
 
-    
+    //     if (thisBoard[0].boardsId != postQuery) {
+    //         dispatch(getBoardFromId(postQuery, userId));
+    //         setUpdater(Date.now());
+    //     }
+    //     else {
+    //         if (typeof cards[0] !== 'undefined' && cards[0].boardId != postQuery) {
+    //             dispatch(getCardsFromBoardId(postQuery));
+    //             dispatch(getAllTasks(cardsId));
+    //             setUpdater(Date.now());
+    //         }
+    //         if (typeof tasks[0] !== 'undefined') {
+
+    //         }
+    //     }
+    // }
+
 
 
     
@@ -104,22 +137,27 @@ let BoardSpace = (props) => {
         )
     }
     return (
-        <div className={s.boardspace}>
+        <div className={s.boardspace} updater={updater}>
             <Typography>{thisBoard[0].tittle}</Typography>
             <div style={{ backgroundColor: thisBoard[0].background }} className={s.bg}></div>
-            <div className={s.cards}>
+            <div className={s.cards} updater={updater}>
                 {cards.map((c, ind) => {
+                    // console.log(c)
                     if (typeof cards[0].none === 'undefined') {
-                        return (
-                            <Card
-                                key={ind}
-                                cardId={c.id}
-                                boardId={thisBoard[0].boardsId}
-                                name={c.name}
-                                tasks={tasks}
-                                getCards={null}
-                                cardsId={cardsId} />
-                        )
+                        if(cards[0].boardId == postQuery){
+                            return (
+                                <Card
+                                    key={ind}
+                                    cardId={c.id}
+                                    boardId={thisBoard[0].boardsId}
+                                    name={c.name}
+                                    tasks={tasks}
+                                    getCards={null}
+                                    cardsId={cardsId} />
+                            )
+                        }
+                        
+                        
 
                     }
 

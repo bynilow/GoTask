@@ -34,7 +34,6 @@ export const getCardsFromBoardId = (boardId) => {
                 boardId
             });
             if(response.data.values.length == 0){
-                
                 dispatch(setCardsAC([{none: 1}]))
             }
             else{
@@ -107,8 +106,8 @@ export const getAllTasks = (cardsId) => {
             const response = await axios.post("http://localhost:4850/api/card/cards", {
                 cardsId
             });
-            if(response.data.values == null){
-                dispatch(setTasksAC({none: -1}))
+            if(response.data.values.length == 0){
+                dispatch(setTasksAC([{none: -1}]))
             }
             else{
                 dispatch(setTasksAC(response.data.values))
