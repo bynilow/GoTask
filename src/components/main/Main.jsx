@@ -7,28 +7,31 @@ import { color } from "@mui/system";
 import { createTheme } from '@mui/material/styles';
 
 const Main = () => {
-    
 
-    
+
+
 
     return (
         <div className={s.main}>
             <div className={s.about}>
                 <Container className={s.about_inner}>
-                    <div className={s.about_left}>
-                        <Typography variant="h3" color="white">
-                        <Typography sx={{fontWeight: 'bold'}} variant="inherit" component="span" color="secondary">APPNAME</Typography> помогает эффективно решать рабочие и ежедневные задачи.
+                    <div className={s.about_left + " " + s.typ_text}>
+                        <Typography variant="h3" color={"#fff"} className={s.typ_text}>
+                            <Typography sx={{ fontWeight: 'bold' }} 
+                            variant="inherit" 
+                            component="span" 
+                            color={"secondary"}>APPNAME</Typography> помогает эффективно решать рабочие и ежедневные задачи.
                         </Typography>
-                        <Typography variant="h5" sx={{ mt: 5 }} color="white">
+                        <Typography variant="h5" sx={{ mt: 5 }} color={"#fff"}>
                             Управляйте проектами, решайте повседневные задачи и выводите продуктивность на новый уровень
-                            вместе с <Typography sx={{fontWeight: 'bold'}} variant="inherit" component="span" color="secondary">APPNAME</Typography>.
+                            вместе с <Typography sx={{ fontWeight: 'bold' }} variant="inherit" component="span" color="secondary">APPNAME</Typography>.
                         </Typography>
                         <Button color='secondary' variant="contained" sx={{ mt: 5 }} size="large">
                             Узнать больше
                         </Button>
                     </div>
                     <div className={s.about_img}>
-                        
+
                     </div>
 
                 </Container>
@@ -43,7 +46,7 @@ const Main = () => {
                             Начните свое использование
                         </Typography>
                         <Typography variant="h5">
-                            Разбивайте задачи на простые шаги, устанавливайте сроки и настраивайте напоминания для ежедневного контрольного списка, 
+                            Разбивайте задачи на простые шаги, устанавливайте сроки и настраивайте напоминания для ежедневного контрольного списка,
                             чтобы следить за осуществлением поставленных целей.
                         </Typography>
                     </div>
@@ -52,13 +55,13 @@ const Main = () => {
 
             <div className={s.start_right}>
                 <div className={s.start_cont} >
-                    
+
                     <div className={s.start_two}>
                         <Typography variant="h4" className={s.head}>
                             Начните свое использование
                         </Typography>
                         <Typography variant="h5">
-                            Разбивайте задачи на простые шаги, устанавливайте сроки и настраивайте напоминания для ежедневного контрольного списка, 
+                            Разбивайте задачи на простые шаги, устанавливайте сроки и настраивайте напоминания для ежедневного контрольного списка,
                             чтобы следить за осуществлением поставленных целей.
                         </Typography>
                     </div>
@@ -78,7 +81,7 @@ const Main = () => {
                             Начните свое использование
                         </Typography>
                         <Typography variant="h5">
-                            Разбивайте задачи на простые шаги, устанавливайте сроки и настраивайте напоминания для ежедневного контрольного списка, 
+                            Разбивайте задачи на простые шаги, устанавливайте сроки и настраивайте напоминания для ежедневного контрольного списка,
                             чтобы следить за осуществлением поставленных целей.
                         </Typography>
                     </div>
@@ -113,7 +116,7 @@ const Main = () => {
                             Связь с нами
                         </Typography>
                     </div>
-                    <Typography variant="h5" sx={{pt:5}}>
+                    <Typography variant="h5" sx={{ pt: 5 }}>
                         APPNAME
                     </Typography>
                     <Typography variant="h6">

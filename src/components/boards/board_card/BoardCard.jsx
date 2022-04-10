@@ -8,7 +8,7 @@ import { NavLink } from "react-router-dom";
 const BoardCard = (props) => {
     return (
         <div className={s.card}>
-            <div style={{ backgroundColor: props.color }} className={s.bg}></div>
+            <div style={{ backgroundImage: props.color }} className={s.bg}></div>
             <Typography component={NavLink} to={`/b?id=${props.id}`} color="black" className={s.name} >{props.name}</Typography>
             <FavoriteBorderIcon className={s.favorite_btn} />
         </div>

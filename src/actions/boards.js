@@ -4,12 +4,18 @@ import { setBoardsAC, setCreatedBoardAC, toggleIsFetchingAC, setFoundBoardAC, se
 
 export const getBoards = (userId) => {
     return async dispatch => {
-        const response = await axios.post("http://localhost:4850/api/boards/boards", {
-            userId
-        });
-        dispatch(setBoardsAC(response.data.values))
-        dispatch(toggleIsFetchingAC(false))
-
+        try{
+            const response = await axios.post("http://localhost:4850/api/boards/boards", {
+                userId
+            });
+            dispatch(setBoardsAC(response.data.values))
+            dispatch(toggleIsFetchingAC(false))
+        }
+        catch(e){
+            console.log(e.response.data.values.none)
+            dispatch(setBoardsAC([{none: e.response.data.values.none}]))
+            dispatch(toggleIsFetchingAC(false))
+        }
     }
 }
 
@@ -53,14 +59,16 @@ export const createBoard = (userId, name, color, visibility) => {
         try {
 
             const response = await axios.post("http://localhost:4850/api/boards/create", {
-                userId: userId,
-                name: name,
-                color: color,
-                visibility: visibility
+                userId,
+                name,
+                color,
+                visibility
             });
             const board = response.data.values;
-            dispatch(setCreatedBoardAC(board))
-            dispatch(setBoardsAC(response.data.values))
+            const response2 = await axios.post("http://localhost:4850/api/boards/boards", {
+                userId
+            });
+            dispatch(setBoardsAC(response2.data.values))            
         }
         catch (e) {
             console.log("hehe " + e)
@@ -106,7 +114,8 @@ export const getAllTasks = (cardsId) => {
             const response = await axios.post("http://localhost:4850/api/card/cards", {
                 cardsId
             });
-            if(response.data.values.length == 0){
+            console.log(response.data.values)
+            if(response.data.values == null){
                 dispatch(setTasksAC([{none: -1}]))
             }
             else{
@@ -121,15 +130,16 @@ export const getAllTasks = (cardsId) => {
     }
 }
 
-export const addTask = (nameTask, cardId, creatorId, cardsId) => {
+export const addTask = (nameTask, cardId, creatorId, cardsId, boardId) => {
     return async dispatch => {
         try{
             const response = await axios.post("http://localhost:4850/api/task/create", {
-                nameTask, cardId, creatorId
+                nameTask, cardId, creatorId, boardId
             });
             const response2 = await axios.post("http://localhost:4850/api/card/cards", {
                     cardsId
             });
+            console.log(response2.data.values)
             dispatch(setTasksAC(response2.data.values));
         }
         catch(e){

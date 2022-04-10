@@ -9,34 +9,34 @@ import PublicIcon from '@mui/icons-material/Public';
 import CheckCircleIcon from '@mui/icons-material/Done';
 import Preloader from "../../common/Preloader";
 import { toggleIsFetchingAC } from "../../../reducers/boardsReducer";
+import { useSearchParams } from "react-router-dom";
 
 let Boards_Inner = () => {
 
-    let boards = useSelector(state => state.boards.boards)
     const userId = useSelector(state => state.user.currentUser.id)
+    const boards = useSelector(state => state.boards.boards)
     const dispatch = useDispatch()
 
-    console.log(boards)
+    const [searchParams, setSearchParams] = useSearchParams();
+    const postQuery = searchParams.get('user');
+    console.log(postQuery)
     
-    // if (boards === undefined){
-    //     dispatch(getBoards(userId))
-    //     dispatch(toggleIsFetchingAC(true))
-    //     if(boards === undefined){
-    //         boards = null;
-    //     }
-    // }
 
-    useEffect(()=>{
-        
-    },[])
+    
 
-    if(boards.length === 0 && boards !== null){
-        dispatch(getBoards(userId))
+    useEffect(() => {
         dispatch(toggleIsFetchingAC(true))
-    }
-        
+        dispatch(getBoards(postQuery))
+        // if (boards.length == 0) {
+        //     dispatch(getBoards(userId))
+        //     dispatch(toggleIsFetchingAC(true))
+        // }        
+    }, [])
+
+    
+
     const isFetching = useSelector(state => state.boards.isFetching)
-        
+
 
     const [boardVisibility, setBoardVisibility] = React.useState(false);
     const [createVisibility, setCreateVisibility] = React.useState(false);
@@ -48,15 +48,15 @@ let Boards_Inner = () => {
     }
 
     const inputChanged = (event) => {
-        if(event.target.value.toString().length < 45){
+        if (event.target.value.toString().length < 45) {
             setInputText(event.target.value)
         }
-        
+
     }
 
     const clickCreateVisibility = () => {
         setCreateVisibility(!createVisibility)
-        
+
     }
 
     const changeColor = (color, ind) => {
@@ -70,47 +70,64 @@ let Boards_Inner = () => {
             default:
                 colorText = "OTHER"
             case 0:
-                colorText = "#b867c6"
+                colorText = "linear-gradient(144deg, rgba(202,113,218,1) 0%, rgba(162,113,218,1) 100%)"
                 break;
             case 1:
-                colorText = "#7b88cc"
+                colorText = "linear-gradient(144deg, rgba(135,150,224,1) 0%, rgba(135,188,224,1) 100%)"
                 break;
             case 2:
-                colorText = "#4fc3f7"
+                colorText = "linear-gradient(144deg, rgba(87,214,255,1) 0%, rgba(87,232,255,1) 100%)"
                 break;
             case 3:
-                colorText = "#4db6ac"
+                colorText = "linear-gradient(144deg, rgba(85,200,189,1) 0%, rgba(85,200,162,1) 100%)"
                 break;
             case 4:
-                colorText = "#81c784"
+                colorText = "linear-gradient(144deg, rgba(153,204,153,1) 0%, rgba(175,204,153,1) 100%)"
                 break;
             case 5:
-                colorText = "#dce775"
+                colorText = "linear-gradient(144deg, rgba(231,231,159,1) 0%, rgba(231,213,159,1) 100%)"
                 break;
             case 6:
-                colorText = "#ffd54f"
+                colorText = "linear-gradient(144deg, rgba(255,255,102,1) 0%, rgba(255,222,102,1) 100%)"
                 break;
             case 7:
-                colorText = "#ff8a65"
+                colorText = "linear-gradient(144deg, rgba(255,153,102,1) 0%, rgba(255,130,102,1) 100%)"
                 break;
             case 8:
-                colorText = "#a1887f"
+                colorText = "linear-gradient(144deg, rgba(177,150,140,1) 0%, rgba(145,113,113,1) 100%)"
                 break;
             case 9:
-                colorText = "#e0e0e0"
+                colorText = "linear-gradient(144deg, rgba(246,246,246,1) 0%, rgba(227,225,225,1) 100%)"
                 break;
         }
-        const visibilityNum = (Number(boardVisibility)+1)
-        dispatch(createBoard(userId, inputText, colorText, visibilityNum))
+        const visibilityNum = (Number(boardVisibility) + 1)
+        if(inputText > 0){
+            dispatch(createBoard(userId, inputText, colorText, visibilityNum))
+        }
+        else{
+            dispatch(createBoard(userId, "Новая доска", colorText, visibilityNum))
+        }
+        
     }
-
+    console.log(boards)
     return (
-        <div className={s.boards_inner}>
+        <div className={s.boards_inner} >
             {isFetching ? <Preloader /> : null}
-            {boards != null
-                ? boards.map((br, ind) =>
-                    <BoardCard id={br.boardsId} key={ind} name={br.tittle} color={br.background} />)
-                : null}
+            <div className={s.boards}>
+                {
+                    boards.map((br, ind) => {
+                        if (typeof boards[0].none === 'undefined') {
+                            return (
+                                <BoardCard id={br.boardsId} key={ind} name={br.tittle} color={br.background} />
+                            )
+                        }
+                    })
+                }
+                
+
+
+            </div>
+
 
 
             <div className={s.createBoard_btn} onClick={createVisibility ? "" : clickCreateVisibility}>

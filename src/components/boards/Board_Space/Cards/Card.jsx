@@ -108,7 +108,8 @@ let Card = (props) => {
     let createTask = (e) => {
         if (e.key == "Enter" || e.key == 13) {
             if (createTaskText.length > 0) {
-                dispatch(addTask(createTaskText, props.cardId, userId, props.cardsId));
+                console.log(props.boardId)
+                dispatch(addTask(createTaskText, props.cardId, userId, props.cardsId, props.boardId));
                 setCreateTaskText("");
                 setToggleCreateTask(true)
             }

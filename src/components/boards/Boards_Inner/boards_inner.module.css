@@ -3,6 +3,11 @@
     margin: 0;
 }
 
+.boards{
+    display: flex;
+    flex-wrap: wrap;
+}
+
 .boards_inner{
     margin: 0 2%;
     width: 100%;

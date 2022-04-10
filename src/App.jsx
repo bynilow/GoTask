@@ -11,10 +11,12 @@ import { ThemeProvider } from '@mui/system';
 import Users from './components/users/Users';
 import Boards from './components/boards/Boards';
 import BoardSpace from './components/boards/Board_Space/BoardSpace';
+import Boards_Inner from './components/boards/Boards_Inner/Boards_Inner';
 
 
 function App() {
   const isAuth = useSelector(state => state.user.isAuth)
+  const userId = useSelector(state => state.user.currentUser.id)
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -35,6 +37,9 @@ function App() {
         dark: '#c56200',
         contrastText: '#000',
       },
+      white: {
+        main: '#fff'
+      }
     },
   })
 
@@ -44,10 +49,10 @@ function App() {
         <div className='empty_spacer_app'>...</div>
         <Header />
         <Routes>
-          <Route path="/reg" element={<Registration isAuth={isAuth} />} />
-          <Route path="/login" element={<Login isAuth={isAuth} />} />
+          <Route path="/reg" element={<Registration isAuth={isAuth} userId={userId} />} />
+          <Route path="/login" element={<Login isAuth={isAuth} userId={userId} />} />
           <Route path="/users" element={<Users key="Users" isAuth={isAuth} />} />
-          <Route path="/boards" element={<Boards isAuth={isAuth} />} />
+          <Route path="/boards" element={<Boards isAuth={isAuth} userId={userId}/>} />
           <Route path="/b" element={<BoardSpace isAuth={isAuth} />} />
         </Routes>
 

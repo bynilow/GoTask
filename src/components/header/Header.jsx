@@ -11,65 +11,53 @@ const Header = () => {
     const dispatch = useDispatch()
     const [header, setHeader] = useState(false)
 
-    if(window.location.pathname !== '/main' && !header){
-        setHeader(true)
-    }
+    // if (window.location.pathname !== '/main' && !header) {
+    //     setHeader(true)
+    // }
 
-    const changeBackground = () =>{
-        
-        if(window.scrollY > 30){
+    const changeBackground = () => {
+
+        if (window.scrollY > 30) {
             setHeader(true)
         }
-        else{
-            if(window.location.pathname === '/main'){
+        else {
+            if (window.location.pathname === '/main') {
                 setHeader(false)
             }
         }
     }
 
-    const logoClick = () =>{
-        if (isAuth){
+    const logoClick = () => {
+        if (isAuth) {
 
         }
-        else{
+        else {
 
         }
     }
-    
-    
-    window.addEventListener('scroll', changeBackground)    
-    
+
+
+    window.addEventListener('scroll', changeBackground)
+    // header ? s.header_active : s.header
     return (
-        <div className={header ? s.header_active : s.header}>
-            <Container >
-                <Toolbar className={s.toolbar}>
-                    {isAuth
-                        ? <Typography
-                            variant="h6"
-                            
-                            component={NavLink}
-                            to="/boards"
-                            onClick={() => setHeader(false)}
-                            color={header ? 'inherit' : 'white'}
-                            className={s.logo}
-                            sx={{ display: { xs: 'none', md: 'flex' } }} >
-                            LOGO
-                        </Typography>
-                        : <Typography
-                            variant="h6"
-                            noWrap
-                            component={NavLink}
-                            to="/main"
-                            onClick={() => setHeader(false)}
-                            color={header ? 'inherit' : 'white'}
-                            className={s.logo}
-                            sx={{ display: { xs: 'none', md: 'flex' } }} >
-                            LOGO
-                        </Typography>
-
-                    }
-
+        <div className={s.header_active}>
+            <div className={s.container} >
+                <div className={s.logo_div}>
+                    <div className={s.d1}></div>
+                    <div className={s.d2}></div>
+                    <Typography
+                        component={NavLink}
+                        to="/boards"
+                        onClick={() => setHeader(false)}
+                        color={"#fff"}
+                        className={s.logo}
+                        sx={{ fontWeight: 'bold', fontSize: '25px', textShadow: '0 0 3px rgba(0,0,0,.5)' }}>
+                        <Typography color="secondary" component={'span'} sx={{ fontWeight: 'bold', fontSize: '20px', textShadow: '0 0 1px rgba(0,0,0,.5)' }} >GO</Typography>TASK
+                    </Typography>
                     
+                </div>
+
+                <div className={s.header_btns}>
                     {!isAuth &&
                         <Box mr={3} color={header ? 'inherit' : 'white'}>
                             <Button color='inherit' variant="outlined" onClick={() => setHeader(true)} component={NavLink} to="/login">
@@ -84,17 +72,24 @@ const Header = () => {
                     }
                     {isAuth &&
                         <div className={s.auth_btns}>
-                            
-                            <Button variant="text" endIcon={<KeyboardArrowDownIcon />}>Доски</Button>
-                            <Button variant="text" endIcon={<KeyboardArrowDownIcon />}>Избранное</Button>
+
+                            <Button variant="text" disabled endIcon={<KeyboardArrowDownIcon />}>Доски</Button>
+                            <Button variant="text" disabled endIcon={<KeyboardArrowDownIcon />}>Избранное</Button>
                             <Divider orientation='vertical' variant='middle' flexItem />
-                            <Button className={s.btn_exit} color="inherit" variant="outlined" onClick={() => dispatch(logoutAC())}>
+                            <Button 
+                            className={s.btn_exit} 
+                            color="inherit" 
+                            variant="outlined" 
+                            component={NavLink}
+                            to="/login"
+                            onClick={() => dispatch(logoutAC())}>
                                 Выход
                             </Button>
                         </div>
                     }
-                </Toolbar>
-            </Container>
+                </div>
+
+            </div>
         </div >
     )
 }

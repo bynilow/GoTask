@@ -3,13 +3,15 @@ const LOGOUT = "LOGOUT"
 const SET_USERS = "SET_USERS"
 const SET_FOUND_USER = "SET_FOUND_USER"
 const GET_FOUND_USER = "GET_FOUND_USER"
+const SET_SIGNIN_TEXT = "SET_SIGNIN_TEXT"
 
 
 const defaultState = {
     currentUser: {},
     isAuth: false,
     users: [],
-    foundUser: false
+    foundUser: false,
+    signinText: ""
 }
 
 export default function userReducer(state = defaultState, action) {
@@ -37,6 +39,11 @@ export default function userReducer(state = defaultState, action) {
                 ...state,
                 foundUser: action.foundUser
             }
+        case SET_SIGNIN_TEXT:
+            return{
+                ...state,
+                signinText: action.text
+            }
         default:
             return state
     }
@@ -60,5 +67,10 @@ export const setUsersAC = (users) => ({
 export const setFoundUserAC = (foundUser) => ({
     type: SET_FOUND_USER,
     foundUser
+})
+
+export const setSigninTextAC = (text) => ({
+    type: SET_SIGNIN_TEXT,
+    text
 })
 

@@ -1,6 +1,6 @@
 import axios from "axios"
 import { Navigate } from "react-router-dom"
-import { setFoundUserAC, setUserAC, setUsersAC } from "../reducers/userReducer"
+import { setFoundUserAC, setSigninTextAC, setUserAC, setUsersAC } from "../reducers/userReducer"
 
 
 export const getUsers = () => {
@@ -21,18 +21,33 @@ export const getUserByEmail = (email) =>{
     
 }
 
-export const registration = async (email, login, password) => {
-    try {
-        const response = await axios.post("http://localhost:4850/api/auth/signup", {
-            email,
-            login,
-            password
-        })
-        alert(response.data.values.message)
+export const registration = (email, login, password) => {
+    return async dispatch => {
+        try {
+            const response = await axios.post("http://localhost:4850/api/auth/signup", {
+                email,
+                login,
+                password
+            })
+            console.log(response.data.status === 200)
+            if(response.data.status === 200){
+                const response = await axios.post("http://localhost:4850/api/auth/signin", {
+                    email,
+                    password
+                })
+                dispatch(setUserAC(response.data.values.user))
+                
+                localStorage.setItem('token', response.data.values.token)
+                console.log(localStorage.getItem('token'))
+                return <Navigate to={'/boards'} />
+            }
+            
+        }
+        catch (e) {
+            alert(e.response.data.values.message)
+        } 
     }
-    catch (e) {
-        alert(e.response.data.values.message)
-    }
+    
 }
 
 export const login = (email, password) => {
@@ -48,11 +63,11 @@ export const login = (email, password) => {
             
             localStorage.setItem('token', response.data.values.token)
             console.log(localStorage.getItem('token'))
-            return <Navigate to={"/users"} />
+            return <Navigate to={'/boards'} />
 
         }
         catch (e) {
-            alert(e)
+            dispatch(setSigninTextAC(e.response.data.values.message))
         }
 
     }
