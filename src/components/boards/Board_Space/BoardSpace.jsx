@@ -3,7 +3,7 @@ import s from './boardspace.module.css'
 import { useSelector, useDispatch } from "react-redux";
 import Card from "./Cards/Card";
 import { useSearchParams } from 'react-router-dom'
-import { createCard, getAllTasks, getBoardFromId, getCardsFromBoardId } from '../../../actions/boards'
+import { createCard, getAllTasks, getBoardFromId, getCardsFromBoardId, getOutputDoc } from '../../../actions/boards'
 import { Button, Divider, IconButton, ListItemIcon, Menu, MenuItem, TextField, Typography } from "@mui/material";
 import Preloader from '../../common/Preloader'
 import CreateCard from "./Cards/CreateCard";
@@ -14,6 +14,10 @@ import AddIcon from '@mui/icons-material/Add';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import ArticleIcon from '@mui/icons-material/Article';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { saveAs } from "file-saver";
+import axios from "axios";
+
+
 
 let BoardSpace = (props) => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -96,6 +100,196 @@ let BoardSpace = (props) => {
     const handleClose = () => {
       setAnchorEl(null);
     };
+    
+    
+
+    const dataExcel = [
+        {name: "ivan", age: "25", email: "testmail"},
+        {name: "ivsdgn", age: "15", email: "testmail"},
+        {name: "ibbbn", age: "65", email: "testmail"},
+        {name: "issss", age: "35", email: "testmail"}
+    ];
+
+    const headers = [
+        {label:'Имя', key: 'name'},
+        {label:'Возраст', key: 'age'},
+        {label:'Почта', key: 'email'}
+    ]
+
+    const csvRep = {
+        filename: 'HELLO WORLD.csv',
+        headers: headers,
+        data: dataExcel
+    }
+
+    const outputDoc = async () => {
+        const docx = require("docx");
+        const response = await axios.post("http://localhost:4850/api/board/output_doc", {
+            boardId: postQuery
+        })
+        const res = response.data.values
+        console.log(res)
+        let docs = {
+            sections: [{
+                properties: {},
+                children: []
+            }]
+        }
+        for (let i = 0; i < res.length; i++) {
+            docs.sections[0].children.push(
+                new docx.Paragraph({
+                    children: [
+                        new docx.TextRun({ text: 'Название карточки:\t' + res[i].name, size: 24})
+                    ]
+                }),
+                new docx.Paragraph({
+                    children: [
+                        new docx.TextRun({ text: 'Номер карточки:\t ' + res[i].id, size: 24})
+                    ],
+                }),
+                new docx.Paragraph({
+                    children: [
+                        new docx.TextRun({ text: 'Описание карточки:\t', size: 24})
+                    ],
+                }),
+                new docx.Paragraph({
+                    children: [
+                        new docx.TextRun({text: 'Номер создателя карточки:\t' + res[i].creatorId, size: 24})
+                    ],
+                }),
+                new docx.Paragraph({
+                    children: [
+                        new docx.TextRun({ text: 'Дата создания карточки:\t' + res[i].createdDate, size: 24})
+                    ],
+                }),
+                new docx.Paragraph({
+                    children: [
+                        new docx.TextRun({ text: 'Задачи:', size: 24})
+                    ]
+                }),
+            );
+            for (let k = 0; k < res[i].tasks.length; k++) {
+                docs.sections[0].children.push(
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun(' ')
+                        ]
+                    }),
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun('\t Название задачи:\t' + res[i].tasks[k].name)
+                        ]
+                    }),
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun('\t Номер задачи:\t' + res[i].tasks[k].id)
+                        ]
+                    }),
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun('\t Описание задачи:\t')
+                        ]
+                    }),
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun('\t Номер создателя задачи:\t' + res[i].tasks[k].creatorId)
+                        ]
+                    }),
+                    new docx.Paragraph({
+                        children: [
+                            new docx.TextRun('\t Дата создания задачи:\t' + res[i].tasks[k].createdDate)
+                        ]
+                    }),
+                )
+            }
+            docs.sections[0].children.push(
+                new docx.Paragraph({
+                    children: [
+                        new docx.TextRun(' ')
+                    ]
+                }),
+                new docx.Paragraph({
+                    children: [
+                        new docx.TextRun(' ')
+                    ]
+                }),
+                new docx.Paragraph({
+                    children: [
+                        new docx.TextRun(' ')
+                    ]
+                }),
+            )
+        }
+        
+        console.log(docs)
+
+        let doc = new docx.Document(docs)
+        // const doc = new docx.Document({
+        //     sections: [{
+        //         properties: {},
+        //         children: [
+        //             new docx.Paragraph({
+        //                 children:[
+        //                     new docx.TextRun("Название карточки: \t" + JSON.stringify(res[0].name) + "\n"),
+        //                 ]
+        //             }),
+        //             new docx.Paragraph({
+        //                 children:[
+        //                     new docx.TextRun("Номер карточки: \t" + JSON.stringify(res[0].id) + "\n"),
+        //                 ]
+        //             }),
+        //             new docx.Paragraph({
+        //                 children:[
+        //                     new docx.TextRun("Описание карточки: \t"),
+        //                 ]
+        //             }),
+        //             new docx.Paragraph({
+        //                 children:[
+        //                     new docx.TextRun("Номер создателя карточки: \t" + JSON.stringify(res[0].creatorId) + "\n"),
+        //                 ]
+        //             }),
+        //             new docx.Paragraph({
+        //                 children:[
+        //                     new docx.TextRun("Дата создания карточки: \t" + JSON.stringify(res[0].createdDate) + "\n"),
+        //                 ]
+        //             }),
+        //             new docx.Paragraph({
+        //                 children:[
+        //                     new docx.TextRun("Задачи:"),
+        //                 ]
+        //             }),
+        //         ]
+        //     }]
+        // })
+        
+        // const doc = new docx.Document({
+        //     sections: [{
+        //         properties: {},
+        //         children: [
+        //             new docx.Paragraph({
+        //                 children: [
+        //                     new docx.TextRun("Hello World"),
+        //                     new docx.TextRun("Hello World"),
+        //                     new docx.TextRun("Hello World"),
+        //                     new docx.TextRun("Hello World"),
+        //                     new docx.TextRun("Hello World"),
+        //                     new docx.TextRun("Hello World"),
+        //                     new docx.TextRun("Hello World"),
+        //                 ],
+        //             }),
+        //         ],
+        //     }],
+        // });
+
+        docx.Packer.toBlob(doc).then(blob => {
+            saveAs(blob, `board_${postQuery}.docx`)
+            
+        });
+
+        
+    }
+
+    
 
     if (thisBoard.length == null) {
         return (
@@ -108,6 +302,7 @@ let BoardSpace = (props) => {
     const mybg = thisBoard[0].background;
     return (
         <div className={s.boardspace} updater={updater}>
+            {/* <SCVLink {...scvRep} /> */}
             <div className={s.board_header}>
                 <div className={s.container_bg}></div>
                 <div className={s.container} >
@@ -161,7 +356,7 @@ let BoardSpace = (props) => {
                         MenuListProps={{
                             'aria-labelledby': 'basic-button',
                         }}>
-                        <MenuItem onClick={handleClose}>
+                        <MenuItem onClick={outputDoc}>
                             <ListItemIcon>
                                 <ArticleIcon />
                             </ListItemIcon>

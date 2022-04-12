@@ -173,3 +173,18 @@ export const renameTask = (taskId, taskText, cardsId) => {
         dispatch(setTasksAC(response2.data.values));
     }
 }
+
+export const getOutputDoc = async(boardId) => {
+    try{
+        const response = await axios.post("http://localhost:4850/api/board/output_doc", {
+            boardId
+        })
+        // console.log(response)
+        return response
+    }
+    catch(e){
+        console.log(e)
+    }
+    
+    
+}
