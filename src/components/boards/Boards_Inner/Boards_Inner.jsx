@@ -19,19 +19,27 @@ let Boards_Inner = () => {
 
     const [searchParams, setSearchParams] = useSearchParams();
     const postQuery = searchParams.get('user');
-    console.log(postQuery)
+    const isAuth = useSelector(state => state.user.isAuth)
     
+    let thisUser;
 
+    thisUser = postQuery == userId;
     
-
     useEffect(() => {
+        console.log('use effect: ', postQuery == userId)
+        console.log('use effect: ', postQuery)
+        console.log('use effect: ', userId)
+
+        
         dispatch(toggleIsFetchingAC(true))
         dispatch(getBoards(postQuery))
+        
+        
         // if (boards.length == 0) {
         //     dispatch(getBoards(userId))
         //     dispatch(toggleIsFetchingAC(true))
         // }        
-    }, [])
+    },[])
 
     
 
@@ -101,7 +109,7 @@ let Boards_Inner = () => {
                 break;
         }
         const visibilityNum = (Number(boardVisibility) + 1)
-        if(inputText > 0){
+        if(inputText.length > 0){
             dispatch(createBoard(userId, inputText, colorText, visibilityNum))
         }
         else{
@@ -110,6 +118,13 @@ let Boards_Inner = () => {
         
     }
     console.log(boards)
+    if (!thisUser) {
+        return (
+            <div>
+                <Typography variant="h2" sx={{ pt: 25 }}>Нет доступа к доскам</Typography>
+            </div>
+        )
+    }
     return (
         <div className={s.boards_inner} >
             {isFetching ? <Preloader /> : null}

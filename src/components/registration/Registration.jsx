@@ -170,7 +170,7 @@ const Registration = (props) => {
                     label="Повторите пароль" 
                     error={values.erConfirm}
                     helperText={values.erConfirm ? "Пароли не совпадают" : ""}/>
-                    <Button onClick={() => CheckValidEmail()}>чекни</Button>
+                    {/* <Button onClick={() => CheckValidEmail()}>чекни</Button> */}
                     <Button onClick={() => CheckValid()} variant="contained" sx={{ mt: 3 }}>Регистрация</Button>
 
 

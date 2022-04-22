@@ -1,6 +1,7 @@
 
 .card{
     min-width: 350px;
+    max-width: 350px;
     max-height: 500px;
     margin: 10px;
     padding: 15px;
@@ -131,6 +132,9 @@
 .task:hover{
 }
 
+.menu_edit{
+
+}
 .task:hover .edit_btn{
     transform: scale(1);
 }

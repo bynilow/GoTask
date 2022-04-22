@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import s from './boardspace.module.css'
 import { useSelector, useDispatch } from "react-redux";
 import Card from "./Cards/Card";
-import { useSearchParams } from 'react-router-dom'
-import { createCard, getAllTasks, getBoardFromId, getCardsFromBoardId, getOutputDoc } from '../../../actions/boards'
+import { Navigate, useSearchParams } from 'react-router-dom'
+import { createCard, getAllTasks, getBoardFromId, getCardsFromBoardId, getOutputDoc, removeBoard, removeCard } from '../../../actions/boards'
 import { Button, Divider, IconButton, ListItemIcon, Menu, MenuItem, TextField, Typography } from "@mui/material";
 import Preloader from '../../common/Preloader'
 import CreateCard from "./Cards/CreateCard";
@@ -16,6 +16,8 @@ import ArticleIcon from '@mui/icons-material/Article';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { saveAs } from "file-saver";
 import axios from "axios";
+import { NavLink } from "react-router-dom";
+import { deleteTasksAC } from "../../../reducers/boardsReducer";
 
 
 
@@ -33,8 +35,6 @@ let BoardSpace = (props) => {
     const userId = useSelector(state => state.user.currentUser.id)
     const tasks = useSelector(state => state.boards.tasks);
 
-    
-
     const cardsId = [];
     if (cards.length !== 0) {
         cards.map(e => {
@@ -50,12 +50,11 @@ let BoardSpace = (props) => {
                     dispatch(getBoardFromId(postQuery, userId));
                     dispatch(getCardsFromBoardId(-1));
                     dispatch(getCardsFromBoardId(postQuery));
-                    console.log(cards)
-                    if (cards > 0) {
+                    // if (cards > 0) {
                         
-                        dispatch(getAllTasks(-1));
-                        dispatch(getAllTasks(cardsId));
-                    }
+                    //     dispatch(getAllTasks(-1));
+                    //     dispatch(getAllTasks(cardsId));
+                    // }
                 }
 
                 if (cards.length == 0 || (cards.length > 1 && cards[0].boardId != postQuery)) {
@@ -63,18 +62,13 @@ let BoardSpace = (props) => {
                     // setUpdater(1)
                     // setUpdater(1)
                 }
-
-                if (tasks.length == 0 || (tasks.length > 1 && tasks[1].boardId != postQuery)) {
+                console.log('tasks:')
+                console.log(tasks)
+                if (tasks.length == 0 || (tasks.length > 0 && tasks[0].boardId != postQuery)) {
                     cards.map(e => {
                         cardsId.push(e.id);
                     })
-                    console.log('here111') // here loop
-                    dispatch(getAllTasks(cardsId));
-                    console.log(tasks)
-                }
-
-                if (updater == 0) {
-
+                    dispatch(getAllTasks(cardsId, postQuery));
                 }
             }
 
@@ -100,27 +94,6 @@ let BoardSpace = (props) => {
     const handleClose = () => {
       setAnchorEl(null);
     };
-    
-    
-
-    const dataExcel = [
-        {name: "ivan", age: "25", email: "testmail"},
-        {name: "ivsdgn", age: "15", email: "testmail"},
-        {name: "ibbbn", age: "65", email: "testmail"},
-        {name: "issss", age: "35", email: "testmail"}
-    ];
-
-    const headers = [
-        {label:'Имя', key: 'name'},
-        {label:'Возраст', key: 'age'},
-        {label:'Почта', key: 'email'}
-    ]
-
-    const csvRep = {
-        filename: 'HELLO WORLD.csv',
-        headers: headers,
-        data: dataExcel
-    }
 
     const outputDoc = async () => {
         const docx = require("docx");
@@ -224,72 +197,21 @@ let BoardSpace = (props) => {
         console.log(docs)
 
         let doc = new docx.Document(docs)
-        // const doc = new docx.Document({
-        //     sections: [{
-        //         properties: {},
-        //         children: [
-        //             new docx.Paragraph({
-        //                 children:[
-        //                     new docx.TextRun("Название карточки: \t" + JSON.stringify(res[0].name) + "\n"),
-        //                 ]
-        //             }),
-        //             new docx.Paragraph({
-        //                 children:[
-        //                     new docx.TextRun("Номер карточки: \t" + JSON.stringify(res[0].id) + "\n"),
-        //                 ]
-        //             }),
-        //             new docx.Paragraph({
-        //                 children:[
-        //                     new docx.TextRun("Описание карточки: \t"),
-        //                 ]
-        //             }),
-        //             new docx.Paragraph({
-        //                 children:[
-        //                     new docx.TextRun("Номер создателя карточки: \t" + JSON.stringify(res[0].creatorId) + "\n"),
-        //                 ]
-        //             }),
-        //             new docx.Paragraph({
-        //                 children:[
-        //                     new docx.TextRun("Дата создания карточки: \t" + JSON.stringify(res[0].createdDate) + "\n"),
-        //                 ]
-        //             }),
-        //             new docx.Paragraph({
-        //                 children:[
-        //                     new docx.TextRun("Задачи:"),
-        //                 ]
-        //             }),
-        //         ]
-        //     }]
-        // })
-        
-        // const doc = new docx.Document({
-        //     sections: [{
-        //         properties: {},
-        //         children: [
-        //             new docx.Paragraph({
-        //                 children: [
-        //                     new docx.TextRun("Hello World"),
-        //                     new docx.TextRun("Hello World"),
-        //                     new docx.TextRun("Hello World"),
-        //                     new docx.TextRun("Hello World"),
-        //                     new docx.TextRun("Hello World"),
-        //                     new docx.TextRun("Hello World"),
-        //                     new docx.TextRun("Hello World"),
-        //                 ],
-        //             }),
-        //         ],
-        //     }],
-        // });
 
         docx.Packer.toBlob(doc).then(blob => {
             saveAs(blob, `board_${postQuery}.docx`)
             
         });
 
-        
     }
 
-    
+    const boardRemove = () => {
+        removeBoard(postQuery, userId);
+    }
+
+    // const cardRemove = (card) => {
+    //     dispatch(removeCard(card, thisBoard[0].boardsId))
+    // }
 
     if (thisBoard.length == null) {
         return (
@@ -300,6 +222,7 @@ let BoardSpace = (props) => {
     }
     console.log("backgroundImage: " + thisBoard[0].background)
     const mybg = thisBoard[0].background;
+    const myboardsForLink = `/boards?user=${userId}`;
     return (
         <div className={s.boardspace} updater={updater}>
             {/* <SCVLink {...scvRep} /> */}
@@ -349,20 +272,18 @@ let BoardSpace = (props) => {
                         Меню
                     </Button>
                     <Menu
-                        id="menu"
+                        id="menu_task"
                         anchorEl={anchorEl}
                         open={open}
                         onClose={handleClose}
-                        MenuListProps={{
-                            'aria-labelledby': 'basic-button',
-                        }}>
+                        MenuListProps={{'aria-labelledby': 'basic-button',}}>
                         <MenuItem onClick={outputDoc}>
                             <ListItemIcon>
                                 <ArticleIcon />
                             </ListItemIcon>
                             Выходной документ
                         </MenuItem>
-                        <MenuItem onClick={handleClose}>
+                        <MenuItem onClick={boardRemove} component={NavLink} to={myboardsForLink}>
                             <ListItemIcon>
                                 <DeleteIcon />
                             </ListItemIcon>
@@ -375,9 +296,10 @@ let BoardSpace = (props) => {
             </div>
 
             <div style={{ backgroundImage: mybg}} className={s.bg}></div>
-            <div className={s.cards} updater={updater}>
+
+            <div className={s.cards} updater={cards}>
                 {cards.map((c, ind) => {
-                    // console.log(c)
+                    console.log(c)
                     if (typeof cards[0].none === 'undefined') {
                         if (cards[0].boardId == postQuery) {
                             return (
@@ -395,12 +317,6 @@ let BoardSpace = (props) => {
                 }
                 )}
             </div>
-
-
-
-
-
-
         </div>
     )
 }

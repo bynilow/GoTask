@@ -1,8 +1,8 @@
-import { Button, IconButton, TextField, Typography } from "@mui/material";
+import { Button, IconButton, ListItemIcon, Menu, MenuItem, TextField, Typography } from "@mui/material";
 import React, { useEffect, useRef } from "react";
 import s from './card.module.css'
 import MenuIcon from '@mui/icons-material/Menu';
-import { addTask, changeCardName, getCardsFromBoardId, moveTask, renameTask } from "../../../../actions/boards";
+import { addTask, changeCardName, getCardsFromBoardId, moveTask, removeCard, removeTask, renameTask } from "../../../../actions/boards";
 import Task from "./task_card/Task";
 import { getAllTasks } from '../../../../actions/boards'
 import { useDispatch, useSelector } from "react-redux";
@@ -17,6 +17,11 @@ let Card = (props) => {
     const dispatch = useDispatch();
 
     const [nameCard, setNameCard] = React.useState(props.name);
+
+    if(nameCard != props.name){
+        setNameCard(props.name)
+    }
+
     const [createTaskText, setCreateTaskText] = React.useState("");
     const [inputText, setInputText] = React.useState(true);
     const [toggleCreateTask, setToggleCreateTask] = React.useState(true);
@@ -42,6 +47,8 @@ let Card = (props) => {
     }
 
     useEffect(() => {
+        console.log('new useeffect')
+        setNameCard(props.name)
         goDown();
     }, [])
 
@@ -219,7 +226,38 @@ let Card = (props) => {
         setIdTaskEditText(-1);
     }
 
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event) => {
+      setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+      setAnchorEl(null);
+    };
 
+    const [anchorElCard, setAnchorElCard] = React.useState(null);
+    const openCard = Boolean(anchorElCard);
+    const handleClickCard = (event) => {
+      setAnchorElCard(event.currentTarget);
+    };
+    const handleCloseCard = () => {
+      setAnchorElCard(null);
+    };
+
+    const taskDelete = (e) => {
+        console.log(e.parentNode.getAttribute('taskId'))
+        console.log(e.parentNode.getAttribute('order'))
+        handleClose();
+        dispatch(removeTask(e.parentNode.getAttribute('taskId'), e.parentNode.getAttribute('order'), props.cardsId))
+    }
+
+    const cardDelete = (e) => {
+        // props.removeCard(e.parentNode.parentNode.getAttribute('cardId'));
+        console.log(e.parentNode.parentNode.getAttribute('cardId'))
+        handleClose();
+        dispatch(removeCard(-1, props.boardId))
+        dispatch(removeCard(e.parentNode.parentNode.getAttribute('cardId'), props.boardId))
+    }
 
     return (
         
@@ -227,7 +265,8 @@ let Card = (props) => {
                 className={s.card}
                 onMouseEnter={() => onMouseOnCard(props.cardId)}
                 onDragOver={e => dragOverHandler(e)}
-                onDrop={e => dropTaskToCardHandler(e)}>
+                onDrop={e => dropTaskToCardHandler(e)}
+                cardId={props.cardId}>
                 <div className={s.topcard}
                 onDrop={e => dropTaskToCardElementsHandler(e)} >
                     {
@@ -248,14 +287,31 @@ let Card = (props) => {
                                 placeholder="" />
                     }
 
-                    <Button className={s.menucard}
-                    onDrop={e => dropTaskToCardElementsHandler(e)} > <MenuIcon /> </Button>
+                <Button className={s.menucard}
+                    onDrop={e => dropTaskToCardElementsHandler(e)}
+                    id="card-button"
+                    aria-controls={openCard ? 'card-menu' : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={openCard ? 'true' : undefined}
+                    onClick={handleClickCard}>
+                    <MenuIcon />
+                </Button>
+                <Menu
+                    id="card-menu"
+                    anchorEl={anchorElCard}
+                    open={openCard}
+                    onClose={handleCloseCard}
+                    MenuListProps={{
+                        'aria-labelledby': 'card-button',
+                    }}
+                    className={s.menu_edit}>
+                    <MenuItem onClick={handleCloseCard}>Изменить название</MenuItem>
+                    <MenuItem onClick={() => cardDelete(anchorElCard)}>Удалить карточку</MenuItem>
+                </Menu>
                 </div>
                 <div className={s.tasks} ref={divRef}>
                     {
-
                         mytasks.map((c, ind) =>
-                            
                             <div
                                 key={ind}
                                 className={s.task}
@@ -294,18 +350,51 @@ let Card = (props) => {
                                         placeholder="Поменяйте заголовок" > </TextField>
                                     }
                                 
-                                
-                                <IconButton sx={{
-                                    position: 'absolute',
-                                    top:0,
-                                    right:0,
-                                    transform: 'scale(0)',
-                                    padding: '10px',
-                                    transition: '.2s ease',
-                                }} className={s.edit_btn}>
-                                    <EditIcon  />
+
+                                <IconButton
+                                    sx={
+                                        
+                                            {
+                                                position: 'absolute',
+                                                top: 0,
+                                                right: 0,
+                                                transform: 'scale(0)',
+                                                padding: '10px',
+                                                transition: '.2s ease',
+                                            }
+                                            // : {
+                                            //     position: 'absolute',
+                                            //     top: 0,
+                                            //     right: 0,
+                                            //     transform: 'scale(1)',
+                                            //     padding: '10px',
+                                            //     transition: '.2s ease',
+                                            // }
+                                        }
+                                    className={s.edit_btn}
+                                    id="basic-button"
+                                    aria-controls={open ? 'basic-menu' : undefined}
+                                    aria-haspopup="true"
+                                    aria-expanded={open ? 'true' : undefined}
+                                    onClick={handleClick}>
+
+                                    <EditIcon />
+                                    
+
                                 </IconButton>
-                                
+                                <Menu
+                                    id="basic-menu"
+                                    anchorEl={anchorEl}
+                                    open={open}
+                                    onClose={handleClose}
+                                    MenuListProps={{
+                                        'aria-labelledby': 'basic-button',
+                                    }}
+                                    className={s.menu_edit}>
+                                    <MenuItem onClick={handleClose}>Изменить заголовок</MenuItem>
+                                    <MenuItem onClick={() => taskDelete(anchorEl)}>Удалить</MenuItem>
+                                </Menu>
+
                                 
                                 
                             </div>)

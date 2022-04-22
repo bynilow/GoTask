@@ -12,6 +12,7 @@ import Users from './components/users/Users';
 import Boards from './components/boards/Boards';
 import BoardSpace from './components/boards/Board_Space/BoardSpace';
 import Boards_Inner from './components/boards/Boards_Inner/Boards_Inner';
+import AdminPanel from './components/admin/admin_panel';
 
 
 function App() {
@@ -54,6 +55,7 @@ function App() {
           <Route path="/users" element={<Users key="Users" isAuth={isAuth} />} />
           <Route path="/boards" element={<Boards isAuth={isAuth} userId={userId}/>} />
           <Route path="/b" element={<BoardSpace isAuth={isAuth} />} />
+          <Route path="/adminpanel" element={<AdminPanel isAuth={isAuth} />} />
         </Routes>
 
         <Routes>

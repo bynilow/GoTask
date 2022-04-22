@@ -1,0 +1,15 @@
+.admin_panel{
+    padding-top: 10%;
+    height: 100vh;
+}
+
+.container{
+    width: 1200px;
+    margin: auto;
+}
+
+.users_list{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}

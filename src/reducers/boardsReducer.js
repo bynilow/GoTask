@@ -22,7 +22,8 @@ const defaultState = {
     createdCard: {},
     tasks: [],
     draggableTask: {},
-    cardIdDND: null
+    cardIdDND: null,
+    deletedTask: {}
 }
 
 export default function boardsReducer(state = defaultState, action) {
@@ -51,8 +52,6 @@ export default function boardsReducer(state = defaultState, action) {
         case SET_CARDS:
             return{
                 ...state,
-                cards: null,
-                cards: [],
                 cards: action.cards
             }
         case CREATE_CARD:
@@ -73,13 +72,7 @@ export default function boardsReducer(state = defaultState, action) {
         case DELETE_TASKS:
             return{
                 ...state,
-                tasks: state.tasks.map(el => {
-                    el.map(el2 => {
-                        if (el2.id == action.task) {
-                            
-                        }
-                    })
-                })
+                tasks: action.tasks
             }
         case SET_CARDID_DND:
             return{
@@ -136,7 +129,7 @@ export const setDraggableTask = (task) => ({
     task
 })
 
-export const deleteTasks = (task) => ({
+export const deleteTasksAC = (task) => ({
     type: DELETE_TASKS,
     task
 })

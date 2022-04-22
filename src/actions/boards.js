@@ -1,5 +1,7 @@
+import React, { Component } from "react"; 
 import axios from "axios"
-import { setBoardsAC, setCreatedBoardAC, toggleIsFetchingAC, setFoundBoardAC, setCardsAC, createCardAC, setTasksAC } from "../reducers/boardsReducer";
+import { Navigate } from "react-router-dom";
+import { setBoardsAC, setCreatedBoardAC, toggleIsFetchingAC, setFoundBoardAC, setCardsAC, createCardAC, setTasksAC, deleteTasksAC } from "../reducers/boardsReducer";
 
 
 export const getBoards = (userId) => {
@@ -107,7 +109,7 @@ export const changeCardName = async (cardId, nameCard, boardId) => {
 
 }
 
-export const getAllTasks = (cardsId) => {
+export const getAllTasks = (cardsId, boardId) => {
     return async dispatch => {
         try {
             console.log('here')
@@ -116,7 +118,7 @@ export const getAllTasks = (cardsId) => {
             });
             console.log(response.data.values)
             if(response.data.values == null){
-                dispatch(setTasksAC([{none: -1}]))
+                dispatch(setTasksAC([{none: -1, boardId}]))
             }
             else{
                 dispatch(setTasksAC(response.data.values))
@@ -185,6 +187,64 @@ export const getOutputDoc = async(boardId) => {
     catch(e){
         console.log(e)
     }
-    
+}
+
+export const removeBoard = async(boardId, userId) => {
+    try{
+        const response = await axios.post("http://localhost:4850/api/board/remove", {
+            boardId
+        })
+        return <Navigate to={`/boards?user=${userId}`} />
+        return response
+    }
+    catch(e){
+        console.log(e)
+    }
+}
+
+export const removeTask = (taskId, order, cardsId) => {
+    return async dispatch => {
+        try {
+            const response = await axios.post("http://localhost:4850/api/task/remove", {
+                taskId, order, cardsId
+            })
+            
+            const response2 = await axios.post("http://localhost:4850/api/card/cards", {
+                cardsId
+            });
+            console.log(response2.data.values)
+            if(response2.data.values == null){
+                dispatch(setTasksAC([{none: -1}]))
+            }
+            else{
+                dispatch(setTasksAC(response2.data.values))
+            }
+        }
+        catch (e) {
+            console.log(e)
+        }
+    }
+}
+
+export const removeCard = (cardId, boardId) => {
+    return async dispatch => {
+        try {
+            const resRemove = await axios.post("http://localhost:4850/api/card/remove", {
+                cardId
+            })
+            const resCards = await axios.post("http://localhost:4850/api/boards/cards", {
+                boardId
+            });
+            if(resCards.data.values.length == 0){
+                dispatch(setCardsAC([{none: 1}]))
+            }
+            else{
+                dispatch(setCardsAC(resCards.data.values))
+            }
+        }
+        catch (e) {
+            console.log(e)
+        }
+    }
     
 }

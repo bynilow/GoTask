@@ -20,11 +20,11 @@ const Main = () => {
                             <Typography sx={{ fontWeight: 'bold' }} 
                             variant="inherit" 
                             component="span" 
-                            color={"secondary"}>APPNAME</Typography> помогает эффективно решать рабочие и ежедневные задачи.
+                            color={"secondary"}>GoTASK</Typography> помогает эффективно решать рабочие и ежедневные задачи.
                         </Typography>
                         <Typography variant="h5" sx={{ mt: 5 }} color={"#fff"}>
                             Управляйте проектами, решайте повседневные задачи и выводите продуктивность на новый уровень
-                            вместе с <Typography sx={{ fontWeight: 'bold' }} variant="inherit" component="span" color="secondary">APPNAME</Typography>.
+                            вместе с <Typography sx={{ fontWeight: 'bold' }} variant="inherit" component="span" color="secondary">GoTASK</Typography>.
                         </Typography>
                         <Button color='secondary' variant="contained" sx={{ mt: 5 }} size="large">
                             Узнать больше

@@ -8,6 +8,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
 const Header = () => {
     const isAuth = useSelector(state => state.user.isAuth)
+    const userId = useSelector(state => state.user.currentUser.id)
     const dispatch = useDispatch()
     const [header, setHeader] = useState(false)
 
@@ -36,7 +37,7 @@ const Header = () => {
         }
     }
 
-
+    const boardLink = `/boards?user=${userId}`
     window.addEventListener('scroll', changeBackground)
     // header ? s.header_active : s.header
     return (
@@ -47,7 +48,7 @@ const Header = () => {
                     <div className={s.d2}></div>
                     <Typography
                         component={NavLink}
-                        to="/boards"
+                        to={boardLink}
                         onClick={() => setHeader(false)}
                         color={"#fff"}
                         className={s.logo}
