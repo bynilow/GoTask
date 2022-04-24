@@ -2,11 +2,11 @@ import { Button, IconButton, ListItemIcon, Menu, MenuItem, TextField, Typography
 import React, { useEffect, useRef } from "react";
 import s from './card.module.css'
 import MenuIcon from '@mui/icons-material/Menu';
-import { addTask, changeCardName, getCardsFromBoardId, moveTask, removeCard, removeTask, renameTask } from "../../../../actions/boards";
+import { addTask, changeCardName, getCardsFromBoardId, moveCard, moveTask, removeCard, removeTask, renameTask } from "../../../../actions/boards";
 import Task from "./task_card/Task";
 import { getAllTasks } from '../../../../actions/boards'
 import { useDispatch, useSelector } from "react-redux";
-import { deleteTasks, setCardIdDndAC, setDraggableTask } from "../../../../reducers/boardsReducer";
+import { deleteTasks, setCardIdDndAC, setDragCardIdAC, setDraggableTask } from "../../../../reducers/boardsReducer";
 import Draggable from 'react-draggable';
 import EditIcon from '@mui/icons-material/Edit';
 import Divider from '@mui/material/Divider';
@@ -33,11 +33,17 @@ let Card = (props) => {
 
     let [currentTask, setCurrentTask] = React.useState(-1);
 
+    let [currentCard, setCurrentCard] = React.useState(-1);
+
     const userId = useSelector(state => state.user.currentUser.id);
     const draggableTask = useSelector(state => state.boards.draggableTask);
     const cardIdDND = useSelector(state => state.boards.cardIdDND);
 
+    const draggableCardId = useSelector(state => state.boards.dragCardId);
+
     const divRef = useRef(null);
+
+    const cardRef = useRef(null)
 
     let mytasks = [];
     let idtasks = [];
@@ -81,6 +87,8 @@ let Card = (props) => {
 
     let clickedName = (inputText) => {
         setInputText(false);
+        cardRef.current.draggable = false;
+
     }
 
     let onChangeName = (event) => {
@@ -97,10 +105,12 @@ let Card = (props) => {
     let blurInput = () => {
         if (nameCard.length > 0) {
             setInputText(true);
+            cardRef.current.draggable = true;
             changeCardName(props.cardId, nameCard, props.boardsId, goDown);
         }
         else {
             setInputText(true);
+            cardRef.current.draggable = true;
             changeCardName(props.cardId, "e", props.boardsId);
             setNameCard("e");
         }
@@ -123,21 +133,32 @@ let Card = (props) => {
         }
     }
 
-
     const dragOverHandler = (e, card, task) => {
         e.preventDefault();
         if (e.target.className == s.task || e.target.parentNode.className == s.task) {
-            if(e.target.className == s.task){
-                e.target.style.borderBottom = '.5rem solid #ff9100';
+            if(draggableCardId == -1){
+                if(e.target.className == s.task){
+                    e.target.style.borderBottom = '.5rem solid #ff9100';
+                }
+                if(e.target.className.indexOf(s.name_title) > -1){
+                    e.target.parentNode.style.borderBottom = '.5rem solid #ff9100';
+                }
             }
-            if(e.target.className.indexOf(s.name_title) > -1){
-                e.target.parentNode.style.borderBottom = '.5rem solid #ff9100';
-            }
-            
         }
-        if (e.target.className == s.card) {
-            // console.log(true)
-            setIsHoveredWithTask(true);
+        const dragLeft = e.target.className == s.dragCard_left && draggableCardId != -1 &&
+            e.target.parentNode.getAttribute('cardId') != draggableCardId;
+        const dragRight = e.target.className == s.dragCard_right && draggableCardId != -1 && 
+            e.target.parentNode.getAttribute('cardId') != draggableCardId;
+        if (dragLeft) {
+            e.target.parentNode.style.borderLeft = '.5rem solid #ff9100';
+        }
+        if (dragRight) {
+            e.target.parentNode.style.borderRight = '.5rem solid #ff9100';
+        }
+        if(e.target.parentNode.className == s.name){
+            if(draggableCardId != -1){
+                setIsHoveredWithTask(true);
+            }
         }
     }
     const dragLeaveHandler = (e) => {
@@ -145,21 +166,30 @@ let Card = (props) => {
             e.target.style.borderBottom = '0rem solid #ff9100';
             console.log("leaved")
         }
-
     }
     let draggedTaskId;
     const dragStartHandler = (e) => {
+        if(e.target.className == s.card){
+            dispatch(setDragCardIdAC(e.target.getAttribute('cardId')))
+        }
+
         setCurrentTask(e.target.getAttribute('taskId'))
         dispatch(setDraggableTask({id: e.target.getAttribute('taskId'), order: e.target.getAttribute('order')}))
     }
     const dragEndHandler = (e) => {
+        dispatch(setDragCardIdAC(-1))
         if(e.target.className == s.task){
             e.target.style.borderBottom = '0rem solid #ff9100';
         }
+        if(e.target.parentNode.className == s.card){
+            e.target.style.border = '0rem solid #ff9100';
+        }
+        
     }
 
     const dropHandler = (e) => {
         e.preventDefault();
+        dispatch(setDragCardIdAC(-1))
         if(e.target.className == s.task ){
             e.target.style.borderBottom = '0rem solid #ff9100';
         }
@@ -177,7 +207,6 @@ let Card = (props) => {
             firstOrder = draggableTask.order;
             cardId = e.target.parentNode.getAttribute('cardId');
         }
-        console.log("first order " + firstOrder)
         dispatch(moveTask(draggableTask.id, cardId, props.cardsId, beforeOrder, isThisCard, firstOrder));
         // props.getCards();
     }
@@ -187,6 +216,14 @@ let Card = (props) => {
         if(e.target.className == s.card || e.target.className == s.tasks || e.target.className == "MuiButton-root"){
             dispatch(moveTask(draggableTask.id, props.cardId, props.cardsId, 0, false, 0));
         }
+        const selectedOrderCard = e.target.parentNode.getAttribute('order');
+        const dirCard = e.target.className == s.dragCard_left ? 'left' : 'right';
+        console.log(dirCard)
+        if(e.target.parentNode.className == s.card){
+            e.target.parentNode.style.border = '0rem solid #ff9100';
+            dispatch(moveCard(draggableCardId, selectedOrderCard, dirCard, props.boardId))
+        }
+        dispatch(setDragCardIdAC(-1))
     }
 
     const dropTaskToCardElementsHandler = (e) => {
@@ -251,22 +288,53 @@ let Card = (props) => {
         dispatch(removeTask(e.parentNode.getAttribute('taskId'), e.parentNode.getAttribute('order'), props.cardsId))
     }
 
+    let imgCard = new Image(10,50)
+    imgCard.src = "./img/card.png";
+
+    const dragCardStart = (e) => {
+        dispatch(setDragCardIdAC(e.target.getAttribute('cardId')))
+    }
+    const dropCard = (e) => {
+        dispatch(setDragCardIdAC(-1))
+    }
+    const cardLeaveDrag = (e) => {
+        if(e.target.parentNode.className == s.card){
+            e.target.parentNode.style.border = '0rem solid #ff9100';
+        }
+    }
+
     const cardDelete = (e) => {
         // props.removeCard(e.parentNode.parentNode.getAttribute('cardId'));
-        console.log(e.parentNode.parentNode.getAttribute('cardId'))
         handleClose();
         dispatch(removeCard(-1, props.boardId))
         dispatch(removeCard(e.parentNode.parentNode.getAttribute('cardId'), props.boardId))
     }
-
     return (
-        
             <div
+                id={props.cardId}
+                ref={cardRef}
+                draggable
                 className={s.card}
                 onMouseEnter={() => onMouseOnCard(props.cardId)}
                 onDragOver={e => dragOverHandler(e)}
                 onDrop={e => dropTaskToCardHandler(e)}
-                cardId={props.cardId}>
+                onDragStart={e => dragStartHandler(e)}
+                onDragEnd={e => dropCard(e)}
+                onDragLeave={e => cardLeaveDrag(e)}
+                cardId={props.cardId}
+                order={props.order} >
+                <div className={s.dragCard_left}
+                style={
+                    (draggableCardId > -1)
+                    ?{zIndex: '9999'}
+                    :{zIndex: '-1'}
+                } />
+                <div className={s.dragCard_right} 
+                style={
+                    (draggableCardId > -1)
+                    ?{zIndex: '9999'}
+                    :{zIndex: '-1'}
+                } />
                 <div className={s.topcard}
                 onDrop={e => dropTaskToCardElementsHandler(e)} >
                     {
@@ -274,6 +342,7 @@ let Card = (props) => {
                             ? <Typography 
                                 className={s.nameText} 
                                 onClick={() => clickedName(nameCard)}
+                                sx={{zIndex: '999'}}
                                 onDrop={e => dropTaskToCardElementsHandler(e)} >{nameCard}</Typography>
                             : <TextField
                                 focused
@@ -284,6 +353,7 @@ let Card = (props) => {
                                 onChange={onChangeName}
                                 onKeyDown={keyDownName}
                                 type="text"
+                                sx={{zIndex: '999'}}
                                 placeholder="" />
                     }
 
@@ -405,7 +475,7 @@ let Card = (props) => {
                     {
                         toggleCreateTask
                             ? <Button 
-                            sx={{color: 'black'}}
+                            sx={{color: 'black', zIndex: '999'}}
                             onClick={() => setToggleCreateTask(false)} 
                             className={s.btn_add}
                             onDrop={e => dropTaskToCardElementsHandler(e)} >

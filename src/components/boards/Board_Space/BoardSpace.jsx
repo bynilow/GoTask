@@ -3,8 +3,8 @@ import s from './boardspace.module.css'
 import { useSelector, useDispatch } from "react-redux";
 import Card from "./Cards/Card";
 import { Navigate, useSearchParams } from 'react-router-dom'
-import { createCard, getAllTasks, getBoardFromId, getCardsFromBoardId, getOutputDoc, removeBoard, removeCard } from '../../../actions/boards'
-import { Button, Divider, IconButton, ListItemIcon, Menu, MenuItem, TextField, Typography } from "@mui/material";
+import { createCard, getAllTasks, getBoardFromId, getCardsFromBoardId, getOutputDoc, inviteUser, removeBoard, removeCard, setFalseInvite } from '../../../actions/boards'
+import { Button, Divider, IconButton, ListItemIcon, Menu, MenuItem, TextField, Typography, Snackbar, Alert } from "@mui/material";
 import Preloader from '../../common/Preloader'
 import CreateCard from "./Cards/CreateCard";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -18,6 +18,8 @@ import { saveAs } from "file-saver";
 import axios from "axios";
 import { NavLink } from "react-router-dom";
 import { deleteTasksAC } from "../../../reducers/boardsReducer";
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
+
 
 
 
@@ -25,6 +27,10 @@ let BoardSpace = (props) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [clickedCreate, setClickedCreate] = useState(false);
     const [updater, setUpdater] = useState(0)
+
+    const [nameInvite, setNameInvite] = React.useState("");
+
+    const [openSuccessInvite, setOpenSuccessInvite] = React.useState(false);
 
     const postQuery = searchParams.get('id');
 
@@ -34,6 +40,10 @@ let BoardSpace = (props) => {
     const isAuth = useSelector(state => state.user.isAuth)
     const userId = useSelector(state => state.user.currentUser.id)
     const tasks = useSelector(state => state.boards.tasks);
+
+    const cardIdDND = useSelector(state => state.boards.cardIdDND);
+
+    const successInviteUser = useSelector(state => state.boards.invitedUserStatus);
 
     const cardsId = [];
     if (cards.length !== 0) {
@@ -95,6 +105,21 @@ let BoardSpace = (props) => {
       setAnchorEl(null);
     };
 
+    const [anchorElInvite, setAnchorElInvite] = React.useState(null);
+    const openInvite = Boolean(anchorElInvite);
+    const handleClickInvite = (event) => {
+      setAnchorElInvite(event.currentTarget);
+    };
+    const handleCloseInvite = () => {
+      setAnchorElInvite(null);
+    };
+
+    const handleClickSuccesInvite = (event) => {
+        setOpenSuccessInvite(true)
+      };
+    const handleCloseSuccessInvite = () => {
+        setOpenSuccessInvite(false)
+    };
     const outputDoc = async () => {
         const docx = require("docx");
         const response = await axios.post("http://localhost:4850/api/board/output_doc", {
@@ -223,9 +248,41 @@ let BoardSpace = (props) => {
     console.log("backgroundImage: " + thisBoard[0].background)
     const mybg = thisBoard[0].background;
     const myboardsForLink = `/boards?user=${userId}`;
+
+    let draggableCardId = -1;
+
+    const dragStartCard = (e) => {
+        draggableCardId = e.currentTarget.getAttribute('cardId')
+        console.log("current card:" + draggableCardId)
+    }
+
+    const dragOverHandler = (e) => {
+        console.log(e.target.getAttribute('cardId'))
+        if (e.target.className == s.dragCard_left && draggableCardId != -1) {
+            e.target.parentNode.style.borderLeft = '.5rem solid #ff9100';
+        }
+        if (e.target.className == s.dragCard_right && draggableCardId != -1) {
+            e.target.parentNode.style.borderRight = '.5rem solid #ff9100';
+        }
+    }
+
+    const onChangeNameInvite = e => {
+        setNameInvite(e.target.value)
+    }
+
+    const sendInvite = () => {
+        dispatch(inviteUser(nameInvite, postQuery))
+    }
+    if(successInviteUser){
+        handleCloseInvite()
+        handleClickSuccesInvite()
+        setNameInvite('')
+        dispatch(setFalseInvite())
+    }
+
+
     return (
         <div className={s.boardspace} updater={updater}>
-            {/* <SCVLink {...scvRep} /> */}
             <div className={s.board_header}>
                 <div className={s.container_bg}></div>
                 <div className={s.container} >
@@ -254,10 +311,51 @@ let BoardSpace = (props) => {
                         <Button startIcon={<GroupIcon />} color="white" size="small" disabled >
                             Группа
                         </Button>
-                        <Button startIcon={<PersonAddAltIcon />} color="white" size="small" disabled>
+                        <Button 
+                        startIcon={<PersonAddAltIcon />} 
+                        color="white" 
+                        size="small"
+                        aria-controls={openInvite ? 'basic-menu' : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={openInvite ? 'true' : undefined}
+                        onClick={handleClickInvite} >
                             Пригласить
                         </Button>
+                        <Menu
+                            id="menu_invite"
+                            anchorEl={anchorElInvite}
+                            open={openInvite}
+                            onClose={handleCloseInvite}
+                            MenuListProps={{ 'aria-labelledby': 'basic-button', }}
+                            sx={{ padding: '10px' }}>
+                            <TextField 
+                                autoComplete="off" 
+                                placeholder="Имя пользователя" 
+                                size="small" 
+                                value={nameInvite}
+                                onChange={e => onChangeNameInvite(e)}
+                                sx={{ m: '5px 10px' }}
+                                error={successInviteUser==false}
+                                helperText={
+                                    successInviteUser==false
+                                    ? "Пользователя не существует"
+                                    : ""
+                                } />
+
+                            <IconButton onClick={sendInvite} sx={{ m: '5px 10px' }}>
+                                <GroupAddIcon />
+                            </IconButton>
+                            <Divider mt={'5px'} />
+                            <Typography width={300} flex m={'auto'} mt={'5px'} fontSize={14} sx={{ textAlign: 'center' }}>
+                                Приглашенному пользователю будет выдана роль "Участник"
+                            </Typography>
+                        </Menu>
                         
+                        <Snackbar open={openSuccessInvite} autoHideDuration={6000} onClose={handleCloseSuccessInvite}>
+                            <Alert onClose={handleCloseSuccessInvite} severity="success" sx={{ width: '100%' }}>
+                                Приглашение успешно отправленно!
+                            </Alert>
+                        </Snackbar>
                     </div>
 
                     <Button
@@ -310,6 +408,7 @@ let BoardSpace = (props) => {
                                     name={c.name}
                                     tasks={tasks}
                                     getCards={null}
+                                    order={c.order}
                                     cardsId={cardsId} />
                             )
                         }

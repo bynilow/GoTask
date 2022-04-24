@@ -8,11 +8,28 @@
     background-color: #ebecf0;
     border-radius: 10px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     transition: .1s ease;
-    
+}
+
+.dragCard_left{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background-color: rgba(0, 80, 254, 0);
+}
+.dragCard_right{
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    background-color: rgba(255, 0, 0, 0);
 }
 
 .card .create_task, .tasks, .topcard{
@@ -70,6 +87,7 @@
 }
 
 .tasks{
+    z-index: 999;
     overflow-y:auto;
     overflow-x:hidden;
     display: flex;
@@ -124,7 +142,7 @@
     border-radius: 5px;
     box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
     transition: .1s ease;
-    z-index: 99;
+    z-index: 99999;
     position: relative;
     
 }

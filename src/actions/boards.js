@@ -1,7 +1,7 @@
 import React, { Component } from "react"; 
 import axios from "axios"
 import { Navigate } from "react-router-dom";
-import { setBoardsAC, setCreatedBoardAC, toggleIsFetchingAC, setFoundBoardAC, setCardsAC, createCardAC, setTasksAC, deleteTasksAC } from "../reducers/boardsReducer";
+import { setBoardsAC, setCreatedBoardAC, toggleIsFetchingAC, setFoundBoardAC, setCardsAC, createCardAC, setTasksAC, deleteTasksAC, setInviteUserStatusAC } from "../reducers/boardsReducer";
 
 
 export const getBoards = (userId) => {
@@ -246,5 +246,43 @@ export const removeCard = (cardId, boardId) => {
             console.log(e)
         }
     }
-    
+}
+
+export const moveCard = (cardId, selectedOrder, dir, boardId) => {
+    return async dispatch => {
+        const moveCardRes = await axios.post("http://localhost:4850/api/card/move", {
+            cardId, selectedOrder, dir, boardId
+        });
+        const getCardsRes = await axios.post("http://localhost:4850/api/boards/cards", {
+            boardId
+        });
+        if (getCardsRes.data.values.length == 0) {
+            dispatch(setCardsAC([{ none: 1 }]))
+        }
+        else {
+            dispatch(setCardsAC(getCardsRes.data.values))
+        }
+    }
+}
+
+export const inviteUser = (userName, boardId) => {
+    return async dispatch => {
+        const findUser = await axios.post("http://localhost:4850/api/getUserByLogin", {
+            userName
+        })
+        const userId = findUser.data.values.id;
+        const foundUser = findUser.data.values.found;
+        if(foundUser){
+            const sendInvite = await axios.post("http://localhost:4850/api/board/invite", {
+                boardId, userId
+            })
+        }
+        dispatch(setInviteUserStatusAC(foundUser))
+    }
+}
+
+export const setFalseInvite = () => {
+    return dispatch => {
+        dispatch(setInviteUserStatusAC(null))
+    }
 }
