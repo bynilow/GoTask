@@ -2,8 +2,8 @@ import { Button, Divider, TextField, ToggleButton, Typography } from "@mui/mater
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createBoard, getBoards } from "../../../actions/boards";
-import BoardCard from "../board_card/BoardCard";
-import s from './boards_inner.module.css'
+import BoardCard from "../board_cards/BoardCard";
+import s from './boards_My.module.css'
 import LockIcon from '@mui/icons-material/Lock';
 import PublicIcon from '@mui/icons-material/Public';
 import CheckCircleIcon from '@mui/icons-material/Done';
@@ -11,7 +11,7 @@ import Preloader from "../../common/Preloader";
 import { toggleIsFetchingAC } from "../../../reducers/boardsReducer";
 import { useSearchParams } from "react-router-dom";
 
-let Boards_Inner = () => {
+let Boards_My = () => {
 
     const userId = useSelector(state => state.user.currentUser.id)
     const boards = useSelector(state => state.boards.boards)
@@ -26,19 +26,8 @@ let Boards_Inner = () => {
     thisUser = postQuery == userId;
     
     useEffect(() => {
-        console.log('use effect: ', postQuery == userId)
-        console.log('use effect: ', postQuery)
-        console.log('use effect: ', userId)
-
-        
         dispatch(toggleIsFetchingAC(true))
-        dispatch(getBoards(postQuery))
-        
-        
-        // if (boards.length == 0) {
-        //     dispatch(getBoards(userId))
-        //     dispatch(toggleIsFetchingAC(true))
-        // }        
+        dispatch(getBoards(postQuery))       
     },[])
 
     
@@ -138,20 +127,12 @@ let Boards_Inner = () => {
                         }
                     })
                 }
-                
-
-
             </div>
-
-
-
             <div className={s.createBoard_btn} onClick={createVisibility ? "" : clickCreateVisibility}>
 
                 <Typography className={s.createBoard_inner} >
                     + Создать доску
                 </Typography>
-
-
                 <div
                     className={createVisibility ? s.createVisible + " " + s.createBoard_popup : s.createHidden + " " + s.createBoard_popup}
                     onMouseLeave={clickCreateVisibility}>
@@ -229,4 +210,4 @@ let Boards_Inner = () => {
     )
 }
 
-export default Boards_Inner;
+export default Boards_My;

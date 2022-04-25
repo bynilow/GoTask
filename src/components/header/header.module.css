@@ -126,3 +126,31 @@
 .header_btns{
     display: flex;
 }
+
+
+@media screen and (max-width: 1200px){
+    .container{
+        width: 1200px;
+    }
+}
+
+@media screen and (max-width: 1150px){
+    .container{
+        width: 1000px;
+    }
+}
+
+@media screen and (max-width: 900px){
+    .container{
+        width: 650px;
+    }
+}
+
+@media screen and (max-width: 600px){
+    .container{
+        width: 400px;
+    }
+    .btn_board{
+        opacity: 0;
+    }
+}

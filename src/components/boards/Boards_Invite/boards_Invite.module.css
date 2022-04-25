@@ -4,20 +4,21 @@
 }
 
 .boards{
-    width: 100%;
+    max-width: 1200px;
     display: flex;
-    flex-direction: row;
     flex-wrap: wrap;
+    margin: auto;
+    align-items: center;
 }
 
 .boards_inner{
-    margin: 0 2%;
     width: 100%;
-    height: 100%;
+    height: 100vh;
     display: flex;
-    flex-wrap: wrap;
-    padding: .5%;
-    justify-content:left;
+    flex-direction: column;
+    margin: auto;
+    align-items: center;
+    align-self: center;
 }
 
 .createBoard_btn{

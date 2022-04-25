@@ -15,17 +15,17 @@ import SpeedDialAction from '@mui/material/SpeedDialAction';
 let Card = (props) => {
 
     const dispatch = useDispatch();
-
+    const [preNameCard, setPreNameCard] = React.useState(props.name)
     const [nameCard, setNameCard] = React.useState(props.name);
-
-    if(nameCard != props.name){
-        setNameCard(props.name)
-    }
+    
+    
 
     const [createTaskText, setCreateTaskText] = React.useState("");
     const [inputText, setInputText] = React.useState(true);
     const [toggleCreateTask, setToggleCreateTask] = React.useState(true);
     const [isHoveredWithTask, setIsHoveredWithTask] = React.useState(true);
+
+    const [renamingCard, setRenamingCard] = React.useState(true);
 
     const [isTitleEdit, setIsTitleEdit] = React.useState(true);
     const [titleEditText, setTitleEditText] = React.useState("");
@@ -55,6 +55,7 @@ let Card = (props) => {
     useEffect(() => {
         console.log('new useeffect')
         setNameCard(props.name)
+        
         goDown();
     }, [])
 
@@ -91,8 +92,9 @@ let Card = (props) => {
 
     }
 
-    let onChangeName = (event) => {
-        setNameCard(event.target.value);
+    let onChangeName = (e) => {
+        console.log(e.target.value)
+        setNameCard(e.target.value);
     }
 
     let onChangeCreateText = (event) => {
@@ -348,9 +350,10 @@ let Card = (props) => {
                                 focused
                                 size="small"
                                 autoFocus
+                                autoComplete="off"
                                 onBlur={blurInput}
                                 value={nameCard}
-                                onChange={onChangeName}
+                                onChange={e => onChangeName(e)}
                                 onKeyDown={keyDownName}
                                 type="text"
                                 sx={{zIndex: '999'}}

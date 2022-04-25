@@ -74,8 +74,8 @@ const Header = () => {
                     {isAuth &&
                         <div className={s.auth_btns}>
 
-                            <Button variant="text" disabled endIcon={<KeyboardArrowDownIcon />}>Доски</Button>
-                            <Button variant="text" disabled endIcon={<KeyboardArrowDownIcon />}>Избранное</Button>
+                            <Button className={s.btn_board} variant="text" disabled endIcon={<KeyboardArrowDownIcon />}>Доски</Button>
+                            <Button className={s.btn_board} variant="text" disabled endIcon={<KeyboardArrowDownIcon />}>Избранное</Button>
                             <Divider orientation='vertical' variant='middle' flexItem />
                             <Button 
                             className={s.btn_exit} 

@@ -11,7 +11,8 @@ import { ThemeProvider } from '@mui/system';
 import Users from './components/users/Users';
 import Boards from './components/boards/Boards';
 import BoardSpace from './components/boards/Board_Space/BoardSpace';
-import Boards_Inner from './components/boards/Boards_Inner/Boards_Inner';
+import Boards_My from './components/boards/Boards_My/Boards_My';
+import Boards_Invite from './components/boards/Boards_Invite/Boards_Invite';
 import AdminPanel from './components/admin/admin_panel';
 
 
@@ -53,7 +54,8 @@ function App() {
           <Route path="/reg" element={<Registration isAuth={isAuth} userId={userId} />} />
           <Route path="/login" element={<Login isAuth={isAuth} userId={userId} />} />
           <Route path="/users" element={<Users key="Users" isAuth={isAuth} />} />
-          <Route path="/boards" element={<Boards isAuth={isAuth} userId={userId}/>} />
+          <Route path="/boards" element={<Boards_My isAuth={isAuth} userId={userId}/>} />
+          <Route path="/invites" element={<Boards_Invite isAuth={isAuth} userId={userId}/>} />
           <Route path="/b" element={<BoardSpace isAuth={isAuth} />} />
           <Route path="/adminpanel" element={<AdminPanel isAuth={isAuth} />} />
         </Routes>

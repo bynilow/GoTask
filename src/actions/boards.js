@@ -265,7 +265,7 @@ export const moveCard = (cardId, selectedOrder, dir, boardId) => {
     }
 }
 
-export const inviteUser = (userName, boardId) => {
+export const inviteUser = (userName, boardId, senderId) => {
     return async dispatch => {
         const findUser = await axios.post("http://localhost:4850/api/getUserByLogin", {
             userName
@@ -273,16 +273,83 @@ export const inviteUser = (userName, boardId) => {
         const userId = findUser.data.values.id;
         const foundUser = findUser.data.values.found;
         if(foundUser){
-            const sendInvite = await axios.post("http://localhost:4850/api/board/invite", {
-                boardId, userId
+            const findInvite = await axios.post("http://localhost:4850/api/board/findInvite", {
+                userId, boardId
             })
+            const foundInvite = findInvite.data.values.found
+            console.log(foundInvite)
+            if(foundInvite === 'exist'){
+                dispatch(setInviteUserStatusAC('exist'))
+            }
+            else{
+                const sendInvite = await axios.post("http://localhost:4850/api/board/invite", {
+                    boardId, userId, senderId
+                })
+                
+                dispatch(setInviteUserStatusAC(foundUser))
+            }
         }
-        dispatch(setInviteUserStatusAC(foundUser))
+        else{
+            dispatch(setInviteUserStatusAC(foundUser))
+        }        
+        
+        
     }
 }
 
 export const setFalseInvite = () => {
     return dispatch => {
         dispatch(setInviteUserStatusAC(null))
+    }
+}
+
+export const getBoardsInvite = (userId) => {
+    return async dispatch => {
+        try{
+            const response = await axios.post("http://localhost:4850/api/board/getInvite", {
+                userId
+            });
+            dispatch(setBoardsAC(response.data.values))
+            dispatch(toggleIsFetchingAC(false))
+        }
+        catch(e){
+            console.log(e.response.data.values.none)
+            dispatch(setBoardsAC([{none: e.response.data.values.none}]))
+            dispatch(toggleIsFetchingAC(false))
+        }
+    }
+}
+
+export const acceptInvite = (userId,inviteId,boardId) => {
+    return async dispatch => {
+        try{
+            const accept = await axios.post("http://localhost:4850/api/board/acceptInvite", {
+                inviteId, userId, boardId
+            });
+            const getInvites = await axios.post("http://localhost:4850/api/board/getInvite", {
+                userId
+            });
+            dispatch(setBoardsAC(getInvites.data.values))
+        }
+        catch(e){
+            console.log(e)
+        }
+    }
+}
+
+export const declineInvite = (userId,inviteId) => {
+    return async dispatch => {
+        try{
+            const decline = await axios.post("http://localhost:4850/api/board/declineInvite", {
+                inviteId
+            });
+            const getInvites = await axios.post("http://localhost:4850/api/board/getInvite", {
+                userId
+            });
+            dispatch(setBoardsAC(getInvites.data.values))
+        }
+        catch(e){
+            console.log(e)
+        }
     }
 }

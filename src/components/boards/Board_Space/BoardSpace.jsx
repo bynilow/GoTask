@@ -245,7 +245,6 @@ let BoardSpace = (props) => {
             </div>
         )
     }
-    console.log("backgroundImage: " + thisBoard[0].background)
     const mybg = thisBoard[0].background;
     const myboardsForLink = `/boards?user=${userId}`;
 
@@ -271,9 +270,9 @@ let BoardSpace = (props) => {
     }
 
     const sendInvite = () => {
-        dispatch(inviteUser(nameInvite, postQuery))
+        dispatch(inviteUser(nameInvite, postQuery, userId))
     }
-    if(successInviteUser){
+    if(successInviteUser === true){
         handleCloseInvite()
         handleClickSuccesInvite()
         setNameInvite('')
@@ -335,11 +334,13 @@ let BoardSpace = (props) => {
                                 value={nameInvite}
                                 onChange={e => onChangeNameInvite(e)}
                                 sx={{ m: '5px 10px' }}
-                                error={successInviteUser==false}
+                                error={successInviteUser===false || successInviteUser=='exist'}
                                 helperText={
                                     successInviteUser==false
                                     ? "Пользователя не существует"
-                                    : ""
+                                    : successInviteUser=='exist'
+                                        ? "Пользователь уже приглашен / участвует"
+                                        : ""
                                 } />
 
                             <IconButton onClick={sendInvite} sx={{ m: '5px 10px' }}>
@@ -402,7 +403,7 @@ let BoardSpace = (props) => {
                         if (cards[0].boardId == postQuery) {
                             return (
                                 <Card
-                                    key={ind}
+                                    key={c.id}
                                     cardId={c.id}
                                     boardId={thisBoard[0].boardsId}
                                     name={c.name}
