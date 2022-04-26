@@ -3,7 +3,7 @@ import s from './boardspace.module.css'
 import { useSelector, useDispatch } from "react-redux";
 import Card from "./Cards/Card";
 import { Navigate, useSearchParams } from 'react-router-dom'
-import { createCard, getAllTasks, getBoardFromId, getCardsFromBoardId, getOutputDoc, inviteUser, removeBoard, removeCard, setFalseInvite } from '../../../actions/boards'
+import { createCard, getAllTasks, getBoardFromId, getCardsFromBoardId, getOutputDoc, inviteUser, removeBoard, removeCard, renameBoard, setFalseInvite } from '../../../actions/boards'
 import { Button, Divider, IconButton, ListItemIcon, Menu, MenuItem, TextField, Typography, Snackbar, Alert } from "@mui/material";
 import Preloader from '../../common/Preloader'
 import CreateCard from "./Cards/CreateCard";
@@ -29,6 +29,9 @@ let BoardSpace = (props) => {
     const [updater, setUpdater] = useState(0)
 
     const [nameInvite, setNameInvite] = React.useState("");
+
+    const [nameBoard, setNameBoard] = React.useState("");
+    const [editingNameBoard, setEditingNameBoard] = React.useState(false);
 
     const [openSuccessInvite, setOpenSuccessInvite] = React.useState(false);
 
@@ -60,17 +63,11 @@ let BoardSpace = (props) => {
                     dispatch(getBoardFromId(postQuery, userId));
                     dispatch(getCardsFromBoardId(-1));
                     dispatch(getCardsFromBoardId(postQuery));
-                    // if (cards > 0) {
-                        
-                    //     dispatch(getAllTasks(-1));
-                    //     dispatch(getAllTasks(cardsId));
-                    // }
+                    
                 }
 
                 if (cards.length == 0 || (cards.length > 1 && cards[0].boardId != postQuery)) {
                     dispatch(getCardsFromBoardId(thisBoard[0].boardsId));
-                    // setUpdater(1)
-                    // setUpdater(1)
                 }
                 console.log('tasks:')
                 console.log(tasks)
@@ -88,8 +85,10 @@ let BoardSpace = (props) => {
                 dispatch(getBoardFromId(postQuery, userId));
             }
         }
-
-
+        if(typeof thisBoard[0] !== 'undefined' && nameBoard == '' && !editingNameBoard){
+            console.log('set name')
+            setNameBoard(thisBoard[0].tittle)
+        }
     })
 
     let createColumn = () => {
@@ -279,6 +278,19 @@ let BoardSpace = (props) => {
         dispatch(setFalseInvite())
     }
 
+    const blurNameBoard = () => {
+        console.log(nameBoard.length)
+        if(nameBoard.length == 0 || !nameBoard.trim()){
+            renameBoard(postQuery, 'Доска')
+            setNameBoard('Доска');
+        }
+        else{
+            renameBoard(postQuery, nameBoard)
+        }
+        setEditingNameBoard(false)
+        
+    }
+
 
     return (
         <div className={s.boardspace} updater={updater}>
@@ -288,11 +300,17 @@ let BoardSpace = (props) => {
                     
                     <div className={s.board_header_left} color="white">
                         <TextField
-                            value={thisBoard[0].tittle}
+                            value={nameBoard}
                             label="Название доски"
                             variant="outlined"
+                            onChange={e => setNameBoard(e.target.value)}
                             size="small"
-                            color="white" />
+                            color={"white"}
+                            focused
+                            autoComplete="off"
+                            onClick={() => setEditingNameBoard(true)}
+                            onBlur={blurNameBoard}
+                            sx={{input: {color: '#fff'}}} />
                         <Button startIcon={<FavoriteBorderIcon />} color="white" size="small" disabled>
                             Избранное
                         </Button>

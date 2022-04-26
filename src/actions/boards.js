@@ -353,3 +353,9 @@ export const declineInvite = (userId,inviteId) => {
         }
     }
 }
+
+export const renameBoard = async(boardId, nameBoard) => {
+        const renameBoardRes = await axios.post("http://localhost:4850/api/board/rename", {
+            boardId, nameBoard
+        })
+}

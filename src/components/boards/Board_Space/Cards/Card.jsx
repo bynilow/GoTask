@@ -105,7 +105,7 @@ let Card = (props) => {
     }
 
     let blurInput = () => {
-        if (nameCard.length > 0) {
+        if (nameCard.length > 0 && nameCard.trim()) {
             setInputText(true);
             cardRef.current.draggable = true;
             changeCardName(props.cardId, nameCard, props.boardsId, goDown);
@@ -113,8 +113,8 @@ let Card = (props) => {
         else {
             setInputText(true);
             cardRef.current.draggable = true;
-            changeCardName(props.cardId, "e", props.boardsId);
-            setNameCard("e");
+            changeCardName(props.cardId, "Карточка", props.boardsId);
+            setNameCard("Карточка");
         }
     }
 
@@ -255,12 +255,12 @@ let Card = (props) => {
     }
 
     let blurTitle = (e) => {
-        if(titleEditText.length > 0){
+        if(titleEditText.length > 0 && titleEditText.trim()){
             dispatch(renameTask(idTaskEditText, titleEditText, props.cardsId))
             
         }
         else{
-            dispatch(renameTask(idTaskEditText, "e", props.cardsId))
+            dispatch(renameTask(idTaskEditText, "Задача", props.cardsId))
         }
         setIdTaskEditText(-1);
     }
