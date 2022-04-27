@@ -3,7 +3,7 @@ import s from './boardspace.module.css'
 import { useSelector, useDispatch } from "react-redux";
 import Card from "./Cards/Card";
 import { Navigate, useSearchParams } from 'react-router-dom'
-import { createCard, getAllTasks, getBoardFromId, getCardsFromBoardId, getOutputDoc, inviteUser, removeBoard, removeCard, renameBoard, setFalseInvite } from '../../../actions/boards'
+import { createCard, getAllTasks, getBoardFromId, getCards, getCardsFromBoardId, getOutputDoc, inviteUser, removeBoard, removeCard, renameBoard, renameTask, setFalseInvite } from '../../../actions/boards'
 import { Button, Divider, IconButton, ListItemIcon, Menu, MenuItem, TextField, Typography, Snackbar, Alert } from "@mui/material";
 import Preloader from '../../common/Preloader'
 import CreateCard from "./Cards/CreateCard";
@@ -17,7 +17,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { saveAs } from "file-saver";
 import axios from "axios";
 import { NavLink } from "react-router-dom";
-import { deleteTasksAC } from "../../../reducers/boardsReducer";
+import { deleteTasksAC, toggleIsFetchingAC } from "../../../reducers/boardsReducer";
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 
 
@@ -30,69 +30,39 @@ let BoardSpace = (props) => {
 
     const [nameInvite, setNameInvite] = React.useState("");
 
-    const [nameBoard, setNameBoard] = React.useState("");
-    const [editingNameBoard, setEditingNameBoard] = React.useState(false);
-
     const [openSuccessInvite, setOpenSuccessInvite] = React.useState(false);
 
     const postQuery = searchParams.get('id');
+    const userId = useSelector(state => state.user.currentUser.id)
 
     const dispatch = useDispatch()
-    const thisBoard = useSelector(state => state.boards.foundBoard)
-    const cards = useSelector(state => state.boards.cards)
-    const isAuth = useSelector(state => state.user.isAuth)
-    const userId = useSelector(state => state.user.currentUser.id)
-    const tasks = useSelector(state => state.boards.tasks);
-
+    
+    const cards = useSelector(state => state.boards.cardsAndTasks)
     const cardIdDND = useSelector(state => state.boards.cardIdDND);
 
     const successInviteUser = useSelector(state => state.boards.invitedUserStatus);
 
-    const cardsId = [];
-    if (cards.length !== 0) {
-        cards.map(e => {
-            cardsId.push(e.id);
-        })
-    }
-
+    
+    const [editingNameBoard, setEditingNameBoard] = React.useState(false);
+    
+    const isFetching = useSelector(state => state.boards.isFetching)
+    
+    const isAuth = useSelector(state => state.user.isAuth)
+    const thisBoard = useSelector(state => state.boards.foundBoard)
+    
+    const [nameBoard, setNameBoard] = React.useState(thisBoard ? thisBoard.tittle : '');
+    const [taskUpdater, setTaskUpdater] = React.useState(Date.now());
 
     useEffect(() => {
-        if (typeof thisBoard[0] !== 'undefined') {
-            if (isAuth) {
-                if (thisBoard[0].boardsId != postQuery) {
-                    dispatch(getBoardFromId(postQuery, userId));
-                    dispatch(getCardsFromBoardId(-1));
-                    dispatch(getCardsFromBoardId(postQuery));
-                    
-                }
+        const checkBoard = userId && (typeof cards.findTasks === 'undefined' || cards.findTasks != postQuery) && (!cards.length || cards[0].boardId != postQuery) && (!thisBoard || thisBoard.boardsId)
+        if(checkBoard) dispatch(getBoardFromId(postQuery, userId))
+        setNameBoard(thisBoard ? thisBoard.tittle : "")
+    }, [isAuth, thisBoard, cards])
+    
 
-                if (cards.length == 0 || (cards.length > 1 && cards[0].boardId != postQuery)) {
-                    dispatch(getCardsFromBoardId(thisBoard[0].boardsId));
-                }
-                console.log('tasks:')
-                console.log(tasks)
-                if (tasks.length == 0 || (tasks.length > 0 && tasks[0].boardId != postQuery)) {
-                    cards.map(e => {
-                        cardsId.push(e.id);
-                    })
-                    dispatch(getAllTasks(cardsId, postQuery));
-                }
-            }
 
-        }
-        else {
-            if (isAuth) {
-                dispatch(getBoardFromId(postQuery, userId));
-            }
-        }
-        if(typeof thisBoard[0] !== 'undefined' && nameBoard == '' && !editingNameBoard){
-            console.log('set name')
-            setNameBoard(thisBoard[0].tittle)
-        }
-    })
-
-    let createColumn = () => {
-        dispatch(createCard(thisBoard[0].boardsId, userId))
+    let cardCreate = () => {
+        dispatch(createCard(postQuery, userId))
     }
 
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -237,15 +207,15 @@ let BoardSpace = (props) => {
     //     dispatch(removeCard(card, thisBoard[0].boardsId))
     // }
 
-    if (thisBoard.length == null) {
-        return (
-            <div>
-                <Typography variant="h2" sx={{ pt: 25 }}>Нет доступа к доске / Доски не существует</Typography>
-            </div>
-        )
-    }
-    const mybg = thisBoard[0].background;
-    const myboardsForLink = `/boards?user=${userId}`;
+    // if (thisBoard.length == null) {
+    //     return (
+    //         <div>
+    //             <Typography variant="h2" sx={{ pt: 25 }}>Нет доступа к доске / Доски не существует</Typography>
+    //         </div>
+    //     )
+    // }
+    const mybg = thisBoard ? thisBoard.background : '';
+    const myboardsForLink = `/brs/boards?user=${userId}`;
 
     let draggableCardId = -1;
 
@@ -291,9 +261,14 @@ let BoardSpace = (props) => {
         
     }
 
+    const onTaskNameChanged = (idTask, nameTask, cardId, cardIdRed, taskIdRed) => {
+        console.log(idTask, nameTask, cardId, cardIdRed, taskIdRed)
+        setTaskUpdater(Date.now())
+        dispatch(renameTask(idTask, nameTask, cardId, cardIdRed, taskIdRed))
+    }
 
     return (
-        <div className={s.boardspace} updater={updater}>
+        <div className={s.boardspace}>
             <div className={s.board_header}>
                 <div className={s.container_bg}></div>
                 <div className={s.container} >
@@ -316,7 +291,7 @@ let BoardSpace = (props) => {
                         </Button>
                         <Divider orientation="vertical" flexItem />
                         <Button
-                            onClick={createColumn}
+                            onClick={cardCreate}
                             // variant="outlined" 
                             className={s.btn_new_column}
                             startIcon={<AddIcon />}
@@ -413,28 +388,30 @@ let BoardSpace = (props) => {
             </div>
 
             <div style={{ backgroundImage: mybg}} className={s.bg}></div>
-
-            <div className={s.cards} updater={cards}>
-                {cards.map((c, ind) => {
-                    console.log(c)
-                    if (typeof cards[0].none === 'undefined') {
-                        if (cards[0].boardId == postQuery) {
-                            return (
-                                <Card
-                                    key={c.id}
-                                    cardId={c.id}
-                                    boardId={thisBoard[0].boardsId}
-                                    name={c.name}
-                                    tasks={tasks}
-                                    getCards={null}
-                                    order={c.order}
-                                    cardsId={cardsId} />
-                            )
-                        }
-                    }
-                }
-                )}
+            
+            {
+                isFetching
+                ? <Preloader />
+                : <div className={s.cards}>
+                        {cards.length
+                            ? cards.map((card, ind) => {
+                                return (
+                                    <Card
+                                        key={card.id}
+                                        cardIdRed={ind}
+                                        cardId={card.id}
+                                        boardId={postQuery}
+                                        name={card.name}
+                                        updater={taskUpdater}
+                                        onTaskChanged={(a,b,c,d,f) => onTaskNameChanged(a,b,c,d,f)}
+                                        tasks={card.task}
+                                        order={card.order} />
+                                )
+                            })
+                            : null}
             </div>
+            }
+            
         </div>
     )
 }

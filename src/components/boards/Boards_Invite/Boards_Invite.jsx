@@ -45,8 +45,9 @@ let Boards_Invite = () => {
     }
     return (
         <div className={s.boards_inner} >
-            {isFetching ? <Preloader /> : null}
-            <div className={s.boards}>
+            {isFetching 
+            ? <Preloader /> 
+            : <div className={s.boards}>
                 {
                     boards.map((br, ind) => {
                         if (typeof boards[0].none === 'undefined') {
@@ -63,7 +64,8 @@ let Boards_Invite = () => {
                         }
                     })
                 }
-            </div>
+            </div>}
+            
             
         </div>
     )

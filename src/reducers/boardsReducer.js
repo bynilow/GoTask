@@ -13,6 +13,10 @@ const SET_DRAGGABLE_TASK = "SET_DRAGGABLE_TASK"
 const SET_CARDID_DND = "SET_CARDID_DND"
 const SET_DRAG_CARDID = "SET_DRAG_CARDID"
 
+const SET_CARDS_AND_TASKS = "SET_CARDS_AND_TASKS"
+
+const SET_RENAME_TASK = "SET_RENAME_TASK"
+
 
 const SET_INVITED_USER_STATUS = "SET_INVITED_USER_STATUS"
 
@@ -21,7 +25,7 @@ const defaultState = {
     boards: [],
     createdBoard: {},
     isFetching: false,
-    foundBoard: {},
+    foundBoard: null,
     cards: [],
     createdCard: {},
     tasks: [],
@@ -29,7 +33,8 @@ const defaultState = {
     cardIdDND: null,
     dragCardId: -1,
     deletedTask: {},
-    invitedUserStatus: null
+    invitedUserStatus: null,
+    cardsAndTasks: []
 }
 
 export default function boardsReducer(state = defaultState, action) {
@@ -40,6 +45,12 @@ export default function boardsReducer(state = defaultState, action) {
                 boards: [],
                 boards: action.boards
             }
+        case SET_CARDS_AND_TASKS: {
+            return {
+                ...state,
+                cardsAndTasks: action.cards
+            }
+        }
         case SET_CREATED_BOARD:
             return {
                 ...state,
@@ -94,6 +105,31 @@ export default function boardsReducer(state = defaultState, action) {
             return{
                 ...state,
                 invitedUserStatus: action.status
+            }
+        case SET_RENAME_TASK:
+            let newCards = [...state.cardsAndTasks.map((card, indCard) => {
+                if(indCard == action.cardId){
+                    console.log('ind card == action')
+                    card.task.map((task,indTask) => {
+                        if(indTask == action.taskId){
+                            task.name = action.newName
+                            return card.task
+                        }
+                        return card.task
+                    })
+                }
+                return card
+            })];
+            console.log('redux')
+            console.log(state.cardsAndTasks)
+            console.log(newCards)
+            console.log(state.cardsAndTasks == newCards)
+            console.log(state.cardsAndTasks === newCards)
+            
+            console.log(newCards)
+            return{
+                ...state,
+                cardsAndTasks: newCards
             }
         default:
             return state
@@ -163,4 +199,16 @@ export const setDragCardIdAC = (cardId) => ({
 export const setInviteUserStatusAC = (status) => ({
     type: SET_INVITED_USER_STATUS,
     status
+})
+
+export const setCardsAndTasksAC = (cards) => ({
+    type: SET_CARDS_AND_TASKS,
+    cards
+})
+
+export const setRenameTaskAC = (newName, cardId, taskId) => ({
+    type: SET_RENAME_TASK,
+    newName,
+    cardId,
+    taskId
 })

@@ -1,0 +1,30 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+
+.boards{
+
+    padding: 5% 0;
+    position: relative;
+}
+
+
+.container{
+    display: flex;
+    margin: auto;
+    flex-direction: column;
+    width: 1200px;
+}
+
+.nav{
+    display: flex;
+    margin: auto;
+    padding: 1%;
+}
+
+.boards_out{
+    display: flex;
+    margin: auto;
+    padding: 1%;
+}

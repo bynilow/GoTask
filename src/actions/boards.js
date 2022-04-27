@@ -1,7 +1,7 @@
 import React, { Component } from "react"; 
 import axios from "axios"
 import { Navigate } from "react-router-dom";
-import { setBoardsAC, setCreatedBoardAC, toggleIsFetchingAC, setFoundBoardAC, setCardsAC, createCardAC, setTasksAC, deleteTasksAC, setInviteUserStatusAC } from "../reducers/boardsReducer";
+import { setBoardsAC, setCreatedBoardAC, toggleIsFetchingAC, setFoundBoardAC, setCardsAC, createCardAC, setTasksAC, deleteTasksAC, setInviteUserStatusAC, setCardsAndTasksAC, setRenameTaskAC } from "../reducers/boardsReducer";
 
 
 export const getBoards = (userId) => {
@@ -24,10 +24,16 @@ export const getBoards = (userId) => {
 export const getBoardFromId = (boardId, userId) => {
     return async dispatch => {
         try {
-            const response = await axios.post("http://localhost:4850/api/boards/board", {
+            const boardRes = await axios.post("http://localhost:4850/api/boards/board", {
                 boardId, userId
             });
-            dispatch(setFoundBoardAC(response.data.values))
+            const cardsRes = await axios.post("http://localhost:4850/api/board", {
+                boardId
+            });
+            dispatch(setFoundBoardAC(boardRes.data.values))
+            dispatch(setCardsAndTasksAC(cardsRes.data.values))
+
+            
         }
         catch (e) {
             console.log(e)
@@ -81,15 +87,14 @@ export const createBoard = (userId, name, color, visibility) => {
 export const createCard = (boardId, userId) => {
     return async dispatch => {
         try {
-            const response = await axios.post("http://localhost:4850/api/card/create", {
+            const createCardRes = await axios.post("http://localhost:4850/api/card/create", {
                 boardId,
                 userId
             });
-            const response2 = await axios.post("http://localhost:4850/api/boards/cards", {
+            const cardsRes = await axios.post("http://localhost:4850/api/board", {
                 boardId
             });
-            dispatch(setCardsAC(response2.data.values))
-            dispatch(createCardAC(response.data.values))
+            dispatch(setCardsAndTasksAC(cardsRes.data.values))
             
         }
         catch (e) {
@@ -135,14 +140,13 @@ export const getAllTasks = (cardsId, boardId) => {
 export const addTask = (nameTask, cardId, creatorId, cardsId, boardId) => {
     return async dispatch => {
         try{
-            const response = await axios.post("http://localhost:4850/api/task/create", {
+            const addTaskRes = await axios.post("http://localhost:4850/api/task/create", {
                 nameTask, cardId, creatorId, boardId
             });
-            const response2 = await axios.post("http://localhost:4850/api/card/cards", {
-                    cardsId
+            const cardsRes = await axios.post("http://localhost:4850/api/board", {
+                boardId
             });
-            console.log(response2.data.values)
-            dispatch(setTasksAC(response2.data.values));
+            dispatch(setCardsAndTasksAC(cardsRes.data.values))
         }
         catch(e){
             console.log(e)
@@ -151,28 +155,28 @@ export const addTask = (nameTask, cardId, creatorId, cardsId, boardId) => {
     }
 }
 
-export const moveTask = (taskId, cardId, cardsId, beforeOrder, isThisCard, firstOrder) => {
+export const moveTask = (taskId, cardId, cardsId, beforeOrder, isThisCard, firstOrder, boardId) => {
     return async dispatch => {
-        const response = await axios.post("http://localhost:4850/api/task/move", {
+        const moveCardRes = await axios.post("http://localhost:4850/api/task/move", {
             taskId, cardId, beforeOrder, isThisCard, firstOrder
         });
-        const response2 = await axios.post("http://localhost:4850/api/card/cards", {
-                cardsId
+        const cardsRes = await axios.post("http://localhost:4850/api/board", {
+            boardId
         });
-        dispatch(setTasksAC(response2.data.values));
+        dispatch(setCardsAndTasksAC(cardsRes.data.values))
         
     }
 }
 
-export const renameTask = (taskId, taskText, cardsId) => {
+export const renameTask = (taskId, taskText, cardsId, cardIdRed, taskIdRed, boardId) => {
     return async dispatch => {
-        const response = await axios.post("http://localhost:4850/api/task/rename", {
+        const renameTaskRes = await axios.post("http://localhost:4850/api/task/rename", {
             taskId, taskText
         })
-        const response2 = await axios.post("http://localhost:4850/api/card/cards", {
-                cardsId
+        const cardsRes = await axios.post("http://localhost:4850/api/board", {
+            boardId
         });
-        dispatch(setTasksAC(response2.data.values));
+        dispatch(setCardsAndTasksAC(cardsRes.data.values))
     }
 }
 
@@ -202,23 +206,16 @@ export const removeBoard = async(boardId, userId) => {
     }
 }
 
-export const removeTask = (taskId, order, cardsId) => {
+export const removeTask = (taskId, order, boardId) => {
     return async dispatch => {
         try {
-            const response = await axios.post("http://localhost:4850/api/task/remove", {
-                taskId, order, cardsId
+            const removeTaskRes = await axios.post("http://localhost:4850/api/task/remove", {
+                taskId, order
             })
-            
-            const response2 = await axios.post("http://localhost:4850/api/card/cards", {
-                cardsId
+            const cardsRes = await axios.post("http://localhost:4850/api/board", {
+                boardId
             });
-            console.log(response2.data.values)
-            if(response2.data.values == null){
-                dispatch(setTasksAC([{none: -1}]))
-            }
-            else{
-                dispatch(setTasksAC(response2.data.values))
-            }
+            dispatch(setCardsAndTasksAC(cardsRes.data.values))
         }
         catch (e) {
             console.log(e)
@@ -232,15 +229,10 @@ export const removeCard = (cardId, boardId) => {
             const resRemove = await axios.post("http://localhost:4850/api/card/remove", {
                 cardId
             })
-            const resCards = await axios.post("http://localhost:4850/api/boards/cards", {
+            const cardsRes = await axios.post("http://localhost:4850/api/board", {
                 boardId
             });
-            if(resCards.data.values.length == 0){
-                dispatch(setCardsAC([{none: 1}]))
-            }
-            else{
-                dispatch(setCardsAC(resCards.data.values))
-            }
+            dispatch(setCardsAndTasksAC(cardsRes.data.values))
         }
         catch (e) {
             console.log(e)
@@ -253,15 +245,11 @@ export const moveCard = (cardId, selectedOrder, dir, boardId) => {
         const moveCardRes = await axios.post("http://localhost:4850/api/card/move", {
             cardId, selectedOrder, dir, boardId
         });
-        const getCardsRes = await axios.post("http://localhost:4850/api/boards/cards", {
+        const cardsRes = await axios.post("http://localhost:4850/api/board", {
             boardId
         });
-        if (getCardsRes.data.values.length == 0) {
-            dispatch(setCardsAC([{ none: 1 }]))
-        }
-        else {
-            dispatch(setCardsAC(getCardsRes.data.values))
-        }
+        dispatch(setCardsAndTasksAC(cardsRes.data.values))
+        
     }
 }
 
@@ -309,8 +297,9 @@ export const getBoardsInvite = (userId) => {
             const response = await axios.post("http://localhost:4850/api/board/getInvite", {
                 userId
             });
-            dispatch(setBoardsAC(response.data.values))
             dispatch(toggleIsFetchingAC(false))
+            dispatch(setBoardsAC(response.data.values))
+            
         }
         catch(e){
             console.log(e.response.data.values.none)
@@ -358,4 +347,19 @@ export const renameBoard = async(boardId, nameBoard) => {
         const renameBoardRes = await axios.post("http://localhost:4850/api/board/rename", {
             boardId, nameBoard
         })
+}
+
+export const getCards = (boardId) => {
+    return async dispatch => {
+        console.log('get cards')
+        try{
+            const cardsRes = await axios.post("http://localhost:4850/api/board", {
+                boardId
+            });
+            dispatch(setCardsAndTasksAC(cardsRes.data.values))
+        }
+        catch(e){
+            console.log(e)
+        }
+    }
 }

@@ -3,29 +3,20 @@ import React, { useEffect, useRef } from "react";
 import s from './card.module.css'
 import MenuIcon from '@mui/icons-material/Menu';
 import { addTask, changeCardName, getCardsFromBoardId, moveCard, moveTask, removeCard, removeTask, renameTask } from "../../../../actions/boards";
-import Task from "./task_card/Task";
-import { getAllTasks } from '../../../../actions/boards'
 import { useDispatch, useSelector } from "react-redux";
-import { deleteTasks, setCardIdDndAC, setDragCardIdAC, setDraggableTask } from "../../../../reducers/boardsReducer";
-import Draggable from 'react-draggable';
+import { deleteTasks, setCardIdDndAC, setDragCardIdAC, setDraggableTask, setRenameTaskAC } from "../../../../reducers/boardsReducer";
 import EditIcon from '@mui/icons-material/Edit';
-import Divider from '@mui/material/Divider';
-import SpeedDialAction from '@mui/material/SpeedDialAction';
+
 
 let Card = (props) => {
 
     const dispatch = useDispatch();
-    const [preNameCard, setPreNameCard] = React.useState(props.name)
     const [nameCard, setNameCard] = React.useState(props.name);
-    
-    
 
     const [createTaskText, setCreateTaskText] = React.useState("");
-    const [inputText, setInputText] = React.useState(true);
+    const [isInputNameCard, setIsInputNameCard] = React.useState(true);
     const [toggleCreateTask, setToggleCreateTask] = React.useState(true);
     const [isHoveredWithTask, setIsHoveredWithTask] = React.useState(true);
-
-    const [renamingCard, setRenamingCard] = React.useState(true);
 
     const [isTitleEdit, setIsTitleEdit] = React.useState(true);
     const [titleEditText, setTitleEditText] = React.useState("");
@@ -33,63 +24,25 @@ let Card = (props) => {
 
     let [currentTask, setCurrentTask] = React.useState(-1);
 
-    let [currentCard, setCurrentCard] = React.useState(-1);
-
     const userId = useSelector(state => state.user.currentUser.id);
     const draggableTask = useSelector(state => state.boards.draggableTask);
     const cardIdDND = useSelector(state => state.boards.cardIdDND);
 
     const draggableCardId = useSelector(state => state.boards.dragCardId);
 
+    const myTasks = useSelector(state => state.boards.cardsAndTasks[props.cardIdRed].task);
+
     const divRef = useRef(null);
 
     const cardRef = useRef(null)
 
-    let mytasks = [];
-    let idtasks = [];
-
-    let goDown = () => {
-        divRef.current.scrollTop = divRef.current.scrollHeight * 2;
-    }
-
     useEffect(() => {
-        console.log('new useeffect')
         setNameCard(props.name)
-        
-        goDown();
-    }, [])
+    }, [myTasks])
 
-    const tasksFromProps = props.tasks;
-
-    if (tasksFromProps != null) {
-        tasksFromProps.map(c => {
-            if (c != null) {
-                if (c.cardId == props.cardId) {
-                    mytasks.push(c);
-                    idtasks.push(c.id);
-                }
-                // c.map((cc, ind) => {
-                //     // if(mytasks.length != 0){
-                //     //     console.log(mytasks[mytasks.length].id)
-                //     // }
-                //     if (idtasks.length == 0) {
-                //         idtasks.push(cc.id);
-                //     }
-                //     if (cc.cardId == props.cardId && idtasks.indexOf(cc.id) === -1) {
-                //         mytasks.push(cc);
-                //         idtasks.push(cc.id);
-                //     }
-                // })
-            }
-
-        })
-    }
-
-
-    let clickedName = (inputText) => {
-        setInputText(false);
+    let clickedNameCard = (inputText) => {
+        setIsInputNameCard(false);
         cardRef.current.draggable = false;
-
     }
 
     let onChangeName = (e) => {
@@ -104,23 +57,23 @@ let Card = (props) => {
         
     }
 
-    let blurInput = () => {
+    let blurInputNameCard = () => {
         if (nameCard.length > 0 && nameCard.trim()) {
-            setInputText(true);
+            setIsInputNameCard(true);
             cardRef.current.draggable = true;
-            changeCardName(props.cardId, nameCard, props.boardsId, goDown);
+            changeCardName(props.cardId, nameCard, props.boardsId);
         }
         else {
-            setInputText(true);
+            setIsInputNameCard(true);
             cardRef.current.draggable = true;
             changeCardName(props.cardId, "Карточка", props.boardsId);
             setNameCard("Карточка");
         }
     }
 
-    let keyDownName = (e) => {
+    let keyDownNameCard = (e) => {
         if (e.key == "Enter" || e.key == 13) {
-            blurInput();
+            blurInputNameCard();
         }
     }
 
@@ -135,6 +88,7 @@ let Card = (props) => {
         }
     }
 
+    /// drag events
     const dragOverHandler = (e, card, task) => {
         e.preventDefault();
         if (e.target.className == s.task || e.target.parentNode.className == s.task) {
@@ -169,14 +123,14 @@ let Card = (props) => {
             console.log("leaved")
         }
     }
-    let draggedTaskId;
     const dragStartHandler = (e) => {
         if(e.target.className == s.card){
             dispatch(setDragCardIdAC(e.target.getAttribute('cardId')))
         }
-
         setCurrentTask(e.target.getAttribute('taskId'))
-        dispatch(setDraggableTask({id: e.target.getAttribute('taskId'), order: e.target.getAttribute('order')}))
+        const eId = e.target.getAttribute('taskId');
+        const eOrder = e.target.getAttribute('order');
+        dispatch(setDraggableTask({id: eId, order: eOrder}));
     }
     const dragEndHandler = (e) => {
         dispatch(setDragCardIdAC(-1))
@@ -188,7 +142,6 @@ let Card = (props) => {
         }
         
     }
-
     const dropHandler = (e) => {
         e.preventDefault();
         dispatch(setDragCardIdAC(-1))
@@ -209,14 +162,13 @@ let Card = (props) => {
             firstOrder = draggableTask.order;
             cardId = e.target.parentNode.getAttribute('cardId');
         }
-        dispatch(moveTask(draggableTask.id, cardId, props.cardsId, beforeOrder, isThisCard, firstOrder));
+        dispatch(moveTask(draggableTask.id, cardId, props.cardsId, beforeOrder, isThisCard, firstOrder, props.boardId));
         // props.getCards();
     }
-
     const dropTaskToCardHandler = (e) => {
         e.preventDefault();
         if(e.target.className == s.card || e.target.className == s.tasks || e.target.className == "MuiButton-root"){
-            dispatch(moveTask(draggableTask.id, props.cardId, props.cardsId, 0, false, 0));
+            dispatch(moveTask(draggableTask.id, props.cardId, props.cardsId, 0, false, 0, props.boardId));
         }
         const selectedOrderCard = e.target.parentNode.getAttribute('order');
         const dirCard = e.target.className == s.dragCard_left ? 'left' : 'right';
@@ -227,51 +179,57 @@ let Card = (props) => {
         }
         dispatch(setDragCardIdAC(-1))
     }
-
     const dropTaskToCardElementsHandler = (e) => {
         e.preventDefault();
         if(e.target.parentNode.className == s.card || e.target.parentNode.parentNode.className == s.card){
-            dispatch(moveTask(draggableTask.id, props.cardId, props.cardsId, 0, false, 0));
+            dispatch(moveTask(draggableTask.id, props.cardId, props.cardsId, 0, false, 0, props.boardId));
         }
     }
-
     const onMouseOnCard = (card) => {
         dispatch(setCardIdDndAC(card));
     }
+    const dropCard = (e) => {
+        dispatch(setDragCardIdAC(-1))
+    }
+    const cardLeaveDrag = (e) => {
+        if(e.target.parentNode.className == s.card){
+            e.target.parentNode.style.border = '0rem solid #ff9100';
+        }
+    }
+    //////
 
-    const setEditTitle = (e,edit) => {
+    const setEditTitleTask = (e,edit) => {
         setIdTaskEditText(e.target.getAttribute('taskId'))
         setTitleEditText(e.target.innerText)
     }
 
-    let onChangeTitle = (event) => {
+    let onChangeTitleTask = (event) => {
         setTitleEditText(event.target.value);
     }
 
-    const keyDownTitle = (e) => {
+    const keyDownTitleTask = (e) => {
         if (e.key == "Enter" || e.key == 13) {
-            blurTitle(e);
+            blurTitleTask(e);
         }
     }
 
-    let blurTitle = (e) => {
-        if(titleEditText.length > 0 && titleEditText.trim()){
-            dispatch(renameTask(idTaskEditText, titleEditText, props.cardsId))
-            
-        }
-        else{
-            dispatch(renameTask(idTaskEditText, "Задача", props.cardsId))
-        }
+    const blurTitleTask = (e) => {
+        const targetTask = e.target.parentNode.parentNode.parentNode;
+        const taskIdRed = targetTask.getAttribute('taskIdRed')
+        const cardIdRed = targetTask.getAttribute('cardIdRed')
+        const newNameTask = titleEditText.trim().length ? titleEditText : 'Задача';
+        // props.onTaskChanged(idTaskEditText, newNameTask, props.cardId, cardIdRed, taskIdRed);
+        dispatch(renameTask(idTaskEditText, newNameTask, props.cardsId, cardIdRed, taskIdRed, props.boardId))
         setIdTaskEditText(-1);
     }
 
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const open = Boolean(anchorEl);
-    const handleClick = (event) => {
-      setAnchorEl(event.currentTarget);
+    const [anchorElTask, setAnchorElTask] = React.useState(null);
+    const openTaskMenu = Boolean(anchorElTask);
+    const handleClickTaskMenu = (event) => {
+      setAnchorElTask(event.currentTarget);
     };
-    const handleClose = () => {
-      setAnchorEl(null);
+    const handleCloseTaskMenu = () => {
+      setAnchorElTask(null);
     };
 
     const [anchorElCard, setAnchorElCard] = React.useState(null);
@@ -284,30 +242,16 @@ let Card = (props) => {
     };
 
     const taskDelete = (e) => {
-        console.log(e.parentNode.getAttribute('taskId'))
-        console.log(e.parentNode.getAttribute('order'))
-        handleClose();
-        dispatch(removeTask(e.parentNode.getAttribute('taskId'), e.parentNode.getAttribute('order'), props.cardsId))
+        const taskIdRemove = e.parentNode.getAttribute('taskId')
+        const taskOrderRemove = e.parentNode.getAttribute('order')
+        handleCloseTaskMenu();
+        dispatch(removeTask(taskIdRemove, taskOrderRemove, props.boardId))
     }
 
-    let imgCard = new Image(10,50)
-    imgCard.src = "./img/card.png";
-
-    const dragCardStart = (e) => {
-        dispatch(setDragCardIdAC(e.target.getAttribute('cardId')))
-    }
-    const dropCard = (e) => {
-        dispatch(setDragCardIdAC(-1))
-    }
-    const cardLeaveDrag = (e) => {
-        if(e.target.parentNode.className == s.card){
-            e.target.parentNode.style.border = '0rem solid #ff9100';
-        }
-    }
+    
 
     const cardDelete = (e) => {
-        // props.removeCard(e.parentNode.parentNode.getAttribute('cardId'));
-        handleClose();
+        handleCloseCard();
         dispatch(removeCard(-1, props.boardId))
         dispatch(removeCard(e.parentNode.parentNode.getAttribute('cardId'), props.boardId))
     }
@@ -340,10 +284,10 @@ let Card = (props) => {
                 <div className={s.topcard}
                 onDrop={e => dropTaskToCardElementsHandler(e)} >
                     {
-                        inputText
+                        isInputNameCard
                             ? <Typography 
                                 className={s.nameText} 
-                                onClick={() => clickedName(nameCard)}
+                                onClick={() => clickedNameCard(nameCard)}
                                 sx={{zIndex: '999'}}
                                 onDrop={e => dropTaskToCardElementsHandler(e)} >{nameCard}</Typography>
                             : <TextField
@@ -351,10 +295,10 @@ let Card = (props) => {
                                 size="small"
                                 autoFocus
                                 autoComplete="off"
-                                onBlur={blurInput}
+                                onBlur={blurInputNameCard}
                                 value={nameCard}
                                 onChange={e => onChangeName(e)}
-                                onKeyDown={keyDownName}
+                                onKeyDown={keyDownNameCard}
                                 type="text"
                                 sx={{zIndex: '999'}}
                                 placeholder="" />
@@ -382,16 +326,18 @@ let Card = (props) => {
                     <MenuItem onClick={() => cardDelete(anchorElCard)}>Удалить карточку</MenuItem>
                 </Menu>
                 </div>
-                <div className={s.tasks} ref={divRef}>
+                <div className={s.tasks} ref={divRef} updater={myTasks}>
                     {
-                        mytasks.map((c, ind) =>
+                        props.tasks.map((c, ind) =>
                             <div
-                                key={ind}
+                                key={c.id}
+                                taskIdRed={ind}
+                                cardIdRed={props.cardIdRed}
                                 className={s.task}
                                 taskId={c.id}
                                 order={c.order}
                                 cardId={props.cardId}
-                                name={c.name}
+                                name={props.tasks[ind].name}
                                 draggable={true}
                                 onDragOver={e => dragOverHandler(e)}
                                 onDragLeave={e => dragLeaveHandler(e)}
@@ -406,17 +352,18 @@ let Card = (props) => {
                                         taskId={c.id}
                                         order={c.order}
                                         cardId={props.cardId}
-                                        onClick={(e) => setEditTitle(e, false)} >
+                                        onClick={(e) => setEditTitleTask(e, false)} >
                                         {
                                             c.name
                                         }
                                     </Typography>
                                         : <TextField 
                                         size="small" 
+                                        autoComplete="off"
                                         value={titleEditText}
-                                        onChange={onChangeTitle}
-                                        onKeyDown={keyDownTitle}
-                                        onBlur={blurTitle}
+                                        onChange={onChangeTitleTask}
+                                        onKeyDown={keyDownTitleTask}
+                                        onBlur={blurTitleTask}
                                         autoFocus
                                         margin="none"
                                         fullWidth
@@ -425,31 +372,20 @@ let Card = (props) => {
                                 
 
                                 <IconButton
-                                    sx={
-                                        
-                                            {
-                                                position: 'absolute',
-                                                top: 0,
-                                                right: 0,
-                                                transform: 'scale(0)',
-                                                padding: '10px',
-                                                transition: '.2s ease',
-                                            }
-                                            // : {
-                                            //     position: 'absolute',
-                                            //     top: 0,
-                                            //     right: 0,
-                                            //     transform: 'scale(1)',
-                                            //     padding: '10px',
-                                            //     transition: '.2s ease',
-                                            // }
-                                        }
+                                    sx={{
+                                        position: 'absolute',
+                                        top: 0,
+                                        right: 0,
+                                        transform: 'scale(0)',
+                                        padding: '10px',
+                                        transition: '.2s ease',
+                                    }}
                                     className={s.edit_btn}
                                     id="basic-button"
-                                    aria-controls={open ? 'basic-menu' : undefined}
+                                    aria-controls={openTaskMenu ? 'basic-menu' : undefined}
                                     aria-haspopup="true"
-                                    aria-expanded={open ? 'true' : undefined}
-                                    onClick={handleClick}>
+                                    aria-expanded={openTaskMenu ? 'true' : undefined}
+                                    onClick={handleClickTaskMenu}>
 
                                     <EditIcon />
                                     
@@ -457,19 +393,16 @@ let Card = (props) => {
                                 </IconButton>
                                 <Menu
                                     id="basic-menu"
-                                    anchorEl={anchorEl}
-                                    open={open}
-                                    onClose={handleClose}
+                                    anchorEl={anchorElTask}
+                                    open={openTaskMenu}
+                                    onClose={handleCloseTaskMenu}
                                     MenuListProps={{
                                         'aria-labelledby': 'basic-button',
                                     }}
                                     className={s.menu_edit}>
-                                    <MenuItem onClick={handleClose}>Изменить заголовок</MenuItem>
-                                    <MenuItem onClick={() => taskDelete(anchorEl)}>Удалить</MenuItem>
+                                    <MenuItem onClick={handleCloseTaskMenu}>Изменить заголовок</MenuItem>
+                                    <MenuItem onClick={() => taskDelete(anchorElTask)}>Удалить</MenuItem>
                                 </Menu>
-
-                                
-                                
                             </div>)
                     }
                 </div>

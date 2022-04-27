@@ -79,3 +79,9 @@ a{
     color:#ff9100;
 }
 
+.invited{
+    position: absolute;
+    bottom: 5%;
+    left: 5%;
+    z-index: 999;
+}

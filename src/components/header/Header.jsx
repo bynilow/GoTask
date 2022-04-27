@@ -37,7 +37,7 @@ const Header = () => {
         }
     }
 
-    const boardLink = `/boards?user=${userId}`
+    const boardLink = `/brs/boards?user=${userId}`
     window.addEventListener('scroll', changeBackground)
     // header ? s.header_active : s.header
     return (

@@ -11,6 +11,7 @@ import Preloader from "../../common/Preloader";
 import { toggleIsFetchingAC } from "../../../reducers/boardsReducer";
 import { useSearchParams } from "react-router-dom";
 
+
 let Boards_My = () => {
 
     const userId = useSelector(state => state.user.currentUser.id)
@@ -116,18 +117,20 @@ let Boards_My = () => {
     }
     return (
         <div className={s.boards_inner} >
-            {isFetching ? <Preloader /> : null}
-            <div className={s.boards}>
+            {isFetching 
+            ? <Preloader /> 
+            : <div className={s.boards}>
                 {
                     boards.map((br, ind) => {
                         if (typeof boards[0].none === 'undefined') {
                             return (
-                                <BoardCard id={br.boardsId} key={ind} name={br.tittle} color={br.background} />
+                                <BoardCard id={br.boardsId} key={ind} name={br.tittle} color={br.background} invited={br.invitedId} />
                             )
                         }
                     })
                 }
-            </div>
+            </div>}
+            
             <div className={s.createBoard_btn} onClick={createVisibility ? "" : clickCreateVisibility}>
 
                 <Typography className={s.createBoard_inner} >
