@@ -17,8 +17,9 @@ const SET_CARDS_AND_TASKS = "SET_CARDS_AND_TASKS"
 
 const SET_RENAME_TASK = "SET_RENAME_TASK"
 
-
 const SET_INVITED_USER_STATUS = "SET_INVITED_USER_STATUS"
+
+const SET_GROUP_USERS = "SET_GROUP_USERS"
 
 
 const defaultState = {
@@ -34,7 +35,8 @@ const defaultState = {
     dragCardId: -1,
     deletedTask: {},
     invitedUserStatus: null,
-    cardsAndTasks: []
+    cardsAndTasks: [],
+    groupUsers: []
 }
 
 export default function boardsReducer(state = defaultState, action) {
@@ -108,10 +110,10 @@ export default function boardsReducer(state = defaultState, action) {
             }
         case SET_RENAME_TASK:
             let newCards = [...state.cardsAndTasks.map((card, indCard) => {
-                if(indCard == action.cardId){
+                if (indCard == action.cardId) {
                     console.log('ind card == action')
-                    card.task.map((task,indTask) => {
-                        if(indTask == action.taskId){
+                    card.task.map((task, indTask) => {
+                        if (indTask == action.taskId) {
                             task.name = action.newName
                             return card.task
                         }
@@ -120,16 +122,14 @@ export default function boardsReducer(state = defaultState, action) {
                 }
                 return card
             })];
-            console.log('redux')
-            console.log(state.cardsAndTasks)
-            console.log(newCards)
-            console.log(state.cardsAndTasks == newCards)
-            console.log(state.cardsAndTasks === newCards)
-            
-            console.log(newCards)
-            return{
+            return {
                 ...state,
                 cardsAndTasks: newCards
+            }
+        case SET_GROUP_USERS:
+            return{
+                ...state,
+                groupUsers: action.users
             }
         default:
             return state
@@ -211,4 +211,9 @@ export const setRenameTaskAC = (newName, cardId, taskId) => ({
     newName,
     cardId,
     taskId
+})
+
+export const setGroupUsersAC = (users) => ({
+    type: SET_GROUP_USERS,
+    users
 })

@@ -87,7 +87,7 @@
 }
 
 .tasks{
-    z-index: 999;
+    z-index: 150;
     overflow-y:auto;
     overflow-x:hidden;
     display: flex;
@@ -107,7 +107,7 @@
 .tasks::-webkit-scrollbar-thumb {
     background-color: #7e57c2;
     border-radius: 5px;
-  }
+}
 
 
 .create_task{

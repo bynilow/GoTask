@@ -124,7 +124,14 @@ let Boards_My = () => {
                     boards.map((br, ind) => {
                         if (typeof boards[0].none === 'undefined') {
                             return (
-                                <BoardCard id={br.boardsId} key={ind} name={br.tittle} color={br.background} invited={br.invitedId} />
+                                <BoardCard
+                                    id={br.boardsId}
+                                    key={br.boardsId}
+                                    name={br.tittle}
+                                    color={br.background}
+                                    userId={userId}
+                                    invited={br.invitedId}
+                                    favorite={br.favoriteId} />
                             )
                         }
                     })

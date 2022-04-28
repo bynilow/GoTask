@@ -2,6 +2,7 @@
 
 .boardspace{
     min-width: 100vw;
+    position: relative;
     height: 100vh;
     display: flex;
     flex-direction: column;

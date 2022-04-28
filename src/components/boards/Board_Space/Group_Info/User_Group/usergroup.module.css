@@ -1,0 +1,26 @@
+.user{
+    background-color: rgb(199, 199, 199);
+    width: 23%;
+    
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.user_info{
+    display: flex;
+    align-items: center;
+}
+
+.user_info *{
+    margin-right: 10px;
+}
+
+.sure_btn{
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+}

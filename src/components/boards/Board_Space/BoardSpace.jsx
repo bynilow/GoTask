@@ -19,6 +19,7 @@ import axios from "axios";
 import { NavLink } from "react-router-dom";
 import { deleteTasksAC, toggleIsFetchingAC } from "../../../reducers/boardsReducer";
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
+import Group_Info from "./Group_Info/Group_Info.jsx";
 
 
 
@@ -44,6 +45,7 @@ let BoardSpace = (props) => {
 
     
     const [editingNameBoard, setEditingNameBoard] = React.useState(false);
+    const [isGroupInfoOpened, setIsGroupInfoOpened] = React.useState(false);
     
     const isFetching = useSelector(state => state.boards.isFetching)
     
@@ -269,6 +271,12 @@ let BoardSpace = (props) => {
 
     return (
         <div className={s.boardspace}>
+            {
+                isGroupInfoOpened
+                ? <Group_Info setCloseGroup={() => setIsGroupInfoOpened(false)} myId={userId} boardId={postQuery}/>
+                : <></>
+            }
+            
             <div className={s.board_header}>
                 <div className={s.container_bg}></div>
                 <div className={s.container} >
@@ -300,7 +308,7 @@ let BoardSpace = (props) => {
                             Карточка
                         </Button>
                         <Divider orientation="vertical" flexItem />
-                        <Button startIcon={<GroupIcon />} color="white" size="small" disabled >
+                        <Button startIcon={<GroupIcon />} color="white" size="small" onClick={() => setIsGroupInfoOpened(true)} >
                             Группа
                         </Button>
                         <Button 

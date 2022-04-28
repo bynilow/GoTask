@@ -1,7 +1,7 @@
 import React, { Component } from "react"; 
 import axios from "axios"
 import { Navigate } from "react-router-dom";
-import { setBoardsAC, setCreatedBoardAC, toggleIsFetchingAC, setFoundBoardAC, setCardsAC, createCardAC, setTasksAC, deleteTasksAC, setInviteUserStatusAC, setCardsAndTasksAC, setRenameTaskAC } from "../reducers/boardsReducer";
+import { setBoardsAC, setCreatedBoardAC, toggleIsFetchingAC, setFoundBoardAC, setCardsAC, createCardAC, setTasksAC, deleteTasksAC, setInviteUserStatusAC, setCardsAndTasksAC, setRenameTaskAC, setGroupUsersAC } from "../reducers/boardsReducer";
 
 
 export const getBoards = (userId) => {
@@ -362,4 +362,65 @@ export const getCards = (boardId) => {
             console.log(e)
         }
     }
+}
+
+export const setFavorite = (boardId, userId, favoriteId) => {
+    return async dispatch => {
+        try{
+            const favorite = favoriteId == 2 ? 1 : 2
+            const setFavorite = await axios.post("http://localhost:4850/api/board/setFavorite", {
+                userId, boardId, favorite
+            });
+            const getBoardsRes = await axios.post("http://localhost:4850/api/boards/boards", {
+                userId
+            });
+            dispatch(setBoardsAC(getBoardsRes.data.values))
+        }
+        catch(e){
+            console.log(e)
+        }
+    }
+}
+
+export const getUsersInGroup = (boardId) => {
+    return async dispatch => {
+        try{
+            const getUsersRes = await axios.post("http://localhost:4850/api/board/getUsersGroup", {
+                boardId
+            });
+            dispatch(setGroupUsersAC(getUsersRes.data.values))
+        }
+        catch(e){
+            console.log(e)
+        }
+    }
+}
+
+export const setTypeUserInGroup = async (boardId, userId, type) => {
+    try {
+        const setTypeRes = await axios.post("http://localhost:4850/api/board/setTypeUserBoard", {
+            boardId, userId, type
+        });
+    }
+    catch (e) {
+        console.log(e)
+    }
+}
+
+export const removeUserFromGroup = (boardId, userId) => {
+    return async dispatch => {
+        try {
+            const removeUserRes = await axios.post("http://localhost:4850/api/board/removeUserFromGroup", {
+                boardId, userId
+            });
+            const getUsersRes = await axios.post("http://localhost:4850/api/board/getUsersGroup", {
+                boardId
+            });
+            dispatch(setGroupUsersAC(getUsersRes.data.values))
+        }
+        catch (e) {
+            console.log(e)
+        }
+    }
+    
 }
