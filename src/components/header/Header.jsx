@@ -1,13 +1,18 @@
 import React, { useState } from 'react'
 import s from './header.module.css'
-import { NavLink } from 'react-router-dom'
-import { AppBar, Typography, Container, Box, Button, Toolbar, Link, Divider } from '@mui/material'
+import { Navigate, NavLink } from 'react-router-dom'
+import { AppBar, Typography, Container, Box, Button, Toolbar, Link, Divider, Avatar, IconButton, Menu, MenuItem, ListItemAvatar, ListItemIcon } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutAC } from '../../reducers/userReducer';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import EmailIcon from '@mui/icons-material/Email';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 const Header = () => {
     const isAuth = useSelector(state => state.user.isAuth)
+    const userName = useSelector(state => state.user.currentUser.login)
     const userId = useSelector(state => state.user.currentUser.id)
     const dispatch = useDispatch()
     const [header, setHeader] = useState(false)
@@ -28,18 +33,22 @@ const Header = () => {
         }
     }
 
-    const logoClick = () => {
-        if (isAuth) {
-
-        }
-        else {
-
-        }
+    const logOut = () => {
+        dispatch(logoutAC())
+        return <Navigate to='/login' />
     }
+
+    const [anchorProfile, setAnchorProfile] = React.useState(null);
+    const openMenuProfile = Boolean(anchorProfile);
+    const handleClickProfile = (event) => {
+        setAnchorProfile(event.currentTarget);
+    };
+    const handleCloseProfile = () => {
+        setAnchorProfile(null);
+    };
 
     const boardLink = `/brs/boards?user=${userId}`
     window.addEventListener('scroll', changeBackground)
-    // header ? s.header_active : s.header
     return (
         <div className={s.header_active}>
             <div className={s.container} >
@@ -58,36 +67,70 @@ const Header = () => {
                     
                 </div>
 
-                <div className={s.header_btns}>
+                <div style={!isAuth ? {width: '20%'} : {}} className={s.header_btns}>
                     {!isAuth &&
-                        <Box mr={3} color={header ? 'inherit' : 'white'}>
+                        <div className={s.btns_auth}>
                             <Button color='inherit' variant="outlined" onClick={() => setHeader(true)} component={NavLink} to="/login">
                                 Вход
                             </Button>
-                        </Box>
-                    }
-                    {!isAuth &&
-                        <Button color={header ? 'primary' : 'secondary'} variant="contained" onClick={() => setHeader(true)} component={NavLink} to="/reg">
-                            Регистрация
-                        </Button>
-                    }
-                    {isAuth &&
-                        <div className={s.auth_btns}>
-
-                            <Button className={s.btn_board} variant="text" disabled endIcon={<KeyboardArrowDownIcon />}>Доски</Button>
-                            <Button className={s.btn_board} variant="text" disabled endIcon={<KeyboardArrowDownIcon />}>Избранное</Button>
-                            <Divider orientation='vertical' variant='middle' flexItem />
-                            <Button 
-                            className={s.btn_exit} 
-                            color="inherit" 
-                            variant="outlined" 
-                            component={NavLink}
-                            to="/login"
-                            onClick={() => dispatch(logoutAC())}>
-                                Выход
+                            <Button color={header ? 'primary' : 'secondary'} variant="contained" onClick={() => setHeader(true)} component={NavLink} to="/reg">
+                                Регистрация
                             </Button>
                         </div>
+                            
                     }
+
+                    {isAuth &&
+                        <IconButton onClick={handleClickProfile}
+                            aria-controls={openMenuProfile ? 'account-menu' : undefined}
+                            aria-haspopup="true"
+                            aria-expanded={openMenuProfile ? 'true' : undefined}>
+                            <Avatar 
+                                src='no.png'
+                                alt={userName}
+                                sx={{ backgroundImage: 'linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%)' }} />
+                        </IconButton>
+
+                    }
+                    <Menu anchorEl={anchorProfile}
+                    id='account-menu'
+                    open={openMenuProfile}
+                    onClose={handleCloseProfile}
+                    onClick={handleCloseProfile}
+                    sx={{zIndex: '99999'}}>
+                        <MenuItem component={NavLink} to="/profile">
+                            <ListItemAvatar>
+                                <Avatar sx={{ width: 32, height: 32 }} />
+                            </ListItemAvatar>
+                            Профиль
+                        </MenuItem>
+                        <Divider />
+                        <MenuItem>
+                            <ListItemIcon>
+                                <DashboardIcon />
+                            </ListItemIcon>
+                            Все доски
+                        </MenuItem>
+                        <MenuItem>
+                            <ListItemIcon>
+                                <FavoriteIcon />
+                            </ListItemIcon>
+                            Избранное
+                        </MenuItem>
+                        <MenuItem>
+                            <ListItemIcon>
+                                <EmailIcon />
+                            </ListItemIcon>
+                            Приглашения
+                        </MenuItem>
+                        <Divider />
+                        <MenuItem onClick={logOut}>
+                            <ListItemIcon>
+                                <ExitToAppIcon />
+                            </ListItemIcon>
+                            Выход
+                        </MenuItem>
+                    </Menu>
                 </div>
 
             </div>

@@ -12,8 +12,6 @@
     transition: .5s ease;
     background: transparent;
     box-shadow: none;
-    padding-top: 30px;
-    padding-bottom: 30px;
     backdrop-filter: blur(0px);
 }
 
@@ -58,8 +56,9 @@
     width: 1200px;
     margin: auto;
     display: flex;
+    position: relative;
     justify-content: space-between;
-    align-items: center;
+    align-items: baseline;
     padding: 10px 0;
 }
 
@@ -124,7 +123,21 @@
 
 
 .header_btns{
+    position: absolute;
     display: flex;
+    top: 0;
+    bottom: 0;
+    right: 0;
+}
+
+.btns_auth{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.btns_auth *{
+    margin: 5px;
 }
 
 
@@ -132,18 +145,21 @@
     .container{
         width: 1200px;
     }
+
 }
 
 @media screen and (max-width: 1150px){
     .container{
         width: 1000px;
     }
+
 }
 
 @media screen and (max-width: 900px){
     .container{
         width: 650px;
     }
+
 }
 
 @media screen and (max-width: 600px){

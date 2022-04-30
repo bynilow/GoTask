@@ -15,7 +15,7 @@ const Login = (props) => {
     const signinText = useSelector(state => state.user.signinText)
 
     
-    if(props.isAuth) return <Navigate to={`/boards?user=${props.userId}`}/>
+    if(props.isAuth) return <Navigate to={`/brs/boards?user=${props.userId}`}/>
 
     return (
         <div className={s.Login}>

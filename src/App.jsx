@@ -15,6 +15,7 @@ import Boards_My from './components/boards/Boards_My/Boards_My';
 import Boards_Invite from './components/boards/Boards_Invite/Boards_Invite';
 import AdminPanel from './components/admin/admin_panel';
 import Boards_Select from './components/boards/Boards_Select/Boards_Select';
+import Profile from './components/profile/Profile';
 
 
 function App() {
@@ -54,6 +55,7 @@ function App() {
         <Routes>
           <Route path="/reg" element={<Registration isAuth={isAuth} userId={userId} />} />
           <Route path="/login" element={<Login isAuth={isAuth} userId={userId} />} />
+          <Route path="/profile" element={<Profile isAuth={isAuth} userId={userId} />} />
           <Route path="/users" element={<Users key="Users" isAuth={isAuth} />} />
           <Route path="/brs" element={<Boards_Select isAuth={isAuth} userId={userId}/>}>
             <Route path="boards" element={<Boards_My isAuth={isAuth} userId={userId}/>} />

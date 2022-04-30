@@ -10,7 +10,7 @@ const defaultState = {
     currentUser: {},
     isAuth: false,
     users: [],
-    foundUser: false,
+    foundUser: null,
     signinText: ""
 }
 

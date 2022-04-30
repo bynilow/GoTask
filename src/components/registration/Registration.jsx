@@ -116,7 +116,7 @@ const Registration = (props) => {
 
                     <TextField sx={{ mt: 2 }}
                         error={values.erEmail || fu}
-                        helperText={fu ? "Пользователь с таким Email уже существует" : (values.erEmail ? "Неверный EMEMEMEMEM" : "")}
+                        helperText={fu ? "Пользователь с таким Email уже существует" : (values.erEmail ? "Неверный Email" : "")}
                         value={values.email}
                         onChange={handleChange('email')}
                         type="email"
