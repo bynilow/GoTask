@@ -32,6 +32,7 @@ const Group_Info = (props) => {
                             key={user.userId}
                             boardId={props.boardId}
                             userName={user.login}
+                            photo={'http://localhost:4850/img/'+user.photo}
                             userType={user.roleId}
                             userId={user.userId}
                             myId={props.myId} 

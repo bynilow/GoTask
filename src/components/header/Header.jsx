@@ -46,7 +46,7 @@ const Header = () => {
     const handleCloseProfile = () => {
         setAnchorProfile(null);
     };
-
+    console.log('avatar: '+localStorage.getItem('avatar'))
     const boardLink = `/brs/boards?user=${userId}`
     window.addEventListener('scroll', changeBackground)
     return (
@@ -86,7 +86,7 @@ const Header = () => {
                             aria-haspopup="true"
                             aria-expanded={openMenuProfile ? 'true' : undefined}>
                             <Avatar 
-                                src='no.png'
+                                src={localStorage.getItem('avatar')}
                                 alt={userName}
                                 sx={{ backgroundImage: 'linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%)' }} />
                         </IconButton>
@@ -100,7 +100,7 @@ const Header = () => {
                     sx={{zIndex: '99999'}}>
                         <MenuItem component={NavLink} to="/profile">
                             <ListItemAvatar>
-                                <Avatar sx={{ width: 32, height: 32 }} />
+                                <Avatar src={localStorage.getItem('avatar')} sx={{ width: 32, height: 32 }} />
                             </ListItemAvatar>
                             Профиль
                         </MenuItem>

@@ -32,9 +32,9 @@ const User_Group = (props) => {
         <div className={s.user}>
             <div className={s.user_info}>
                 <Avatar
-                    sx={{ backgroundColor: 'orange', width: '60px', height: '60px' }}
+                    sx={{ backgroundColor: 'orange', width: '60px', height: '60px', marginRight: '10px' }}
                     alt={props.userName}
-                    src='./no.jpg' />
+                    src={props.photo} />
                 <Typography variant="h6">{props.userName}</Typography>
             </div>
             <Select sx={{ mt: '10px' }}

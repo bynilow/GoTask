@@ -143,3 +143,17 @@ export const changeUserName = async (userId, userName) => {
         console.log(e)
     }
 }
+
+export const setUserPhoto = async (data, userId) => {
+    try {
+        const setAvatar = await axios.post("http://localhost:4850/api/user/setUserPhoto", data, {
+            headers: {
+                'content-type': 'multipart/form-data'
+            }
+        })
+        return setAvatar.data.values
+    }
+    catch (e) {
+        console.log(e)
+    }
+}

@@ -3,10 +3,11 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import { Alert, AlertTitle, Avatar, Box, Button, Divider, FormControl, FormHelperText, IconButton, Input, InputAdornment, InputLabel, OutlinedInput, Snackbar, TextField, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { changeEmail, changePassword, changeUserName, getUserByEmail } from '../../actions/user'
+import { changeEmail, changePassword, changeUserName, getUserByEmail, setUserPhoto } from '../../actions/user'
 import s from './profile.module.css'
 import SaveIcon from '@mui/icons-material/Save';
 import { setFoundUserAC } from '../../reducers/userReducer'
+import axios from 'axios'
 
 const Profile = (props) => {
 
@@ -32,6 +33,11 @@ const Profile = (props) => {
     const [isPassCorrect, setIsPassCorrect] = React.useState(true)
     const [isPassChanged, setIsPassChanged] = React.useState(false)
 
+    const [avatar, setAvatar] = React.useState(null)
+    const [img, setImg] = React.useState(null)
+
+    const [isAvatarChanged, setIsAvatarChanged] = React.useState(null)
+
 
     useEffect(() => {
         setUserEmail(user.email)
@@ -39,13 +45,6 @@ const Profile = (props) => {
         setUserName(user.login)
         setLastUserName(user.login)      
     }, [user])
-    console.log(userName)
-    // if(!userName){
-    //     setUserName(user.login)
-    //     setUserEmail(user.email)
-    //     setLastUserEmail(user.email)
-    //     setLastUserName(user.login)      
-    // }
 
     const nameSave = () => {
         if (lastUserName != userName) {
@@ -126,6 +125,28 @@ const Profile = (props) => {
         setIsPassChanged(false)
     };
 
+    const sendAvatar = async(e) => {
+        try {
+            if(e.size < 6291456){
+                setImg(e)
+                const data = new FormData()
+                data.append('avatar', e)            
+                data.append('userId', user.id)
+                let photoRes = await setUserPhoto(data)  ;
+                localStorage.setItem('avatar', photoRes)
+                console.log(localStorage.getItem('avatar'))       
+                setAvatar(photoRes)
+                setIsAvatarChanged(true)
+            }
+            else{
+                setIsAvatarChanged(false)
+            }
+        } 
+        catch (e) {}
+    }
+    const handleCloseAlertAvatar = () => {
+        setIsAvatarChanged(null)
+    }
 
     return (
         <div className={s.profile}>
@@ -134,12 +155,26 @@ const Profile = (props) => {
                 <div className={s.profile_inner}>
                     <Typography variant='h4' sx={{ textTransform: 'uppercase', marginBottom: '30px' }}> твой профиль </Typography>
                     <Divider orientation='horizontal' />
-
-                    <div className={s.photo_login}>
-                        <IconButton>
-                            <Avatar sx={{ width: '200px', height: '200px' }} />
-                        </IconButton>
                     
+                    <div className={s.photo_login}>
+                        <label htmlFor='avatar-button'>
+                            <Input 
+                            accept="image/*" 
+                            id='avatar-button' 
+                            type="file" 
+                            sx={{display: 'none'}}
+                            onChange={e => sendAvatar(e.target.files[0])} />
+                            <IconButton component='span'>
+                                <Avatar src={localStorage.getItem('avatar')} sx={{ width: '200px', height: '200px' }} />
+                            </IconButton>
+                        </label>
+                        <Snackbar open={isAvatarChanged == false} autoHideDuration={3000} onClose={handleCloseAlertAvatar}>
+                            <Alert onClose={handleCloseAlertAvatar} severity="error" sx={{ width: '100%' }} >
+                                Большой вес картинки
+                            </Alert>
+                        </Snackbar>
+
+                        {/* <input type='file' onChange={} /> */}
                         <div className={s.textFields}>
                             <div autoComplete="off" className={s.input_with_btn}>
                                 <TextField
@@ -169,7 +204,6 @@ const Profile = (props) => {
                                 <TextField
                                     value={userEmail}
                                     onChange={onEmailChange}
-                                    maxRows={15}
                                     inputProps={{style: {fontSize: 30}}}
                                     autoComplete='off'
                                     variant="standard"
@@ -198,7 +232,6 @@ const Profile = (props) => {
                                         id='password'
                                         type={isPassword ? 'password' : 'text'}
                                         sx={{ margin: '10px' }}
-                                        auto
                                         inputProps={{style: {fontSize: 30}}}
                                         variant="standard"
                                         error={!isPassCorrect}
