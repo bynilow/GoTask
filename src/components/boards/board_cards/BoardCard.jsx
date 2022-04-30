@@ -6,7 +6,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import { NavLink } from "react-router-dom";
 import PeopleIcon from '@mui/icons-material/People';
 import { useDispatch } from "react-redux";
-import { setFavorite } from "../../../actions/boards";
+import { getBoardsFavorite, setFavorite } from "../../../actions/boards";
 
 
 const BoardCard = (props) => {
@@ -14,7 +14,7 @@ const BoardCard = (props) => {
     const dispatch = useDispatch();
 
     const onClickFavorite = () => {
-        dispatch(setFavorite(props.id, props.userId, props.favorite))
+        dispatch(setFavorite(props.id, props.userId, props.favorite, props.isFavoritePage))
     }
 
     return (

@@ -21,6 +21,8 @@ const SET_INVITED_USER_STATUS = "SET_INVITED_USER_STATUS"
 
 const SET_GROUP_USERS = "SET_GROUP_USERS"
 
+const SET_FAVORITE_IN_BOARD = "SET_FAVORITE_IN_BOARD"
+
 
 const defaultState = {
     boards: [],
@@ -131,6 +133,13 @@ export default function boardsReducer(state = defaultState, action) {
                 ...state,
                 groupUsers: action.users
             }
+        case SET_FAVORITE_IN_BOARD:
+            let foundBoard = {...state.foundBoard};
+            foundBoard.favoriteId = action.favorite
+            return{
+                ...state,
+                foundBoard
+            }
         default:
             return state
     }
@@ -216,4 +225,9 @@ export const setRenameTaskAC = (newName, cardId, taskId) => ({
 export const setGroupUsersAC = (users) => ({
     type: SET_GROUP_USERS,
     users
+})
+
+export const setFavoriteInBoardAC = (favorite) => ({
+    type: SET_FAVORITE_IN_BOARD,
+    favorite
 })

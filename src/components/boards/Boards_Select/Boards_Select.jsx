@@ -17,6 +17,7 @@ let Boards_Select = (props) =>{
 
     const boardLink = `/brs/boards?user=${props.userId}`
     const inviteLink = `/brs/invites?user=${props.userId}`
+    const favoriteLink = `/brs/favorites?user=${props.userId}`
 
     return(
         
@@ -26,7 +27,7 @@ let Boards_Select = (props) =>{
                     <Button component={NavLink} to={boardLink}>
                         Мои доски
                     </Button>
-                    <Button disabled>
+                    <Button component={NavLink} to={favoriteLink}>
                         Избранное
                     </Button>
                     <Button component={NavLink} to={inviteLink}>

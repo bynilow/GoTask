@@ -3,11 +3,12 @@ import s from './boardspace.module.css'
 import { useSelector, useDispatch } from "react-redux";
 import Card from "./Cards/Card";
 import { Navigate, useSearchParams } from 'react-router-dom'
-import { createCard, getAllTasks, getBoardFromId, getCards, getCardsFromBoardId, getOutputDoc, inviteUser, removeBoard, removeCard, renameBoard, renameTask, setFalseInvite } from '../../../actions/boards'
+import { createCard, getAllTasks, getBoardFromId, getCards, getCardsFromBoardId, getOutputDoc, inviteUser, removeBoard, removeCard, renameBoard, renameTask, setFalseInvite, setFavorite, setFavoriteInBoard } from '../../../actions/boards'
 import { Button, Divider, IconButton, ListItemIcon, Menu, MenuItem, TextField, Typography, Snackbar, Alert } from "@mui/material";
 import Preloader from '../../common/Preloader'
 import CreateCard from "./Cards/CreateCard";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import GroupIcon from '@mui/icons-material/Group';
 import MenuIcon from '@mui/icons-material/Menu';
 import AddIcon from '@mui/icons-material/Add';
@@ -53,6 +54,7 @@ let BoardSpace = (props) => {
     const thisBoard = useSelector(state => state.boards.foundBoard)
     
     const [nameBoard, setNameBoard] = React.useState(thisBoard ? thisBoard.tittle : '');
+    const [isFavorite, setIsFavorite] = React.useState(null);
     const [taskUpdater, setTaskUpdater] = React.useState(Date.now());
 
     useEffect(() => {
@@ -269,6 +271,11 @@ let BoardSpace = (props) => {
         dispatch(renameTask(idTask, nameTask, cardId, cardIdRed, taskIdRed))
     }
 
+    const onHandleFavoriteClick = () => {
+        dispatch(setFavoriteInBoard(postQuery,userId, thisBoard.favoriteId))
+    }
+
+    const iconFavorite = thisBoard && (thisBoard.favoriteId - 1);
     return (
         <div className={s.boardspace}>
             {
@@ -294,8 +301,12 @@ let BoardSpace = (props) => {
                             onClick={() => setEditingNameBoard(true)}
                             onBlur={blurNameBoard}
                             sx={{input: {color: '#fff'}}} />
-                        <Button startIcon={<FavoriteBorderIcon />} color="white" size="small" disabled>
-                            Избранное
+                        <Button 
+                            startIcon={iconFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                            color="white"
+                            size="small"
+                            onClick={onHandleFavoriteClick}>
+                            Избранное 
                         </Button>
                         <Divider orientation="vertical" flexItem />
                         <Button

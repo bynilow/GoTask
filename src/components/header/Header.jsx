@@ -47,8 +47,12 @@ const Header = () => {
         setAnchorProfile(null);
     };
     console.log('avatar: '+localStorage.getItem('avatar'))
-    const boardLink = `/brs/boards?user=${userId}`
     window.addEventListener('scroll', changeBackground)
+
+    const boardLink = `/brs/boards?user=${userId}`
+    const inviteLink = `/brs/invites?user=${userId}`
+    const favoriteLink = `/brs/favorites?user=${userId}`
+
     return (
         <div className={s.header_active}>
             <div className={s.container} >
@@ -105,19 +109,19 @@ const Header = () => {
                             Профиль
                         </MenuItem>
                         <Divider />
-                        <MenuItem>
+                        <MenuItem component={NavLink} to={boardLink}>
                             <ListItemIcon>
                                 <DashboardIcon />
                             </ListItemIcon>
                             Все доски
                         </MenuItem>
-                        <MenuItem>
+                        <MenuItem component={NavLink} to={favoriteLink}>
                             <ListItemIcon>
                                 <FavoriteIcon />
                             </ListItemIcon>
                             Избранное
                         </MenuItem>
-                        <MenuItem>
+                        <MenuItem component={NavLink} to={inviteLink}>
                             <ListItemIcon>
                                 <EmailIcon />
                             </ListItemIcon>

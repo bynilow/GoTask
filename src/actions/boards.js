@@ -1,7 +1,7 @@
 import React, { Component } from "react"; 
 import axios from "axios"
 import { Navigate } from "react-router-dom";
-import { setBoardsAC, setCreatedBoardAC, toggleIsFetchingAC, setFoundBoardAC, setCardsAC, createCardAC, setTasksAC, deleteTasksAC, setInviteUserStatusAC, setCardsAndTasksAC, setRenameTaskAC, setGroupUsersAC } from "../reducers/boardsReducer";
+import { setBoardsAC, setCreatedBoardAC, toggleIsFetchingAC, setFoundBoardAC, setCardsAC, createCardAC, setTasksAC, deleteTasksAC, setInviteUserStatusAC, setCardsAndTasksAC, setRenameTaskAC, setGroupUsersAC, setFavoriteInBoardAC } from "../reducers/boardsReducer";
 
 
 export const getBoards = (userId) => {
@@ -364,17 +364,46 @@ export const getCards = (boardId) => {
     }
 }
 
-export const setFavorite = (boardId, userId, favoriteId) => {
+export const setFavorite = (boardId, userId, favoriteId, isFavoritePage) => {
     return async dispatch => {
         try{
             const favorite = favoriteId == 2 ? 1 : 2
             const setFavorite = await axios.post("http://localhost:4850/api/board/setFavorite", {
                 userId, boardId, favorite
             });
-            const getBoardsRes = await axios.post("http://localhost:4850/api/boards/boards", {
-                userId
-            });
-            dispatch(setBoardsAC(getBoardsRes.data.values))
+            if (isFavoritePage) {
+                const getFavoritesRes = await axios.post("http://localhost:4850/api/board/getFavorite", {
+                    userId
+                });
+                dispatch(toggleIsFetchingAC(false))
+                dispatch(setBoardsAC(getFavoritesRes.data.values))
+            }
+            else{
+                const getBoardsRes = await axios.post("http://localhost:4850/api/boards/boards", {
+                    userId
+                });
+                dispatch(setBoardsAC(getBoardsRes.data.values))
+            }
+            
+        }
+        catch(e){
+            dispatch(setBoardsAC([{none: e.response.data.values.none}]))
+            dispatch(toggleIsFetchingAC(false))
+        }
+    }
+}
+
+export const setFavoriteInBoard = (boardId, userId, favoriteId) => {
+    return async dispatch => {
+        try {
+            if (userId) {
+                const favorite = favoriteId == 2 ? 1 : 2;
+                const setFavorite = await axios.post("http://localhost:4850/api/board/setFavorite", {
+                    userId, boardId, favorite
+                });
+                console.log('favorited')
+                dispatch(setFavoriteInBoardAC(favorite))
+            }
         }
         catch(e){
             console.log(e)
@@ -423,4 +452,22 @@ export const removeUserFromGroup = (boardId, userId) => {
         }
     }
     
+}
+
+export const getBoardsFavorite = (userId) => {
+    return async dispatch => {
+        try{
+            const response = await axios.post("http://localhost:4850/api/board/getFavorite", {
+                userId
+            });
+            dispatch(toggleIsFetchingAC(false))
+            dispatch(setBoardsAC(response.data.values))
+            
+        }
+        catch(e){
+            console.log(e.response.data.values.none)
+            dispatch(setBoardsAC([{none: e.response.data.values.none}]))
+            dispatch(toggleIsFetchingAC(false))
+        }
+    }
 }
