@@ -10,7 +10,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import EmailIcon from '@mui/icons-material/Email';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
-const Header = () => {
+const Header = (props) => {
     const isAuth = useSelector(state => state.user.isAuth)
     const userName = useSelector(state => state.user.currentUser.login)
     const userId = useSelector(state => state.user.currentUser.id)
@@ -34,7 +34,7 @@ const Header = () => {
     }
 
     const logOut = () => {
-        dispatch(logoutAC())
+        dispatch(logoutAC());
         return <Navigate to='/login' />
     }
 
@@ -61,14 +61,13 @@ const Header = () => {
                     <div className={s.d2}></div>
                     <Typography
                         component={NavLink}
-                        to={boardLink}
+                        to={props.isAuth ? boardLink : '/login'}
                         onClick={() => setHeader(false)}
                         color={"#fff"}
                         className={s.logo}
                         sx={{ fontWeight: 'bold', fontSize: '25px', textShadow: '0 0 3px rgba(0,0,0,.5)' }}>
                         <Typography color="secondary" component={'span'} sx={{ fontWeight: 'bold', fontSize: '20px', textShadow: '0 0 1px rgba(0,0,0,.5)' }} >GO</Typography>TASK
                     </Typography>
-                    
                 </div>
 
                 <div style={!isAuth ? {width: '20%'} : {}} className={s.header_btns}>

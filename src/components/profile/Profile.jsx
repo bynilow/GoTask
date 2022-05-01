@@ -8,8 +8,11 @@ import s from './profile.module.css'
 import SaveIcon from '@mui/icons-material/Save';
 import { setFoundUserAC } from '../../reducers/userReducer'
 import axios from 'axios'
+import { Navigate } from 'react-router-dom'
 
 const Profile = (props) => {
+
+    if(!props.isAuth) return <Navigate to='/login' />
 
     const user = useSelector(state => state.user.currentUser)
 

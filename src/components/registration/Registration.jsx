@@ -40,7 +40,7 @@ const Registration = (props) => {
    
 
 
-    if (props.isAuth) return <Navigate to={`/boards?user=${props.userId}`} />
+    if (props.isAuth) return <Navigate to={`/brs/boards?user=${props.userId}`} />
 
     let CheckValidEmail = () => {
         const reg = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}/

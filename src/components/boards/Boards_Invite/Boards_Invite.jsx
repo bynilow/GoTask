@@ -9,10 +9,12 @@ import PublicIcon from '@mui/icons-material/Public';
 import CheckCircleIcon from '@mui/icons-material/Done';
 import Preloader from "../../common/Preloader";
 import { toggleIsFetchingAC } from "../../../reducers/boardsReducer";
-import { useSearchParams } from "react-router-dom";
+import { Navigate, useSearchParams } from "react-router-dom";
 import BoardCardInvite from "../board_cards/BoardCardInvite";
 
-let Boards_Invite = () => {
+let Boards_Invite = (props) => {
+
+    if(!props.isAuth) return <Navigate to='/login' />
 
     const userId = useSelector(state => state.user.currentUser.id)
     const boards = useSelector(state => state.boards.boards)
