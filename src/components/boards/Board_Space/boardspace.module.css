@@ -69,9 +69,11 @@
 
 .container{
     width: 1200px;
+    max-width: 100%;
     margin: auto;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     position: relative;
     padding: 5px;
 
@@ -90,11 +92,11 @@
 .board_header_left{
     display: flex;
     justify-content: space-between;
-    width: 60%;
 }
 
 .board_header_right{
-
+    position: absolute;
+    right: 0;
 }
 
 .name_board{
@@ -103,4 +105,26 @@
 
 .invite_text{
     text-align: center;
+}
+
+
+@media (max-width: 1200px) {
+    .container{
+        width: 1200px;
+    }
+
+}
+
+@media (max-width: 1024px) {
+    .container{
+        width: 1000px;
+    }
+
+}
+
+@media (max-width: 768px) {
+    .container{
+        width: 100%;
+    }
+
 }

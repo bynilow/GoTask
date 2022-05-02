@@ -38,3 +38,19 @@
     background-color: #7e57c2;
     border-radius: 5px;
 }
+
+@media (max-width: 1200px) {
+    .group_info{
+        max-width: 90%;
+    }
+
+}
+
+@media (max-width: 1024px) {
+
+
+}
+
+@media (max-width: 768px) {
+
+}

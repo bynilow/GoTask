@@ -9,7 +9,6 @@
 
 .container{
     max-width: 1200px;
-    
 }
 
 .profile_bg{
@@ -27,11 +26,9 @@
     align-items:center;
 }
 
-
 .textFields{
     display: flex;
     flex-direction: column;
-    max-width: 100%;
 }
 
 
@@ -43,15 +40,42 @@
     text-align: left;
     background: white;
     padding: 30px;
+    width: 100%;
     border-radius: 15px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
 .input_with_btn{
+    
     background-color: rgb(219, 219, 219);
     border-radius: 5px;
     margin: 5px;
     padding: 5px;
     display: flex;
     align-items: center;
+}
+
+.input_with_btn *{
+    
+}
+
+@media (max-width: 768px) {
+    .container{
+        min-width: 100%;
+    }
+    .profile_inner{
+        width: 100vw;
+        height: 100vh;
+        padding: 10px;
+        border-radius: 0px;
+        align-items: center;
+        padding-top: 17%;
+    }
+    .photo_login{
+        display: flex;
+        flex-direction: column;
+        width: 400px;
+        padding: 10px;
+    }
+
 }

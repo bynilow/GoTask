@@ -1,7 +1,3 @@
-*{
-    padding: 0;
-    margin: 0;
-}
 
 .boards{
 
@@ -20,11 +16,46 @@
 .nav{
     display: flex;
     margin: auto;
-    padding: 1%;
+    padding: 10px;
 }
 
 .boards_out{
     display: flex;
     margin: auto;
-    padding: 1%;
+    padding: 10px;
+}
+
+@media (max-width: 1200px) {
+    .container{
+        width: 1200px;
+    }
+    .nav{
+        padding-top: 20px;
+    }
+
+}
+
+@media (max-width: 1024px) {
+    .container{
+        width: 800px;
+    }
+    .nav{
+        padding-top: 30px;
+    }
+    .boards{
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .container{
+        width: 100%;
+    }
+    .nav{
+        padding-top: 40px;
+    }
+    .boards{
+        justify-content: center;
+    }
+
 }

@@ -305,6 +305,7 @@ let BoardSpace = (props) => {
                             startIcon={iconFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
                             color="white"
                             size="small"
+                            sx={{ display: { xs: 'none', md: 'inline-flex'} }}
                             onClick={onHandleFavoriteClick}>
                             Избранное 
                         </Button>
@@ -319,7 +320,11 @@ let BoardSpace = (props) => {
                             Карточка
                         </Button>
                         <Divider orientation="vertical" flexItem />
-                        <Button startIcon={<GroupIcon />} color="white" size="small" onClick={() => setIsGroupInfoOpened(true)} >
+                        <Button
+                            startIcon={<GroupIcon />}
+                            color="white"
+                            size="small"
+                            onClick={() => setIsGroupInfoOpened(true)} >
                             Группа
                         </Button>
                         <Button 
@@ -328,6 +333,7 @@ let BoardSpace = (props) => {
                         size="small"
                         aria-controls={openInvite ? 'basic-menu' : undefined}
                         aria-haspopup="true"
+                        sx={{ display: { xs: 'none', md: 'inline-flex'} }}
                         aria-expanded={openInvite ? 'true' : undefined}
                         onClick={handleClickInvite} >
                             Пригласить
@@ -370,18 +376,19 @@ let BoardSpace = (props) => {
                             </Alert>
                         </Snackbar>
                     </div>
-
-                    <Button
-                        startIcon={<MenuIcon />}
-                        color="white"
-                        className={s.board_header_right}
-                        size="small"
-                        aria-controls={open ? 'basic-menu' : undefined}
-                        aria-haspopup="true"
-                        aria-expanded={open ? 'true' : undefined}
-                        onClick={handleClick} >
-                        Меню
-                    </Button>
+                    <div className={s.board_header_right} >
+                        <Button
+                            startIcon={<MenuIcon />}
+                            color="white"
+                            size="small"
+                            aria-controls={open ? 'basic-menu' : undefined}
+                            aria-haspopup="true"
+                            aria-expanded={open ? 'true' : undefined}
+                            onClick={handleClick} >
+                            Меню
+                        </Button>
+                    </div>
+                    
                     <Menu
                         id="menu_task"
                         anchorEl={anchorEl}

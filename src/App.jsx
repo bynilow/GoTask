@@ -51,7 +51,6 @@ function App() {
   return (
     <BrowserRouter>
       <ThemeProvider theme={theme}>
-        <div className='empty_spacer_app'>...</div>
         <Header />
         <Routes>
           <Route path="/reg" element={<Registration isAuth={isAuth} userId={userId} />} />

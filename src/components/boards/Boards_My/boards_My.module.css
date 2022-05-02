@@ -1,17 +1,30 @@
-*{
-    padding: 0;
-    margin: 0;
-}
+
 
 .boards_inner{
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
 }
 
 .boards{
     display: flex;
-    flex-wrap: wrap; 
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.hidden_boardCard{
+    width: 200px;
+    height: 100px;
+    padding: 10px;
+    margin: 10px;
+}
+
+.boards_upper{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .popup{
@@ -28,83 +41,36 @@
 .popup_bg{
     position: fixed;
     z-index: 9999;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     top: 0;
     left: 0;
     background-color: rgba(0, 0, 0, 0.505);
 }
 
-.toggleButton_group{
-    display: flex;
-    text-align: left;
-    justify-content: center;
+
+@media (max-width: 1200px) {
+    .container{
+        width: 1200px;
+    }
 
 }
 
-.toggleButton_group *{
-    padding: 0 2%;
-    align-self: center;
-}
-
-.toggleButton_description{
-    display: flex;
-}
-
-
-.toggleButton{
-    min-width: 15%;
-    display: flex;
-    text-align: left;
-    height: 30%;
-}
-
-.toggleButton_Lock , .toggleButton_Private{
-    align-self: center;
-    margin-right: 5%;
-}
-
-.toggleButton_text *{
-    line-height: 100%;
-}
-
-.toggleButton_text h5{
-    margin-bottom: 2%;
-    font-weight: bold;
-}
-
-.btn_create{
-    width: 100%;
-}
-
-.createVisible{
-    visibility: visible;
-    left: -25%;
-}
-
-.createHidden{
-    visibility: hidden;
-    left: -999%;
-}
-
-
-
-@media screen and (max-width: 1200px){
-    .createBoard_popup{
-        max-width: 35vw;
+@media (max-width: 1024px) {
+    .container{
+        width: 800px;
+    }
+    .boards{
+        justify-content: center;
     }
 }
 
-
-@media screen and (max-width: 1000px){
-    .createBoard_popup{
-        max-width: 45vw;
+@media (max-width: 768px) {
+    .container{
+        width: 100%;
     }
-}
-
-
-@media screen and (max-width: 700px){
-    .createBoard_popup{
-        max-width: 65vw;
+    .boards{
+        justify-content: center;
     }
+
 }

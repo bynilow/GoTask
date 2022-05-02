@@ -12,7 +12,7 @@ import { Navigate } from 'react-router-dom'
 
 const Profile = (props) => {
 
-    if(!props.isAuth) return <Navigate to='/login' />
+    // if(!props.isAuth) return <Navigate to='/login' />
 
     const user = useSelector(state => state.user.currentUser)
 
@@ -177,7 +177,6 @@ const Profile = (props) => {
                             </Alert>
                         </Snackbar>
 
-                        {/* <input type='file' onChange={} /> */}
                         <div className={s.textFields}>
                             <div autoComplete="off" className={s.input_with_btn}>
                                 <TextField

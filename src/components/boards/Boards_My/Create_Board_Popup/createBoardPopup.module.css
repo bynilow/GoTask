@@ -20,7 +20,7 @@
 }
 
 .select_color_inner{
-    width: 70%;
+    width: 100%;
 }
 
 
@@ -113,4 +113,24 @@
 
 .board_name{
     width: 100%;
+}
+
+@media (max-width: 1200px) {
+    .board_popup{
+        min-width: 60%;
+    }
+}
+
+@media (max-width: 1024px) {
+    .board_popup{
+        min-width: 50%;
+    }
+
+}
+
+@media (max-width: 768px) {
+    .board_popup{
+        min-width: 80%;
+    }
+
 }

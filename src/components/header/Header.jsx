@@ -15,23 +15,6 @@ const Header = (props) => {
     const userName = useSelector(state => state.user.currentUser.login)
     const userId = useSelector(state => state.user.currentUser.id)
     const dispatch = useDispatch()
-    const [header, setHeader] = useState(false)
-
-    // if (window.location.pathname !== '/main' && !header) {
-    //     setHeader(true)
-    // }
-
-    const changeBackground = () => {
-
-        if (window.scrollY > 30) {
-            setHeader(true)
-        }
-        else {
-            if (window.location.pathname === '/main') {
-                setHeader(false)
-            }
-        }
-    }
 
     const logOut = () => {
         dispatch(logoutAC());
@@ -46,8 +29,6 @@ const Header = (props) => {
     const handleCloseProfile = () => {
         setAnchorProfile(null);
     };
-    console.log('avatar: '+localStorage.getItem('avatar'))
-    window.addEventListener('scroll', changeBackground)
 
     const boardLink = `/brs/boards?user=${userId}`
     const inviteLink = `/brs/invites?user=${userId}`
@@ -62,7 +43,6 @@ const Header = (props) => {
                     <Typography
                         component={NavLink}
                         to={props.isAuth ? boardLink : '/login'}
-                        onClick={() => setHeader(false)}
                         color={"#fff"}
                         className={s.logo}
                         sx={{ fontWeight: 'bold', fontSize: '25px', textShadow: '0 0 3px rgba(0,0,0,.5)' }}>
@@ -70,25 +50,32 @@ const Header = (props) => {
                     </Typography>
                 </div>
 
-                <div style={!isAuth ? {width: '20%'} : {}} className={s.header_btns}>
+                <div className={s.header_btns}>
                     {!isAuth &&
                         <div className={s.btns_auth}>
-                            <Button color='inherit' variant="outlined" onClick={() => setHeader(true)} component={NavLink} to="/login">
+                            <Button 
+                            color='inherit' 
+                            variant="outlined" 
+                            component={NavLink} to="/login">
                                 Вход
                             </Button>
-                            <Button color={header ? 'primary' : 'secondary'} variant="contained" onClick={() => setHeader(true)} component={NavLink} to="/reg">
+                            <Button 
+                            color='secondary'
+                            variant="contained" 
+                            component={NavLink} to="/reg">
                                 Регистрация
                             </Button>
                         </div>
-                            
                     }
 
                     {isAuth &&
-                        <IconButton onClick={handleClickProfile}
+                        <IconButton
+                            onClick={handleClickProfile}
+                            sx={{position:'absolute', right: '0', top: '0', bottom: '0', display: 'flex'}}
                             aria-controls={openMenuProfile ? 'account-menu' : undefined}
                             aria-haspopup="true"
                             aria-expanded={openMenuProfile ? 'true' : undefined}>
-                            <Avatar 
+                            <Avatar
                                 src={localStorage.getItem('avatar')}
                                 alt={userName}
                                 sx={{ backgroundImage: 'linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%)' }} />
