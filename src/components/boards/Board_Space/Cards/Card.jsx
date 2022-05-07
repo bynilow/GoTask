@@ -6,6 +6,7 @@ import { addTask, changeCardName, getCardsFromBoardId, moveCard, moveTask, remov
 import { useDispatch, useSelector } from "react-redux";
 import { deleteTasks, setCardIdDndAC, setDragCardIdAC, setDraggableTask, setRenameTaskAC } from "../../../../reducers/boardsReducer";
 import EditIcon from '@mui/icons-material/Edit';
+import { actionLog } from "../../../../actions/user";
 
 
 let Card = (props) => {
@@ -28,7 +29,7 @@ let Card = (props) => {
     const draggableTask = useSelector(state => state.boards.draggableTask);
     const cardIdDND = useSelector(state => state.boards.cardIdDND);
 
-    const draggableCardId = useSelector(state => state.boards.dragCardId);
+    const draggableCard = useSelector(state => state.boards.dragCardId);
 
     const myTasks = useSelector(state => state.boards.cardsAndTasks[props.cardIdRed].task);
 
@@ -62,12 +63,15 @@ let Card = (props) => {
             setIsInputNameCard(true);
             cardRef.current.draggable = true;
             changeCardName(props.cardId, nameCard, props.boardsId);
+            actionLog(userId, props.boardId, `Поменял название карточки "${props.name}" на "${nameCard}"`)
+
         }
         else {
             setIsInputNameCard(true);
             cardRef.current.draggable = true;
             changeCardName(props.cardId, "Карточка", props.boardsId);
             setNameCard("Карточка");
+            actionLog(userId, props.boardId, `Поменял название карточки "${props.name}" на "Карточка"`)
         }
     }
 
@@ -82,6 +86,7 @@ let Card = (props) => {
             if (createTaskText.length > 0) {
                 console.log(props.boardId)
                 dispatch(addTask(createTaskText, props.cardId, userId, props.cardsId, props.boardId));
+                actionLog(userId, props.boardId, `Создал задачу "${createTaskText}" в карточке "${nameCard}"`)
                 setCreateTaskText("");
                 setToggleCreateTask(true)
             }
@@ -92,7 +97,7 @@ let Card = (props) => {
     const dragOverHandler = (e, card, task) => {
         e.preventDefault();
         if (e.target.className == s.task || e.target.parentNode.className == s.task) {
-            if(draggableCardId == -1){
+            if(draggableCard.id == -1){
                 if(e.target.className == s.task){
                     e.target.style.borderBottom = '.5rem solid #ff9100';
                 }
@@ -101,10 +106,10 @@ let Card = (props) => {
                 }
             }
         }
-        const dragLeft = e.target.className == s.dragCard_left && draggableCardId != -1 &&
-            e.target.parentNode.getAttribute('cardId') != draggableCardId;
-        const dragRight = e.target.className == s.dragCard_right && draggableCardId != -1 && 
-            e.target.parentNode.getAttribute('cardId') != draggableCardId;
+        const dragLeft = e.target.className == s.dragCard_left && draggableCard.id != -1 &&
+            e.target.parentNode.getAttribute('cardId') != draggableCard.id;
+        const dragRight = e.target.className == s.dragCard_right && draggableCard.id != -1 && 
+            e.target.parentNode.getAttribute('cardId') != draggableCard.id;
         if (dragLeft) {
             e.target.parentNode.style.borderLeft = '.5rem solid #ff9100';
         }
@@ -112,7 +117,7 @@ let Card = (props) => {
             e.target.parentNode.style.borderRight = '.5rem solid #ff9100';
         }
         if(e.target.parentNode.className == s.name){
-            if(draggableCardId != -1){
+            if(draggableCard.id != -1){
                 setIsHoveredWithTask(true);
             }
         }
@@ -125,12 +130,13 @@ let Card = (props) => {
     }
     const dragStartHandler = (e) => {
         if(e.target.className == s.card){
-            dispatch(setDragCardIdAC(e.target.getAttribute('cardId')))
+            dispatch(setDragCardIdAC({id: e.target.getAttribute('cardId'), name: props.name}))
         }
         setCurrentTask(e.target.getAttribute('taskId'))
         const eId = e.target.getAttribute('taskId');
         const eOrder = e.target.getAttribute('order');
-        dispatch(setDraggableTask({id: eId, order: eOrder}));
+        const eName = e.target.getAttribute('name');
+        dispatch(setDraggableTask({id: eId, order: eOrder, name: eName}));
     }
     const dragEndHandler = (e) => {
         dispatch(setDragCardIdAC(-1))
@@ -161,9 +167,14 @@ let Card = (props) => {
             beforeOrder = e.target.parentNode.getAttribute('order');
             firstOrder = draggableTask.order;
             cardId = e.target.parentNode.getAttribute('cardId');
+            const taskName = e.target.parentNode.getAttribute('name');
+            console.log(taskName)
         }
         dispatch(moveTask(draggableTask.id, cardId, props.cardsId, beforeOrder, isThisCard, firstOrder, props.boardId));
-        // props.getCards();
+        if(!isThisCard) {
+            actionLog(userId, props.boardId, `Переместил задачу "${draggableTask.name}" в карточку "${nameCard}"`)
+        }
+
     }
     const dropTaskToCardHandler = (e) => {
         e.preventDefault();
@@ -172,12 +183,13 @@ let Card = (props) => {
         }
         const selectedOrderCard = e.target.parentNode.getAttribute('order');
         const dirCard = e.target.className == s.dragCard_left ? 'left' : 'right';
-        console.log(dirCard)
+        console.log(props.name)
         if(e.target.parentNode.className == s.card){
             e.target.parentNode.style.border = '0rem solid #ff9100';
-            dispatch(moveCard(draggableCardId, selectedOrderCard, dirCard, props.boardId))
+            dispatch(moveCard(draggableCard.id, selectedOrderCard, dirCard, props.boardId))
+            actionLog(userId, props.boardId, `Переместил карточку "${draggableCard.name}"`)
         }
-        dispatch(setDragCardIdAC(-1))
+        dispatch(setDragCardIdAC({id: -1, name: null}))
     }
     const dropTaskToCardElementsHandler = (e) => {
         e.preventDefault();
@@ -216,10 +228,12 @@ let Card = (props) => {
     const blurTitleTask = (e) => {
         const targetTask = e.target.parentNode.parentNode.parentNode;
         const taskIdRed = targetTask.getAttribute('taskIdRed')
+        const oldNameTask = targetTask.getAttribute('name')
         const cardIdRed = targetTask.getAttribute('cardIdRed')
         const newNameTask = titleEditText.trim().length ? titleEditText : 'Задача';
         // props.onTaskChanged(idTaskEditText, newNameTask, props.cardId, cardIdRed, taskIdRed);
         dispatch(renameTask(idTaskEditText, newNameTask, props.cardsId, cardIdRed, taskIdRed, props.boardId))
+        actionLog(userId, props.boardId, `Поменял название задачи "${oldNameTask}" в карточке "${nameCard}" на "${newNameTask}"`)
         setIdTaskEditText(-1);
     }
 
@@ -243,15 +257,16 @@ let Card = (props) => {
 
     const taskDelete = (e) => {
         const taskIdRemove = e.parentNode.getAttribute('taskId')
+        const taskName = e.parentNode.getAttribute('name')
         const taskOrderRemove = e.parentNode.getAttribute('order')
         handleCloseTaskMenu();
+        actionLog(userId, props.boardId, `Удалил задачу "${taskName}" в карточке "${props.name}"`)
         dispatch(removeTask(taskIdRemove, taskOrderRemove, props.boardId))
     }
 
-    
-
     const cardDelete = (e) => {
         handleCloseCard();
+        actionLog(userId, props.boardId, `Удалил карточку "${props.name}"`)
         dispatch(removeCard(-1, props.boardId))
         dispatch(removeCard(e.parentNode.parentNode.getAttribute('cardId'), props.boardId))
     }
@@ -269,15 +284,17 @@ let Card = (props) => {
                 onDragLeave={e => cardLeaveDrag(e)}
                 cardId={props.cardId}
                 order={props.order} >
+                <div className={props.roleId == 3 ? s.card_observer_bg : ''} />
                 <div className={s.dragCard_left}
                 style={
-                    (draggableCardId > -1)
+                    (draggableCard.id > -1)
                     ?{zIndex: '9999'}
                     :{zIndex: '-1'}
                 } />
+                
                 <div className={s.dragCard_right} 
                 style={
-                    (draggableCardId > -1)
+                    (draggableCard.id > -1)
                     ?{zIndex: '9999'}
                     :{zIndex: '-1'}
                 } />
@@ -372,14 +389,20 @@ let Card = (props) => {
                                 
 
                                 <IconButton
-                                    sx={{
-                                        position: 'absolute',
-                                        top: 0,
-                                        right: 0,
-                                        transform: 'scale(0)',
-                                        padding: '10px',
-                                        transition: '.2s ease',
-                                    }}
+                                    sx={
+                                        props.roleId != 3
+                                            ? {
+                                                position: 'absolute',
+                                                top: 0,
+                                                right: 0,
+                                                transform: 'scale(0)',
+                                                padding: '10px',
+                                                transition: '.2s ease',
+                                            }
+                                            : { 
+                                                position: 'absolute',
+                                            display:'none' }
+                                        }
                                     className={s.edit_btn}
                                     id="basic-button"
                                     aria-controls={openTaskMenu ? 'basic-menu' : undefined}
@@ -393,6 +416,7 @@ let Card = (props) => {
                                 </IconButton>
                                 <Menu
                                     id="basic-menu"
+                                    disabled={props.roleId == 3}
                                     anchorEl={anchorElTask}
                                     open={openTaskMenu}
                                     onClose={handleCloseTaskMenu}

@@ -1,0 +1,43 @@
+.logs{
+    background-color: white;
+    width: 70%;
+    height: 80%;
+    border-radius: 15px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+}
+
+.logs_bg{
+    z-index: 99999;
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.logs_list{
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+    overflow-y: scroll;
+}
+
+.logs_list::-webkit-scrollbar{
+    width: 8px;
+
+}
+.logs_list::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2); 
+    border-radius: 5px;
+  }
+.logs_list::-webkit-scrollbar-thumb {
+    background-color: #7e57c2;
+    border-radius: 5px;
+}

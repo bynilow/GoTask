@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios"
 import { Navigate } from "react-router-dom"
 import { setFoundUserAC, setSigninTextAC, setUserAC, setUsersAC } from "../reducers/userReducer"
+import { setLogsAC } from "../reducers/boardsReducer";
 
 
 export const getUsers = () => {
@@ -155,5 +156,31 @@ export const setUserPhoto = async (data, userId) => {
     }
     catch (e) {
         console.log(e)
+    }
+}
+
+export const actionLog = async (userId, boardId, message) => {
+    try {
+        const log = await axios.post("http://localhost:4850/api/log", {
+            userId, boardId, message
+        })
+        
+    }
+    catch (e) {
+        console.log(e)
+    }
+}
+
+export const getLogs = (boardId) => {
+    return async dispatch => {
+        try {
+            const getLogs = await axios.post("http://localhost:4850/api/logsGet", {
+                boardId
+            })
+            dispatch(setLogsAC(getLogs.data.values))
+        }
+        catch (e) {
+            console.log(e)
+        }
     }
 }

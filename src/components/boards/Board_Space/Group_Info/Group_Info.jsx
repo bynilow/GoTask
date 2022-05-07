@@ -15,9 +15,8 @@ const Group_Info = (props) => {
         dispatch(getUsersInGroup(props.boardId))
     }, [])
 
-    // if(!props.isAuth) return <Navigate to={'/login'}/>
     let isAdmin;
-    if(users.length > 0){
+    if(users.length > 0 && props.myId){
         isAdmin = users.find(user => user.userId == props.myId).roleId
     }
 

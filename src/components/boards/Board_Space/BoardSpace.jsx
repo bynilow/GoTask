@@ -21,7 +21,9 @@ import { NavLink } from "react-router-dom";
 import { deleteTasksAC, toggleIsFetchingAC } from "../../../reducers/boardsReducer";
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import Group_Info from "./Group_Info/Group_Info.jsx";
-
+import { actionLog } from "../../../actions/user";
+import Board_Logs from "./Board_Logs/Board_Logs";
+import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
 
 
 
@@ -36,6 +38,7 @@ let BoardSpace = (props) => {
 
     const postQuery = searchParams.get('id');
     const userId = useSelector(state => state.user.currentUser.id)
+    const userName = useSelector(state => state.user.currentUser.login)
 
     const dispatch = useDispatch()
     
@@ -56,6 +59,7 @@ let BoardSpace = (props) => {
     const [nameBoard, setNameBoard] = React.useState(thisBoard ? thisBoard.tittle : '');
     const [isFavorite, setIsFavorite] = React.useState(null);
     const [taskUpdater, setTaskUpdater] = React.useState(Date.now());
+    const [isLogsOpen, setIsLogsOpen] = React.useState(false);
 
     useEffect(() => {
         const checkBoard = userId && (typeof cards.findTasks === 'undefined' || cards.findTasks != postQuery) && (!cards.length || cards[0].boardId != postQuery) && (!thisBoard || thisBoard.boardsId)
@@ -67,6 +71,7 @@ let BoardSpace = (props) => {
 
     let cardCreate = () => {
         dispatch(createCard(postQuery, userId))
+        actionLog(userId, postQuery, `Создал новую карточку`)
     }
 
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -204,20 +209,22 @@ let BoardSpace = (props) => {
     }
 
     const boardRemove = () => {
+        actionLog(userId, postQuery, `Удалил доску`)
         removeBoard(postQuery, userId);
+        
     }
 
     // const cardRemove = (card) => {
     //     dispatch(removeCard(card, thisBoard[0].boardsId))
     // }
 
-    // if (thisBoard.length == null) {
-    //     return (
-    //         <div>
-    //             <Typography variant="h2" sx={{ pt: 25 }}>Нет доступа к доске / Доски не существует</Typography>
-    //         </div>
-    //     )
-    // }
+    if (thisBoard == null) {
+        return (
+            <div>
+                <Typography variant="h2" sx={{ pt: 25 }}>Нет доступа к доске / Доски не существует</Typography>
+            </div>
+        )
+    }
     const mybg = thisBoard ? thisBoard.background : '';
     const myboardsForLink = `/brs/boards?user=${userId}`;
 
@@ -244,6 +251,7 @@ let BoardSpace = (props) => {
 
     const sendInvite = () => {
         dispatch(inviteUser(nameInvite, postQuery, userId))
+        actionLog(userId, postQuery, `Пригласил пользователя "${nameInvite}"`)
     }
     if(successInviteUser === true){
         handleCloseInvite()
@@ -257,22 +265,33 @@ let BoardSpace = (props) => {
         if(nameBoard.length == 0 || !nameBoard.trim()){
             renameBoard(postQuery, 'Доска')
             setNameBoard('Доска');
+            actionLog(userId, postQuery, `Поменял название доски на "Доска"`)
         }
         else{
             renameBoard(postQuery, nameBoard)
+            actionLog(userId, postQuery, `Поменял название доски на "${nameBoard}"`)
         }
         setEditingNameBoard(false)
         
     }
 
-    const onTaskNameChanged = (idTask, nameTask, cardId, cardIdRed, taskIdRed) => {
+    const onTaskNameChanged = (idTask, nameTask, cardId, cardIdRed, taskIdRed, oldNameTask) => {
         console.log(idTask, nameTask, cardId, cardIdRed, taskIdRed)
         setTaskUpdater(Date.now())
         dispatch(renameTask(idTask, nameTask, cardId, cardIdRed, taskIdRed))
+        actionLog(userId, postQuery, `Поменял название карточки "${oldNameTask}" на "${nameTask}"`)
     }
 
     const onHandleFavoriteClick = () => {
         dispatch(setFavoriteInBoard(postQuery,userId, thisBoard.favoriteId))
+    }
+
+    const onClickCloseLogs = () => {
+        setIsLogsOpen(false);
+    }
+    const onClickOpenLogs = () => {
+        setIsLogsOpen(true);
+        handleClose();
     }
 
     const iconFavorite = thisBoard && (thisBoard.favoriteId - 1);
@@ -297,6 +316,7 @@ let BoardSpace = (props) => {
                             size="small"
                             color={"white"}
                             focused
+                            disabled={thisBoard.roleId == 3}
                             autoComplete="off"
                             onClick={() => setEditingNameBoard(true)}
                             onBlur={blurNameBoard}
@@ -316,6 +336,7 @@ let BoardSpace = (props) => {
                             className={s.btn_new_column}
                             startIcon={<AddIcon />}
                             color="white"
+                            disabled={thisBoard.roleId == 3}
                             size="small" >
                             Карточка
                         </Button>
@@ -331,6 +352,7 @@ let BoardSpace = (props) => {
                         startIcon={<PersonAddAltIcon />} 
                         color="white" 
                         size="small"
+                        disabled={thisBoard.roleId == 3}
                         aria-controls={openInvite ? 'basic-menu' : undefined}
                         aria-haspopup="true"
                         sx={{ display: { xs: 'none', md: 'inline-flex'} }}
@@ -381,6 +403,7 @@ let BoardSpace = (props) => {
                             startIcon={<MenuIcon />}
                             color="white"
                             size="small"
+                            disabled={thisBoard.roleId == 3}
                             aria-controls={open ? 'basic-menu' : undefined}
                             aria-haspopup="true"
                             aria-expanded={open ? 'true' : undefined}
@@ -401,6 +424,13 @@ let BoardSpace = (props) => {
                             </ListItemIcon>
                             Выходной документ
                         </MenuItem>
+                        <MenuItem onClick={() => onClickOpenLogs()}>
+                            <ListItemIcon>
+                                <PlaylistAddCheckIcon />
+                            </ListItemIcon>
+                            Посмотреть логи
+                        </MenuItem>
+                        <Divider />
                         <MenuItem onClick={boardRemove} component={NavLink} to={myboardsForLink}>
                             <ListItemIcon>
                                 <DeleteIcon />
@@ -412,7 +442,11 @@ let BoardSpace = (props) => {
                 </div>
                 {/* <Divider orientation="horizontal" sx={{width: '1200px'}} /> */}
             </div>
-
+            {
+                isLogsOpen
+                ? <Board_Logs closeLogs={() => onClickCloseLogs()} boardId={postQuery} />
+                : <></>
+            }
             <div style={{ backgroundImage: mybg}} className={s.bg}></div>
             
             {
@@ -426,16 +460,17 @@ let BoardSpace = (props) => {
                                         key={card.id}
                                         cardIdRed={ind}
                                         cardId={card.id}
+                                        roleId={thisBoard.roleId}
                                         boardId={postQuery}
                                         name={card.name}
+                                        username={userName}
                                         updater={taskUpdater}
-                                        onTaskChanged={(a,b,c,d,f) => onTaskNameChanged(a,b,c,d,f)}
                                         tasks={card.task}
                                         order={card.order} />
                                 )
                             })
                             : null}
-            </div>
+                    </div>
             }
             
         </div>

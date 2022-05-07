@@ -23,6 +23,8 @@ const SET_GROUP_USERS = "SET_GROUP_USERS"
 
 const SET_FAVORITE_IN_BOARD = "SET_FAVORITE_IN_BOARD"
 
+const SET_LOGS = "SET_LOGS"
+
 
 const defaultState = {
     boards: [],
@@ -33,12 +35,13 @@ const defaultState = {
     createdCard: {},
     tasks: [],
     draggableTask: {},
-    cardIdDND: null,
-    dragCardId: -1,
+    cardIdDND: {},
+    dragCardId: {},
     deletedTask: {},
     invitedUserStatus: null,
     cardsAndTasks: [],
-    groupUsers: []
+    groupUsers: [],
+    logs: [],
 }
 
 export default function boardsReducer(state = defaultState, action) {
@@ -98,12 +101,12 @@ export default function boardsReducer(state = defaultState, action) {
         case SET_CARDID_DND:
             return{
                 ...state,
-                cardIdDND: action.cardId
+                cardIdDND: action.cardId + action.cardName
             }
         case SET_DRAG_CARDID:
             return {
                 ...state,
-                dragCardId: action.cardId
+                dragCardId: action.card
             }
         case SET_INVITED_USER_STATUS:
             return{
@@ -139,6 +142,11 @@ export default function boardsReducer(state = defaultState, action) {
             return{
                 ...state,
                 foundBoard
+            }
+        case SET_LOGS: 
+            return{
+                ...state,
+                logs: action.logs
             }
         default:
             return state
@@ -200,9 +208,9 @@ export const setCardIdDndAC = (cardId) =>({
     cardId
 })
 
-export const setDragCardIdAC = (cardId) => ({
+export const setDragCardIdAC = (card) => ({
     type: SET_DRAG_CARDID,
-    cardId
+    card
 })
 
 export const setInviteUserStatusAC = (status) => ({
@@ -230,4 +238,9 @@ export const setGroupUsersAC = (users) => ({
 export const setFavoriteInBoardAC = (favorite) => ({
     type: SET_FAVORITE_IN_BOARD,
     favorite
+})
+
+export const setLogsAC = (logs) => ({
+    type: SET_LOGS,
+    logs
 })
