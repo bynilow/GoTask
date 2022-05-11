@@ -1,4 +1,4 @@
-import { Button, Divider, TextField, Typography } from "@mui/material";
+import { Box, Button, Divider, Hidden, MenuItem, Select, TextField, Typography } from "@mui/material";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createBoard, getBoards } from "../../../actions/boards";
@@ -10,12 +10,16 @@ import { toggleIsFetchingAC } from "../../../reducers/boardsReducer";
 import { useSearchParams, Navigate } from "react-router-dom";
 import Create_Board_Popup from "./Create_Board_Popup/Create_Board_Popup";
 
+import SearchIcon from '@mui/icons-material/Search';
+import AddIcon from '@mui/icons-material/Add';
+
 let Boards_My = (props) => {
 
 
     if (!props.isAuth) return <Navigate to='/login' />
 
-
+    const [selectBoards, setSelectBoards] = React.useState(1);
+    const [nameBoardText, setNameBoardText] = React.useState('');
 
     const userId = useSelector(state => state.user.currentUser.id)
     const boards = useSelector(state => state.boards.boards)
@@ -58,14 +62,42 @@ let Boards_My = (props) => {
             {isFetching
                 ? <Preloader />
                 : <div className={s.boards_upper}>
-                    <Button
+                    <div className={s.header_select}>
+                        <div className={s.header_search}>
+                            <TextField 
+                            size='small' 
+                            label='Название доски' 
+                            sx={{ width: '250px', margin: '0 5px' }}
+                            value={nameBoardText}
+                            onChange={event => setNameBoardText(event.target.value)} />
+                            <Select
+                                size='small'
+                                value={selectBoards}
+                                sx={{ width: '250px', margin: '0 5px' }}
+                                onChange={(event) => setSelectBoards(event.target.value)}>
+                                <MenuItem value={1} >Все доски</MenuItem>
+                                <MenuItem value={2} >Мои доски</MenuItem>
+                                <MenuItem value={3} >Приглашенные доски</MenuItem>
+                            </Select>
+                            <Button 
+                            sx={{margin: '0 5px'}} 
+                            variant="contained" 
+                            startIcon={<SearchIcon />}
+                            onClick={() => dispatch(getBoards(postQuery, nameBoardText, selectBoards))} >
+                                Найти
+                            </Button>
+                        </div>
+                        
+                        <Button
                             onClick={onClickCreate}
                             variant="contained"
                             color="secondary"
                             className={s.btn_create}
-                            sx={{ marginBottom: '10px' }}>
-                            Создать
+                            startIcon={<AddIcon />} >
+                            {<Hidden >Создать</Hidden>}
                         </Button>
+                    </div>
+                    
                     <div className={s.boards}>
                         {
                             boards.map((br, ind) => {
@@ -75,6 +107,8 @@ let Boards_My = (props) => {
                                             id={br.boardsId}
                                             key={br.boardsId}
                                             name={br.tittle}
+                                            date={br.createdDate}
+                                            countGroup={br.countGroup}
                                             color={br.background}
                                             userId={userId}
                                             invited={br.invitedId}

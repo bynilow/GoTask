@@ -5,10 +5,13 @@ import { setFoundUserAC, setSigninTextAC, setUserAC, setUsersAC } from "../reduc
 import { setLogsAC } from "../reducers/boardsReducer";
 
 
-export const getUsers = () => {
+export const getUsers = (pageNum, likeText = '') => {
     return async dispatch => {
-        const response = await axios.get("http://localhost:4850/api/users");
-        dispatch(setUsersAC(response.data.values))
+        console.log(pageNum)
+        const response = await axios.post("http://localhost:4850/api/users", {
+            pageNum, likeText
+        });
+        dispatch(setUsersAC(response.data.values));
         
     }
 }
@@ -52,16 +55,23 @@ export const registration = (email, login, password) => {
 export const login = (email, password) => {
     return async dispatch => {
         try {
-            const response = await axios.post("http://localhost:4850/api/auth/signin", {
+            const loginInfo = await axios.post("http://localhost:4850/api/auth/signin", {
                 email,
                 password
             })
-            dispatch(setUserAC(response.data.values.user))
-            localStorage.setItem('token', response.data.values.token)
-            return <Navigate to={'/boards'} />
+            console.log(loginInfo)
+            if(typeof loginInfo.data.values.message === 'undefined'){
+                
+                dispatch(setUserAC(loginInfo.data.values.user))
+                localStorage.setItem('token', loginInfo.data.values.token)
+                localStorage.setItem('avatar', 'http://localhost:4850/img/'+loginInfo.data.user.photo)
+            }
+            else{
+                dispatch(setSigninTextAC(loginInfo.data.values.message))
+            }
+            
         }
         catch (e) {
-            dispatch(setSigninTextAC(e.response.data.values.message))
         }
     }
 }
@@ -72,14 +82,16 @@ export let auth = () => {
         try {
             
             if(localStorage.getItem('token')){
-                const response = await axios.get("http://localhost:4850/api/auth/auth",
-                { headers: {Authorization: `Bearer ${localStorage.getItem('token')}` } }
-            )
-            dispatch(setUserAC(response.data.user))
+                const response = await axios.get("http://localhost:4850/api/auth/auth",{ 
+                    headers: {Authorization: `Bearer ${localStorage.getItem('token')}` } 
+                })
             localStorage.setItem('token', response.data.token.split(' '))
+            localStorage.setItem('avatar', 'http://localhost:4850/img/'+response.data.user.photo)
+            dispatch(setUserAC(response.data.user))
+            
             }
             else{
-                console.log('НЕТ ТОКЕНА')
+                
             }
             
 

@@ -4,14 +4,23 @@ import { Navigate } from "react-router-dom";
 import { setBoardsAC, setCreatedBoardAC, toggleIsFetchingAC, setFoundBoardAC, setCardsAC, createCardAC, setTasksAC, deleteTasksAC, setInviteUserStatusAC, setCardsAndTasksAC, setRenameTaskAC, setGroupUsersAC, setFavoriteInBoardAC } from "../reducers/boardsReducer";
 
 
-export const getBoards = (userId) => {
+export const getBoards = (userId, tittle = '', selectedType = 1) => {
     return async dispatch => {
         try{
-            const response = await axios.post("http://localhost:4850/api/boards/boards", {
-                userId
-            });
-            dispatch(setBoardsAC(response.data.values))
-            dispatch(toggleIsFetchingAC(false))
+            if (selectedType == 1) {
+                const allBoards = await axios.post("http://localhost:4850/api/boards/boards", {
+                    userId, tittle
+                });
+                dispatch(setBoardsAC(allBoards.data.values));
+                dispatch(toggleIsFetchingAC(false));
+            }
+            else {
+                const selectedBoards = await axios.post("http://localhost:4850/api/boards/withSelect", {
+                    userId, tittle, selectedType: selectedType-1
+                });
+                dispatch(setBoardsAC(selectedBoards.data.values));
+                dispatch(toggleIsFetchingAC(false));
+            }
         }
         catch(e){
             console.log(e.response.data.values.none)
@@ -74,7 +83,7 @@ export const createBoard = (userId, name, color, visibility) => {
             });
             const board = response.data.values;
             const response2 = await axios.post("http://localhost:4850/api/boards/boards", {
-                userId
+                userId, tittle: ''
             });
             dispatch(setBoardsAC(response2.data.values))            
         }
@@ -469,5 +478,18 @@ export const getBoardsFavorite = (userId) => {
             dispatch(setBoardsAC([{none: e.response.data.values.none}]))
             dispatch(toggleIsFetchingAC(false))
         }
+    }
+}
+
+export const toggleTaskDone = (taskId, doneStatus, boardId) => {
+    return async dispatch => {
+        const status = doneStatus + 1;
+        const renameTaskRes = await axios.post("http://localhost:4850/api/task/toggleChecked", {
+            taskId, status
+        })
+        const cardsRes = await axios.post("http://localhost:4850/api/board", {
+            boardId
+        });
+        dispatch(setCardsAndTasksAC(cardsRes.data.values))
     }
 }

@@ -34,11 +34,7 @@ const Registration = (props) => {
         setValues({...values, mailFound: true})
         
         
-    }
-
-    console.log("ERROR MAIL: " + values.erEmail)
-   
-
+    }   
 
     if (props.isAuth) return <Navigate to={`/brs/boards?user=${props.userId}`} />
 
@@ -144,7 +140,6 @@ const Registration = (props) => {
                             id="password"
                             
                             error={values.erPassword}
-                            helperText={values.erPassword ? "Неверный Email" : ""}
                             type={values.showPassword ? 'text' : 'password'}
                             value={values.password}
                             onChange={handleChange('password')}

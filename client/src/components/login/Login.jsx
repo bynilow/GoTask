@@ -15,6 +15,7 @@ const Login = (props) => {
     const signinText = useSelector(state => state.user.signinText)
 
     
+    if(props.isAdmin) return <Navigate to={`/adminpanel`}/>
     if(props.isAuth) return <Navigate to={`/brs/boards?user=${props.userId}`}/>
 
     return (

@@ -48,6 +48,18 @@
     background-color: rgba(0, 0, 0, 0.505);
 }
 
+.header_select{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+    margin: 10px;
+}
+
+.header_search{
+    display: flex;
+    align-items: center;
+}
 
 @media (max-width: 1200px) {
     .container{
@@ -63,6 +75,7 @@
     .boards{
         justify-content: center;
     }
+    
 }
 
 @media (max-width: 768px) {
@@ -72,5 +85,11 @@
     .boards{
         justify-content: center;
     }
-
+    .header_search{
+        display: none;
+    }
+    .header_select{
+        justify-content: center;
+        align-items: center;
+    }
 }

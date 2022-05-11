@@ -9,8 +9,6 @@ import s from './boardsSelect.module.css'
 
 let Boards_Select = (props) =>{
 
-    console.log("auth? - "+props.isAuth)
-
     // if(!props.isAuth) {
     //     return <Navigate to={'/users'}/>
     // }

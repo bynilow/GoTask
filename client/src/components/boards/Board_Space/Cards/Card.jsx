@@ -1,13 +1,15 @@
-import { Button, IconButton, ListItemIcon, Menu, MenuItem, TextField, Typography } from "@mui/material";
+import { Button, Checkbox, IconButton, LinearProgress, ListItemIcon, Menu, MenuItem, TextField, Typography } from "@mui/material";
 import React, { useEffect, useRef } from "react";
 import s from './card.module.css'
 import MenuIcon from '@mui/icons-material/Menu';
-import { addTask, changeCardName, getCardsFromBoardId, moveCard, moveTask, removeCard, removeTask, renameTask } from "../../../../actions/boards";
+import { addTask, changeCardName, getCardsFromBoardId, moveCard, moveTask, removeCard, removeTask, renameTask, toggleTaskDone } from "../../../../actions/boards";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteTasks, setCardIdDndAC, setDragCardIdAC, setDraggableTask, setRenameTaskAC } from "../../../../reducers/boardsReducer";
 import EditIcon from '@mui/icons-material/Edit';
 import { actionLog } from "../../../../actions/user";
 
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 let Card = (props) => {
 
@@ -25,6 +27,8 @@ let Card = (props) => {
 
     let [currentTask, setCurrentTask] = React.useState(-1);
 
+    const [tasksDoned, setTasksDoned] = React.useState(0);
+
     const userId = useSelector(state => state.user.currentUser.id);
     const draggableTask = useSelector(state => state.boards.draggableTask);
     const cardIdDND = useSelector(state => state.boards.cardIdDND);
@@ -39,6 +43,11 @@ let Card = (props) => {
 
     useEffect(() => {
         setNameCard(props.name)
+        let countDonedTasks = 0;
+        if(props.tasks.length){
+            props.tasks.forEach(t => t.doneId-1 ? countDonedTasks++ : null);
+        }
+        setTasksDoned(countDonedTasks);
     }, [myTasks])
 
     let clickedNameCard = (inputText) => {
@@ -270,6 +279,18 @@ let Card = (props) => {
         dispatch(removeCard(-1, props.boardId))
         dispatch(removeCard(e.parentNode.parentNode.getAttribute('cardId'), props.boardId))
     }
+
+    const handleCheckChanged = (event) => {
+        const checkTaskId = event.currentTarget.parentNode.getAttribute('taskId');
+        const taskName = event.currentTarget.parentNode.parentNode.getAttribute('name');
+        console.log(taskName)
+        const taskChecked = event.currentTarget.checked;
+        taskChecked
+            ? actionLog(userId, props.boardId, `Пометил задачу "${taskName}" в карточке "${nameCard}" как "Выполнено"`)
+            : actionLog(userId, props.boardId, `Пометил задачу "${taskName}" в карточке "${nameCard}" как "Не выполнено"`);
+        dispatch(toggleTaskDone(checkTaskId, taskChecked, props.boardId ))
+    }
+
     return (
             <div
                 id={props.cardId}
@@ -339,10 +360,29 @@ let Card = (props) => {
                         'aria-labelledby': 'card-button',
                     }}
                     className={s.menu_edit}>
-                    <MenuItem onClick={handleCloseCard}>Изменить название</MenuItem>
                     <MenuItem onClick={() => cardDelete(anchorElCard)}>Удалить карточку</MenuItem>
                 </Menu>
                 </div>
+            <div className={s.progress}>
+                <LinearProgress
+                    variant="determinate"
+                    color="secondary"
+                    sx={
+                        props.tasks.length
+                        ? {height: '10px', borderRadius: '5px', width: '100%', marginRight: '10px' }
+                        : {display: 'none'}
+                    }
+                    value={Math.round((tasksDoned / props.tasks.length)*100)} />
+                <Typography
+                    sx={
+                        props.tasks.length
+                            ? null
+                            : { display: 'none' }
+                    }>
+                    {Math.round((tasksDoned / props.tasks.length)*100)}%
+                </Typography>
+            </div>
+                
                 <div className={s.tasks} ref={divRef} updater={myTasks}>
                     {
                         props.tasks.map((c, ind) =>
@@ -361,6 +401,16 @@ let Card = (props) => {
                                 onDragStart={e => dragStartHandler(e)}
                                 onDragEnd={e => dragEndHandler(e)}
                                 onDrop={e => dropHandler(e)}>
+
+                                    <Checkbox 
+                                    sx={{position:'absolute', right: '0', top: '0'}}
+                                    onChange={handleCheckChanged}
+                                    color='secondary'
+                                    checked={c.doneId-1}
+                                    taskId={c.id}
+                                    icon={<CheckCircleOutlineIcon />}
+                                    checkedIcon={<CheckCircleIcon />} />
+
                                     {
                                         isTitleEdit  && idTaskEditText != c.id
                                         ? <Typography
@@ -386,33 +436,29 @@ let Card = (props) => {
                                         fullWidth
                                         placeholder="Поменяйте заголовок" > </TextField>
                                     }
-                                
-
                                 <IconButton
                                     sx={
                                         props.roleId != 3
                                             ? {
                                                 position: 'absolute',
                                                 top: 0,
-                                                right: 0,
+                                                right: '10%',
                                                 transform: 'scale(0)',
                                                 padding: '10px',
                                                 transition: '.2s ease',
                                             }
                                             : { 
                                                 position: 'absolute',
-                                            display:'none' }
+                                                display:'none' }
                                         }
                                     className={s.edit_btn}
                                     id="basic-button"
+                                    color='primary'
                                     aria-controls={openTaskMenu ? 'basic-menu' : undefined}
                                     aria-haspopup="true"
                                     aria-expanded={openTaskMenu ? 'true' : undefined}
                                     onClick={handleClickTaskMenu}>
-
                                     <EditIcon />
-                                    
-
                                 </IconButton>
                                 <Menu
                                     id="basic-menu"
@@ -424,7 +470,6 @@ let Card = (props) => {
                                         'aria-labelledby': 'basic-button',
                                     }}
                                     className={s.menu_edit}>
-                                    <MenuItem onClick={handleCloseTaskMenu}>Изменить заголовок</MenuItem>
                                     <MenuItem onClick={() => taskDelete(anchorElTask)}>Удалить</MenuItem>
                                 </Menu>
                             </div>)

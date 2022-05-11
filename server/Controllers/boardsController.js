@@ -13,7 +13,9 @@ exports.getAllFromId = async (req, res) => {
         boards_dependencies.userId,
         boards_dependencies.boardsId,
         boards_dependencies.invitedId,
-        boards_dependencies.favoriteId
+        boards_dependencies.favoriteId,
+        boards.createdDate,
+        boards.countGroup
     FROM
         diplom_node.users,
         diplom_node.boards,
@@ -21,7 +23,40 @@ exports.getAllFromId = async (req, res) => {
     WHERE
         boards_dependencies.userId = '${req.body.userId}'
             AND boards_dependencies.userId = users.id
-            AND boards_dependencies.boardsId = boards.id`, (err, rows, fields) => {
+            AND boards_dependencies.boardsId = boards.id
+            AND boards.tittle LIKE '%${req.body.tittle}%'`, (err, rows, fields) => {
+        if(rows.length > 0){
+            response.status(200, rows, res)
+        }
+        else{
+            response.status(400, { message: "BOARDS NOT FOUND", none: -1 }, res)
+        }
+    })
+}
+
+exports.getSelectById = async (req, res) => {
+    db.query(`
+    SELECT 
+        users.id,
+        boards.id,
+        boards.tittle,
+        boards.background,
+        boards_dependencies.userId,
+        boards_dependencies.boardsId,
+        boards_dependencies.invitedId,
+        boards_dependencies.favoriteId,
+        boards.createdDate,
+        boards.countGroup
+    FROM
+        diplom_node.users,
+        diplom_node.boards,
+        diplom_node.boards_dependencies
+    WHERE
+        boards_dependencies.userId = '${req.body.userId}'
+            AND boards_dependencies.userId = users.id
+            AND boards_dependencies.boardsId = boards.id
+            AND invitedId = ${req.body.selectedType}
+            AND boards.tittle LIKE '%${req.body.tittle}%'`, (err, rows, fields) => {
         if(rows.length > 0){
             response.status(200, rows, res)
         }
@@ -477,10 +512,16 @@ exports.acceptInvite = async (req,res) => {
             if(rows){
                 db.query(`INSERT INTO diplom_node.boards_dependencies (userId, boardsId, roleId, invitedId) 
                 VALUES ('${req.body.userId}', '${req.body.boardId}', '2', '2');`, (err,rows,fields) => {
-                    
                     if(rows){
-                        response.status(200, rows, res)
+                        db.query(`UPDATE diplom_node.boards SET countGroup = countGroup+1 WHERE (id = '${req.body.boardId}');`, 
+                            (err,rows,fields) =>{
+                            if(rows){
+                                response.status(200, rows, res)
+                            }
+                        })
                     }
+                    
+                    
                 })
                 
             }
@@ -627,7 +668,7 @@ exports.getUsersGroup = async (req,res) =>{
             users.login,
             users.photo
         FROM diplom_node.boards_dependencies, diplom_node.users 
-        WHERE boardsId = ${req.body.boardId} AND userId = users.id AND invitedId = 2;`, (err,rows,fields) => {
+        WHERE boardsId = ${req.body.boardId} AND userId = users.id;`, (err,rows,fields) => {
             if(rows){
                 response.status(200, rows, res)
             }
@@ -704,6 +745,22 @@ exports.getFavorite = async (req,res) => {
         }
     })
         
+    }
+    catch(e){
+        console.log(e)
+    }
+}
+
+exports.toggleTaskDone = async (req,res) =>{
+    try{
+        db.query(`UPDATE diplom_node.tasks SET doneId = '${req.body.status}' WHERE (id = '${req.body.taskId}');`, (err,rows,fields) => {
+            if(rows){
+                response.status(200, rows, res)
+            }
+            else{
+                response.status(400, { message: "TASKS NOT CHECKED" }, res)
+            }
+        })
     }
     catch(e){
         console.log(e)

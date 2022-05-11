@@ -134,10 +134,6 @@
     
 }
 
-.send_icon{
-    
-}
-
 .create_btn{
     margin: 1%;
 }
@@ -159,25 +155,12 @@
     
 }
 
-.task:hover{
-}
-
-.menu_edit{
-
-}
 .task:hover .edit_btn{
     transform: scale(1);
 }
 
-.edit_icon{
-    
-}
-
-.edit_btn{
-
-}
-
-
-.name_title{
-    
+.progress{
+    height: 30px;
+    display: flex;
+    align-items: center;
 }

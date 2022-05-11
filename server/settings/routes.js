@@ -8,7 +8,7 @@ module.exports = (app) => {
     const usersController = require("../Controllers/usersController")
     const boardsController = require("../Controllers/boardsController")
 
-    app.route('/api/users').get(usersController.getAll)
+    app.route('/api/users').post(usersController.getAll)
 
     app.route('/api/user/changePassword').post(usersController.changePassword)
 
@@ -30,6 +30,10 @@ module.exports = (app) => {
 
     app.route('/api/boards/boards').post(boardsController.getAllFromId)
 
+    app.route('/api/boards/withSelect').post(boardsController.getSelectById)
+
+    // app.route('/api/boards/boards').post(boardsController.getAllFromId)
+
     app.route('/api/boards/create').post(boardsController.createBoard)
 
     app.route('/api/boards/board').post(boardsController.findFromBoardId)
@@ -49,6 +53,8 @@ module.exports = (app) => {
     app.route('/api/task/move').post(boardsController.moveTask)
 
     app.route('/api/task/rename').post(boardsController.renameTask)
+
+    app.route('/api/task/toggleChecked').post(boardsController.toggleTaskDone)
 
     app.route('/api/board/output_doc').post(boardsController.outputDoc)
 
@@ -85,5 +91,7 @@ module.exports = (app) => {
     app.route('/api/log').post(usersController.logAction)
 
     app.route('/api/logsGet').post(usersController.getLogs)
+
+    app.route('/api/user/activate/:link').post(usersController.userActivate)
 
 }

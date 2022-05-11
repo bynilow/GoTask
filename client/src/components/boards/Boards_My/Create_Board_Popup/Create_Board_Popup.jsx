@@ -59,6 +59,7 @@ const Create_Board_Popup = (props) => {
         else{
             dispatch(createBoard(props.userId, "Новая доска", colorText, 1))
         }
+        onClickClosePopup();
     }
     const inputChanged = (event) => {
         if (event.target.value.toString().length < 45) {

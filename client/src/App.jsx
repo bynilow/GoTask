@@ -13,7 +13,7 @@ import Boards from './components/boards/Boards';
 import BoardSpace from './components/boards/Board_Space/BoardSpace';
 import Boards_My from './components/boards/Boards_My/Boards_My';
 import Boards_Invite from './components/boards/Boards_Invite/Boards_Invite';
-import AdminPanel from './components/admin/admin_panel';
+import AdminPanel from './components/admin/AdminPanel';
 import Boards_Select from './components/boards/Boards_Select/Boards_Select';
 import Profile from './components/profile/Profile';
 import Boards_Favorites from './components/boards/Boards_Favorites/Boards_Favorites';
@@ -21,6 +21,7 @@ import Boards_Favorites from './components/boards/Boards_Favorites/Boards_Favori
 
 function App() {
   const isAuth = useSelector(state => state.user.isAuth)
+  const isAdmin = useSelector(state => state.user.currentUser.isAdmin)
   const userId = useSelector(state => state.user.currentUser.id)
   const dispatch = useDispatch()
 
@@ -54,7 +55,8 @@ function App() {
         <Header />
         <Routes>
           <Route path="/reg" element={<Registration isAuth={isAuth} userId={userId} />} />
-          <Route path="/login" element={<Login isAuth={isAuth} userId={userId} />} />
+          <Route path="/" element={<Login isAuth={isAuth} userId={userId} />} />
+          <Route path="/login" element={<Login isAdmin={isAdmin} isAuth={isAuth} userId={userId} />} />
           <Route path="/profile" element={<Profile isAuth={isAuth} userId={userId} />} />
           <Route path="/users" element={<Users key="Users" isAuth={isAuth} />} />
           <Route path="/brs" element={<Boards_Select isAuth={isAuth} userId={userId}/>}>
@@ -63,7 +65,7 @@ function App() {
             <Route path="favorites" element={<Boards_Favorites isAuth={isAuth} userId={userId}/>} />
           </Route>
           <Route path="/b" element={<BoardSpace isAuth={isAuth} userId={userId}/>} />
-          <Route path="/adminpanel" element={<AdminPanel isAuth={isAuth} />} />
+          <Route path="/adminpanel" element={<AdminPanel isAdmin={isAdmin} userId={userId} isAuth={isAuth} />} />
         </Routes>
 
         <Routes>

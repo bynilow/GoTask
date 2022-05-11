@@ -9,7 +9,10 @@ const SET_SIGNIN_TEXT = "SET_SIGNIN_TEXT"
 const defaultState = {
     currentUser: {},
     isAuth: false,
-    users: [],
+    users: {
+        count: null,
+        users: []
+    },
     foundUser: null,
     signinText: ""
 }
@@ -32,6 +35,7 @@ export default function userReducer(state = defaultState, action) {
         case SET_USERS:
             return {
                 ...state,
+                users: null,
                 users: action.users
             }
         case SET_FOUND_USER:

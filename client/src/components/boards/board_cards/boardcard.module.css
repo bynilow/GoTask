@@ -66,11 +66,6 @@ a{
     right: -80%;
 }
 
-.card:hover .bg{
-    
-}
-
-
 .nav_bg{
     position: absolute;
     width: 100%;
@@ -85,4 +80,10 @@ a{
     bottom: 5%;
     left: 5%;
     z-index: 999;
+}
+
+.group_info{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
 }

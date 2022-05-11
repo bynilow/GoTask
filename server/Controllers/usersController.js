@@ -5,14 +5,33 @@ const db = require("../settings/db.js")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const authMiddleware = require("../middleware/auth.middleware")
+const nodemailer = require('nodemailer')
 
-exports.getAll = (req, res) => {
-    db.query(`SELECT id,login,email,user_type FROM diplom_node.users;`, (err, rows, fields) => {
-        if (err) {
-            response.status(400, rows, res)
+exports.getAll = async (req, res) => {
+    let users = {};
+    db.query(`SELECT COUNT(*) AS count FROM diplom_node.users 
+        WHERE login LIKE '%${req.body.likeText}%' OR email LIKE '%${req.body.likeText}%';`, (err, rows, fields) => {
+        if(rows){
+            users.count = rows[0].count;
+            let lastUser = req.body.pageNum*6;
+            console.log(lastUser-6, ' ', lastUser)
+            /// max 6 users in page
+            db.query(`SELECT id, login, email, photo FROM diplom_node.users 
+            WHERE login LIKE '%${req.body.likeText}%' OR email LIKE '%${req.body.likeText}%' 
+            LIMIT ${lastUser-6},${6}`, (err,rows,fields) => {
+                console.log(err)
+                if(rows){
+                    users.users = rows;
+                    response.status(200, users, res)
+                }
+                else{
+                    response.status(400, {message: 'USERS NOT FOUND'}, res)
+                }
+            })
+            
         }
-        else {
-            response.status(200, rows, res)
+        else{
+            response.status(400, {message: 'USERS NOT FOUND'}, res)
         }
     })
 }
@@ -48,53 +67,53 @@ exports.findOneByEmail = async (req, res) => {
     } 
 }
 
-exports.signup = (req, res) => {
 
-    db.query(`SELECT id,email,login FROM diplom_node.users WHERE email = '${req.body.email}'`, (err, rows, fields) => {
+exports.signup = async(req, res) => {
+    try{
+        db.query(`SELECT id,email,login FROM diplom_node.users WHERE email = '${req.body.email}'`, (err, rows, fields) => {
+            if (err) {
+                response.status(400, err, res)
+            }
+            else if (typeof rows !== 'undefined' && rows.length > 0) {
+                console.log('step 1');
+                const row = JSON.parse(JSON.stringify(rows))
+                row.map(rw => {
+                    response.status(302, { message: `ПОЛЬЗОВАТЕЛЬ С ТАКИМ EMAIL - ${rw.email} УЖЕ СУЩЕСТВУЕТ` }, res)
+                    return true
+                })
+            }
+            else {
+                const email = req.body.email
+                const login = req.body.login
+                const password = bcrypt.hashSync(req.body.password, 8)
+                let sql = `INSERT INTO diplom_node.users(login,password,email) VALUES('${login}','${password}','${email}' )`
+                db.query(sql, (err, result) => {
+                    if (err) {
+                        response.status(400, err, res)
+                    }
+                    else {
+                        response.status(200, { message: `ПОЛЬЗОВАТЕЛЬ БЫЛ ЗАРЕГЕСТРИРОВАН ` }, res)
+                    }
+                })
+            }
+        })
 
-        if (err) {
-            response.status(400, err, res)
-        }
-        else if (typeof rows !== 'undefined' && rows.length > 0) {
-            console.log('step 1');
-            const row = JSON.parse(JSON.stringify(rows))
-            row.map(rw => {
-                response.status(302, { message: `ПОЛЬЗОВАТЕЛЬ С ТАКИМ EMAIL - ${rw.email} УЖЕ СУЩЕСТВУЕТ` }, res)
-                return true
-            })
-        }
-        else {
-
-            const email = req.body.email
-            const login = req.body.login
-
-            const password = bcrypt.hashSync(req.body.password, 8)
-
-            let sql = `INSERT INTO diplom_node.users(login,password,email) VALUES('${login}','${password}','${email}' )`
-            db.query(sql, (err, result) => {
-                if (err) {
-                    response.status(400, err, res)
-                }
-                else {
-                    response.status(200, { message: `ПОЛЬЗОВАТЕЛЬ БЫЛ ЗАРЕГЕСТРИРОВАН ` }, res)
-                }
-            })
-        }
-
-
-
-    })
+    }
+    catch (e) {
+        console.log(e)
+    }
+    
 }
 
 exports.signin = (req, res) => {
 
-    db.query(`SELECT id, email, password, login FROM diplom_node.users WHERE email = '${req.body.email}'`, (err, rows, fields) => {
+    db.query(`SELECT id, email, password, login, user_type FROM diplom_node.users WHERE email = '${req.body.email}'`, (err, rows, fields) => {
         if (err) {
             response.status(400, err, res)
             console.log(err);
         }
         else if (rows.length <= 0) {
-            response.status(404, { message: `ПОЛЬЗОВАТЕЛЬ С EMAIL - ${req.body.email} НЕ НАЙДЕН` }, res)
+            response.status(200, { message: `ПОЛЬЗОВАТЕЛЬ С EMAIL - ${req.body.email} НЕ НАЙДЕН` }, res)
         }
         else {
 
@@ -115,12 +134,14 @@ exports.signin = (req, res) => {
                         user: {
                             id: rw.id,
                             email: rw.email,
-                            login: rw.login
+                            login: rw.login,
+                            photo: rw.photo,
+                            isAdmin: rw.user_type-1
                         }
                     }, res)
                 }
                 else {
-                    response.status(401, { message: "НЕВЕРНЫЙ ПАРОЛЬ" }, res)
+                    response.status(200, { message: "НЕВЕРНЫЙ ПАРОЛЬ" }, res)
                 }
                 return true
             }
@@ -133,25 +154,24 @@ exports.signin = (req, res) => {
 }
 
 exports.auth = async(req, res) => {
-
     try {
-
-        db.query(`SELECT id, email, login FROM diplom_node.users WHERE id = '${req.user.id}'`, (err, rows, fields) => {
-
+        db.query(`SELECT id, email, login, photo, user_type FROM diplom_node.users WHERE id = '${req.user.id}'`, (err, rows, fields) => {
             const row = JSON.parse(JSON.stringify(rows))
             row.map(rw => {
                 const token = jwt.sign({
                     id: rw.id,
                     email: rw.email,
                     login: rw.login
-                }, 'its my token', { expiresIn: "1h" })
+                }, 'its my token', { expiresIn: "30d" })
 
                 return res.json({
                     token,
                     user: {
                         id: rw.id,
                         email: rw.email,
-                        login: rw.login
+                        login: rw.login,
+                        photo: rw.photo,
+                        isAdmin: rw.user_type-1
                     }
                 })
 
@@ -281,5 +301,14 @@ exports.getLogs = async(req,res) => {
     }
     catch(e){
         console.log(e)
+    }
+}
+
+exports.userActivate = async(req,res) => {
+    try{
+
+    }
+    catch(e){
+        
     }
 }
