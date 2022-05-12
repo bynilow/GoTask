@@ -16,12 +16,13 @@ export const getUsers = (pageNum, likeText = '') => {
     }
 }
 
-export const getUserByEmail = (email) =>{
+export const getUserByEmail = (email, isAdminPanel = 0) =>{
     return async dispatch => {
-        const response = await axios.post("http://localhost:4850/api/getuser", { email })
-        dispatch(setFoundUserAC(response.data.values.found))  
+        const response = await axios.post("http://localhost:4850/api/getuser", { email, isAdminPanel })
+        dispatch(setFoundUserAC(response.data.values))  
     }
 }
+
 
 export const registration = (email, login, password) => {
     return async dispatch => {
@@ -118,16 +119,18 @@ export const changePassword = async (userId, password) => {
     }
 }
 
-export const changeEmail = (userId, email) => {
+export const changeEmail = (userId, email, finder) => {
     return async dispatch => {
         try {
             const foundUserEmail = await axios.post("http://localhost:4850/api/getuser", { 
-                email 
+                email, isAdminPanel: 0
             })
             const founded = foundUserEmail.data.values.found;
+            let foundRes = foundUserEmail.data.values;
+            foundRes.finder = finder;
             console.log('founded: '+founded)
             if(founded){
-                dispatch(setFoundUserAC(founded)) 
+                dispatch(setFoundUserAC(foundRes)) 
                 return false
             }
             else{
@@ -135,7 +138,7 @@ export const changeEmail = (userId, email) => {
                     userId,
                     email
                 })
-                dispatch(setFoundUserAC(false))
+                dispatch(setFoundUserAC({found: false, finder}))
             }
         }
         catch (e) {
@@ -189,6 +192,21 @@ export const getLogs = (boardId) => {
             const getLogs = await axios.post("http://localhost:4850/api/logsGet", {
                 boardId
             })
+            dispatch(setLogsAC(getLogs.data.values))
+        }
+        catch (e) {
+            console.log(e)
+        }
+    }
+}
+
+export const getLogsAdminPanel = (email) => {
+    return async dispatch => {
+        try {
+            const getLogs = await axios.post("http://localhost:4850/api/logsGetAdminPanel", {
+                email
+            })
+            console.log(getLogs.data.values)
             dispatch(setLogsAC(getLogs.data.values))
         }
         catch (e) {

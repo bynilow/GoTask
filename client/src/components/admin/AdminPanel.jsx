@@ -7,7 +7,8 @@ import { getUsers } from '../../actions/user';
 import UserCard from '../users/UserCard/UserCard';
 import SearchIcon from '@mui/icons-material/Search';
 import { setUsersAC } from '../../reducers/userReducer';
-
+import EditUserPopup from './Edit_User_Popup/EditUserPopup';
+import Board_Logs from '../boards/Board_Space/Board_Logs/Board_Logs';
 
 const AdminPanel = (props) => {
     
@@ -19,6 +20,7 @@ const AdminPanel = (props) => {
 
     const [page, setPage] = React.useState(1);
     const [userNameText, setUserNameText] = React.useState('');
+    const [isEditUser, setIsEditUser] = React.useState(0);
 
     useEffect(() => {
         dispatch(getUsers(1,userNameText));
@@ -28,6 +30,10 @@ const AdminPanel = (props) => {
     const onPaginationChange = (event, value=page) => {
         setPage(value);
         dispatch(getUsers(value,userNameText));
+    }
+
+    const toggleIsEditUser = (uId) => {
+        setIsEditUser(uId);
     }
 
     return(
@@ -54,7 +60,14 @@ const AdminPanel = (props) => {
                     <div className={s.users_list}>
                         {
                             users.users.map((user, ind) =>
-                                <UserCard key={user.id} login={user.login} email={user.email} id={user.id} type={user.user_type - 1} />
+                                <UserCard 
+                                key={user.id} 
+                                login={user.login} 
+                                email={user.email} 
+                                id={user.id} 
+                                photo={user.photo}
+                                type={user.user_type - 1}
+                                toggleIsEditUser={() => toggleIsEditUser(user.email)} />
                             )
                         }
                     </div>
@@ -62,10 +75,17 @@ const AdminPanel = (props) => {
                         <Pagination
                             page={page}
                             onChange={onPaginationChange}
-                            count={Math.ceil(users.count / 6)} />
+                            count={Math.ceil(users.count / 9)} />
                     </Box>
-
                 </div>
+                {
+                    isEditUser
+                    ? <Board_Logs
+                        email={isEditUser} 
+                        isAdminPanel={true}
+                        toggleIsEditUser={() => toggleIsEditUser(0)} />
+                    : <></>
+                }
             </div>
         </div>
     )

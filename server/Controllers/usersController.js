@@ -13,12 +13,12 @@ exports.getAll = async (req, res) => {
         WHERE login LIKE '%${req.body.likeText}%' OR email LIKE '%${req.body.likeText}%';`, (err, rows, fields) => {
         if(rows){
             users.count = rows[0].count;
-            let lastUser = req.body.pageNum*6;
-            console.log(lastUser-6, ' ', lastUser)
+            let lastUser = req.body.pageNum*9;
+            console.log(lastUser-9, ' ', lastUser)
             /// max 6 users in page
             db.query(`SELECT id, login, email, photo FROM diplom_node.users 
             WHERE login LIKE '%${req.body.likeText}%' OR email LIKE '%${req.body.likeText}%' 
-            LIMIT ${lastUser-6},${6}`, (err,rows,fields) => {
+            LIMIT ${lastUser-9},${9}`, (err,rows,fields) => {
                 console.log(err)
                 if(rows){
                     users.users = rows;
@@ -50,11 +50,15 @@ exports.findOne = async (req, res) => {
 exports.findOneByEmail = async (req, res) => {
     console.log(req.body.email)
     try{
-        db.query(`SELECT id, email FROM diplom_node.users where email = '${req.body.email}';`, (err, rows, fields) => {
+        db.query(`SELECT id, login, email, photo FROM diplom_node.users WHERE email = '${req.body.email}';`, (err, rows, fields) => {
             
             console.log(err)
             if(rows.length > 0){
-                response.status(200, { found: true }, res)
+                let user = rows[0];
+                user.found = true;
+                
+                console.log(user)
+                response.status(200, user, res)
             }
             else{
                 response.status(200, { found: false }, res)
@@ -300,6 +304,20 @@ exports.getLogs = async(req,res) => {
         })
     }
     catch(e){
+        console.log(e)
+    }
+}
+
+exports.getLogsAdminPanel = async (req, res) => {
+    try {
+        db.query(`
+        SELECT logs.id, users.login, boardId, message, date, users.photo FROM diplom_node.logs
+        JOIN diplom_node.users ON logs.action_creator = users.id
+        WHERE users.email = '${req.body.email}' ORDER BY logs.date DESC LIMIT 0,30;`, (err, rows, fields) => {
+            response.status(200, rows, res)
+        })
+    }
+    catch (e) {
         console.log(e)
     }
 }

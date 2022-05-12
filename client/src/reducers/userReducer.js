@@ -13,7 +13,10 @@ const defaultState = {
         count: null,
         users: []
     },
-    foundUser: null,
+    foundUser: {
+        found: null,
+        finder: 0
+    },
     signinText: ""
 }
 

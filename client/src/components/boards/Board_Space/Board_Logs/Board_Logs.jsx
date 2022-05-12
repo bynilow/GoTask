@@ -4,7 +4,7 @@ import {Navigate} from 'react-router-dom'
 import { useDispatch, useSelector } from "react-redux"
 import { Button, IconButton, Typography } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
-import { getLogs } from "../../../../actions/user";
+import { getLogs, getLogsAdminPanel } from "../../../../actions/user";
 import Action_Log from "./Action_Log/Action_Log";
 
 const Board_Logs = (props) => {
@@ -13,13 +13,19 @@ const Board_Logs = (props) => {
     const logs = useSelector(state => state.boards.logs)
 
     useEffect(() => {
-        dispatch(getLogs(props.boardId))
+        props.isAdminPanel
+            ? dispatch(getLogsAdminPanel(props.email))
+            : dispatch(getLogs(props.boardId))
+
     }, [])
 
     const onClickCloseLogs = () => {
-        props.closeLogs();
+        props.isAdminPanel
+            ? props.toggleIsEditUser()
+            : props.closeLogs();
     }
-
+    console.log(logs)
+    if(!logs) return <></>
     return(
         <div className={s.logs_bg}>
             <div className={s.logs}>

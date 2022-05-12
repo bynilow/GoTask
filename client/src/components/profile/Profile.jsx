@@ -82,7 +82,7 @@ const Profile = (props) => {
             if (emailValid) {
                 dispatch(changeEmail(user.id, userEmail));
                 setLastUserEmail(userEmail)
-                if(!foundedUserEmail) {
+                if(!foundedUserEmail.found) {
                     setIsEmailChanged(true)
                 }
             }
@@ -96,7 +96,7 @@ const Profile = (props) => {
     }
     const onEmailChange = (event) => {
         setUserEmail(event.target.value)
-        if(foundedUserEmail) dispatch(setFoundUserAC(null))
+        if(foundedUserEmail.found) dispatch(setFoundUserAC({found: null}))
         if (!isEmailCorrect) setIsEmailCorrect(true)
     }
     const handleCloseAlertEmail = () => {
@@ -150,7 +150,10 @@ const Profile = (props) => {
     const handleCloseAlertAvatar = () => {
         setIsAvatarChanged(null)
     }
-
+    if(!foundedUserEmail){
+        return <></>
+    }
+    console.log(foundedUserEmail)
     return (
         <div className={s.profile}>
             <div className={s.profile_bg}></div>
@@ -211,9 +214,9 @@ const Profile = (props) => {
                                     variant="standard"
                                     fullWidth
                                     sx={{ margin: '10px' }}
-                                    error={foundedUserEmail || !isEmailCorrect}
+                                    error={foundedUserEmail.found || !isEmailCorrect}
                                     helperText={!isEmailCorrect ? 'Некорректный Email' 
-                                        : (foundedUserEmail ? 'Пользователь с таким Email уже существует' : '')} />
+                                        : (foundedUserEmail.found ? 'Пользователь с таким Email уже существует' : '')} />
                                 {
                                     lastUserEmail != userEmail
                                     && <IconButton onClick={emailSave}>
@@ -222,7 +225,7 @@ const Profile = (props) => {
                                     
                                 }
                             </div>
-                            <Snackbar open={foundedUserEmail == false} autoHideDuration={3000} onClose={handleCloseAlertEmail}>
+                            <Snackbar open={foundedUserEmail.found == false} autoHideDuration={3000} onClose={handleCloseAlertEmail}>
                                 <Alert onClose={handleCloseAlertEmail} severity="success" sx={{ width: '100%' }} >
                                     Email успешно изменен!
                                 </Alert>
