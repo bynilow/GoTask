@@ -3,8 +3,8 @@ import s from './boardspace.module.css'
 import { useSelector, useDispatch } from "react-redux";
 import Card from "./Cards/Card";
 import { Navigate, useSearchParams } from 'react-router-dom'
-import { createCard, getAllTasks, getBoardFromId, getCards, getCardsFromBoardId, getOutputDoc, inviteUser, removeBoard, removeCard, renameBoard, renameTask, setFalseInvite, setFavorite, setFavoriteInBoard } from '../../../actions/boards'
-import { Button, Divider, IconButton, ListItemIcon, Menu, MenuItem, TextField, Typography, Snackbar, Alert } from "@mui/material";
+import { createCard, getAllTasks, getBoardFromId, getCards, getCardsFromBoardId, getOutputDoc, inviteUser, removeBoard, removeCard, renameBoard, renameTask, setFalseInvite, setFavorite, setFavoriteInBoard, uploadBoard } from '../../../actions/boards'
+import { Button, Divider, IconButton, ListItemIcon, Menu, MenuItem, TextField, Typography, Snackbar, Alert, Input } from "@mui/material";
 import Preloader from '../../common/Preloader'
 import CreateCard from "./Cards/CreateCard";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -24,8 +24,8 @@ import Group_Info from "./Group_Info/Group_Info.jsx";
 import { actionLog } from "../../../actions/user";
 import Board_Logs from "./Board_Logs/Board_Logs";
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
-
-
+import DownloadIcon from '@mui/icons-material/Download';
+import PublishIcon from '@mui/icons-material/Publish';
 
 let BoardSpace = (props) => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -98,6 +98,41 @@ let BoardSpace = (props) => {
     const handleCloseSuccessInvite = () => {
         setOpenSuccessInvite(false)
     };
+    const convertDeckJson = async() => {
+        const response = await axios.post("http://localhost:4850/api/board/output_doc", {
+            boardId: postQuery
+        })
+        const res = response.data.values
+        const jsonData = JSON.stringify(res)
+        console.log(jsonData)
+        var blob = new Blob([jsonData], {type: "text/plain"});
+        const fs = require('file-saver')
+        const nameFile = 'board_'+postQuery+'.json'
+        fs.saveAs(blob, nameFile)
+    }
+    const uploadDeckJson = async() => {
+        
+    }
+    const uploadJsonHandler = (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.readAsText(file)
+        reader.onload = function () {
+            console.log(reader.result)
+            if (reader.result) {
+                try {
+                    const jsonData = JSON.parse(reader.result);
+                    dispatch(uploadBoard(jsonData, postQuery, userId));
+                }
+                catch (e) {
+                    console.log(e)
+                }
+            }
+        };
+        handleClose();
+        console.log(reader)
+        console.log(reader.result)
+    }
     const outputDoc = async () => {
         const docx = require("docx");
         const response = await axios.post("http://localhost:4850/api/board/output_doc", {
@@ -207,6 +242,8 @@ let BoardSpace = (props) => {
         });
 
     }
+
+   
 
     const boardRemove = () => {
         actionLog(userId, postQuery, `Удалил доску`)
@@ -348,16 +385,16 @@ let BoardSpace = (props) => {
                             onClick={() => setIsGroupInfoOpened(true)} >
                             Группа
                         </Button>
-                        <Button 
-                        startIcon={<PersonAddAltIcon />} 
-                        color="white" 
-                        size="small"
-                        disabled={thisBoard.roleId == 3}
-                        aria-controls={openInvite ? 'basic-menu' : undefined}
-                        aria-haspopup="true"
-                        sx={{ display: { xs: 'none', md: 'inline-flex'} }}
-                        aria-expanded={openInvite ? 'true' : undefined}
-                        onClick={handleClickInvite} >
+                        <Button
+                            startIcon={<PersonAddAltIcon />}
+                            color="white"
+                            size="small"
+                            disabled={thisBoard.roleId == 3}
+                            aria-controls={openInvite ? 'basic-menu' : undefined}
+                            aria-haspopup="true"
+                            sx={{ display: { xs: 'none', md: 'inline-flex' } }}
+                            aria-expanded={openInvite ? 'true' : undefined}
+                            onClick={handleClickInvite} >
                             Пригласить
                         </Button>
                         <Menu
@@ -424,12 +461,36 @@ let BoardSpace = (props) => {
                             </ListItemIcon>
                             Выходной документ
                         </MenuItem>
+                        <MenuItem onClick={convertDeckJson}>
+                            <ListItemIcon>
+                                <DownloadIcon />
+                            </ListItemIcon>
+                            Выгрузить доску в JSON
+                        </MenuItem>
+                        <label htmlFor="contained-button-file">
+                            <input
+                                accept="application/JSON, .json"
+                                id="contained-button-file"
+                                type="file"
+                                style={{ display: 'none' }}
+                                onChange={e => uploadJsonHandler(e)} />
+                            <MenuItem
+                                component="span"
+                                onClick={uploadDeckJson}>
+                                <ListItemIcon>
+                                    <PublishIcon />
+                                </ListItemIcon>
+                                Загрузить доску из JSON
+                            </MenuItem>
+                        </label>
+                        
                         <MenuItem onClick={() => onClickOpenLogs()}>
                             <ListItemIcon>
                                 <PlaylistAddCheckIcon />
                             </ListItemIcon>
-                            Посмотреть логи
+                            Посмотреть журнал активности
                         </MenuItem>
+                        
                         <Divider />
                         <MenuItem onClick={boardRemove} component={NavLink} to={myboardsForLink}>
                             <ListItemIcon>

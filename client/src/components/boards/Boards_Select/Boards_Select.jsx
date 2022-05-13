@@ -16,6 +16,7 @@ let Boards_Select = (props) =>{
     const boardLink = `/brs/boards?user=${props.userId}`
     const inviteLink = `/brs/invites?user=${props.userId}`
     const favoriteLink = `/brs/favorites?user=${props.userId}`
+    const publicLink = `/brs/public`
 
     return(
         
@@ -23,13 +24,16 @@ let Boards_Select = (props) =>{
             <div className={s.container}>
                 <div className={s.nav}>
                     <Button component={NavLink} to={boardLink}>
-                        Мои доски
+                        Доски
                     </Button>
                     <Button component={NavLink} to={favoriteLink}>
                         Избранное
                     </Button>
                     <Button component={NavLink} to={inviteLink}>
                         Приглашения
+                    </Button>
+                    <Button component={NavLink} to={publicLink}>
+                        Публичные
                     </Button>
                 </div>
                 <Divider className={s.divid} />

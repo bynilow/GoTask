@@ -339,13 +339,16 @@ exports.outputDoc = async (req, res) => {
         let jsonData = [];
         console.log('hehe')
         db.query(`
-        SELECT name,id,creatorId,createdDate FROM diplom_node.cards WHERE cards.boardId = ${req.body.boardId}`, (err, rows, fields) => {
+        SELECT name,id,creatorId,createdDate,\`order\` FROM diplom_node.cards 
+        WHERE cards.boardId = ${req.body.boardId} ORDER BY \`order\``, (err, rows, fields) => {
+            console.log(err)
             if(rows){
                 console.log('parsed rows:')
                 jsonData = rows;
                 // console.log(jsonData)
 
-                db.query(`SELECT name,id,cardId,creatorId,createdDate FROM diplom_node.tasks WHERE tasks.boardId = ${req.body.boardId}`, (err,rows,fields) => {
+                db.query(`SELECT name,id,cardId,creatorId,createdDate, doneId, \`order\`
+                    FROM diplom_node.tasks WHERE tasks.boardId = ${req.body.boardId}`, (err,rows,fields) => {
                     if(rows){
                         rows.forEach((task, i, rows) => {
                             console.log(' ')
@@ -369,6 +372,7 @@ exports.outputDoc = async (req, res) => {
                     console.log(' ')
                     console.log(' ')
                     console.log(jsonData)
+                    
                     response.status(200,jsonData, res)
                 })
                 // response.status(200, rows, res)
@@ -380,6 +384,80 @@ exports.outputDoc = async (req, res) => {
         console.log(e);
     }
     
+}
+
+exports.uploadBoard = async(req,res) => {
+    try{
+        const date = new Date();
+
+        const jsonData = req.body.jsonData;
+        const boardId = req.body.boardId;
+        const userId = req.body.userId;
+
+        let mysql = '';
+        const cardsLenght = jsonData.length;
+
+        
+        db.query(`SELECT MAX(\`order\`) as MAX FROM diplom_node.cards WHERE boardId = ${boardId};`, (err, rows, fields) => {
+            let maxOrder = rows[0].MAX;
+            !!maxOrder ? null : maxOrder = 0;
+            if (Array.isArray(jsonData)) {
+                jsonData.forEach(card => {
+                    const haveName = typeof card.name !== 'undefined' && card.name;
+                    const haveOrder = typeof card.order !== 'undefined' && card.order;
+                    console.log(haveName, haveOrder)
+                    if (haveName && haveOrder) {
+                        mysql = mysql +
+                            `INSERT INTO diplom_node.cards (name, boardId, creatorId, \`order\`, createdDate) 
+                                VALUES ('${card.name}', '${boardId}', '${userId}', '${maxOrder + card.order}', '${date}');`;
+                    }
+                    else {
+                        response.status(400, { message: 'CHECK JSON FILE' }, res)
+                    }
+                })
+                jsonData.map(card => {
+                    /// поочередная запись карточек в бд
+                    db.query(`INSERT INTO diplom_node.cards (name, boardId, creatorId, \`order\`, createdDate) 
+                    VALUES ('${card.name}', '${boardId}', '${userId}', '${maxOrder + card.order}', '${date}');`, (err, rows, fields) => { })
+                    /// получение последнего ид карточки
+                    db.query(`SELECT MAX(id) AS MAX FROM diplom_node.cards WHERE boardId = ${boardId} ORDER BY id DESC`, (err, rows, fields) => {
+                        const lastIdCard = rows[0].MAX;
+                        if (lastIdCard) {
+                            console.log(card.tasks)
+                            if (typeof card.tasks !== 'undefined' && card.tasks.length) {
+                                card.tasks.map(task => {
+                                    const haveName = typeof task.name !== 'undefined' && task.name;
+                                    const haveOrder = typeof task.order !== 'undefined' && task.order;
+                                    const haveDone = typeof task.doneId !== 'undefined' && task.doneId;
+                                    if (haveName && haveOrder && haveDone) {
+                                        db.query(`INSERT INTO diplom_node.tasks
+                                        (name, cardId, creatorId, \`order\`, doneId, createdDate, boardId) 
+                                        VALUES 
+                                        ('${task.name}', '${lastIdCard}', '${userId}', '${task.order}', '${task.doneId}', 
+                                        '${date}', '${boardId}');`, (err, rows, fields) => {
+
+                                        })
+                                    }
+                                    else {
+                                        response.status(400, { message: 'CHECK JSON FILE' }, res)
+                                    }
+                                })
+                            }
+                        }
+                        else {
+                            response.status(400, { message: 'CHECK JSON FILE' }, res)
+                        }
+                    })
+                })
+            }
+            
+            
+        })
+        response.status(200, { message: 'BOARD SUCCESS UPLOADED' }, res)
+    }
+    catch(e){
+        response.status(400, { message: 'CHECK JSON FILE' }, res)
+    }
 }
 
 exports.removeBoard = async (req, res) => {

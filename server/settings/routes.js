@@ -58,6 +58,8 @@ module.exports = (app) => {
 
     app.route('/api/board/output_doc').post(boardsController.outputDoc)
 
+    app.route('/api/board/upload').post(boardsController.uploadBoard)
+
     app.route('/api/board/remove').post(boardsController.removeBoard)
 
     app.route('/api/task/remove').post(boardsController.removeTask)

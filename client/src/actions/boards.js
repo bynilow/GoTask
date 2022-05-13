@@ -202,6 +202,30 @@ export const getOutputDoc = async(boardId) => {
     }
 }
 
+export const uploadBoard = (jsonData, boardId, userId) => {
+    return async dispatch => {
+        try {
+            console.log("jsonData")
+            console.log(jsonData)
+            const uploadRes = await axios.post("http://localhost:4850/api/board/upload", {
+                jsonData, boardId, userId
+            })
+            const boardRes = await axios.post("http://localhost:4850/api/boards/board", {
+                boardId, userId
+            });
+            const cardsRes = await axios.post("http://localhost:4850/api/board", {
+                boardId
+            });
+            dispatch(setFoundBoardAC(boardRes.data.values))
+            dispatch(setCardsAndTasksAC(cardsRes.data.values))
+        }
+        catch (e) {
+            console.log(e)
+        }
+    }
+    
+}
+
 export const removeBoard = async(boardId, userId) => {
     try{
         const response = await axios.post("http://localhost:4850/api/board/remove", {

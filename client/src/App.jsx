@@ -17,6 +17,7 @@ import AdminPanel from './components/admin/AdminPanel';
 import Boards_Select from './components/boards/Boards_Select/Boards_Select';
 import Profile from './components/profile/Profile';
 import Boards_Favorites from './components/boards/Boards_Favorites/Boards_Favorites';
+import Boards_Public from './components/boards/Boards_Public/Boards_Public';
 
 
 function App() {
@@ -58,11 +59,11 @@ function App() {
           <Route path="/" element={<Login isAuth={isAuth} userId={userId} />} />
           <Route path="/login" element={<Login isAdmin={isAdmin} isAuth={isAuth} userId={userId} />} />
           <Route path="/profile" element={<Profile isAuth={isAuth} userId={userId} />} />
-          <Route path="/users" element={<Users key="Users" isAuth={isAuth} />} />
           <Route path="/brs" element={<Boards_Select isAuth={isAuth} userId={userId}/>}>
             <Route path="boards" element={<Boards_My isAuth={isAuth} userId={userId}/>} />
             <Route path="invites" element={<Boards_Invite isAuth={isAuth} userId={userId}/>} />
             <Route path="favorites" element={<Boards_Favorites isAuth={isAuth} userId={userId}/>} />
+            <Route path="public" element={<Boards_Public isAuth={isAuth} userId={userId}/>} />
           </Route>
           <Route path="/b" element={<BoardSpace isAuth={isAuth} userId={userId}/>} />
           <Route path="/adminpanel" element={<AdminPanel isAdmin={isAdmin} userId={userId} isAuth={isAuth} />} />
