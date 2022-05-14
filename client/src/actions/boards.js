@@ -1,7 +1,9 @@
 import React, { Component } from "react"; 
 import axios from "axios"
 import { Navigate } from "react-router-dom";
-import { setBoardsAC, setCreatedBoardAC, toggleIsFetchingAC, setFoundBoardAC, setCardsAC, createCardAC, setTasksAC, deleteTasksAC, setInviteUserStatusAC, setCardsAndTasksAC, setRenameTaskAC, setGroupUsersAC, setFavoriteInBoardAC } from "../reducers/boardsReducer";
+import { setBoardsAC, setCreatedBoardAC, toggleIsFetchingAC, setFoundBoardAC, setCardsAC, 
+    createCardAC, setTasksAC, deleteTasksAC, setInviteUserStatusAC, setCardsAndTasksAC, setRenameTaskAC, 
+    setGroupUsersAC, setFavoriteInBoardAC } from "../reducers/boardsReducer";
 
 
 export const getBoards = (userId, tittle = '', selectedType = 1) => {

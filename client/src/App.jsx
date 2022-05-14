@@ -8,16 +8,13 @@ import { auth } from './actions/user';
 import Main from './components/main/Main';
 import { createTheme } from '@mui/material';
 import { ThemeProvider } from '@mui/system';
-import Users from './components/users/Users';
-import Boards from './components/boards/Boards';
-import BoardSpace from './components/boards/Board_Space/BoardSpace';
-import Boards_My from './components/boards/Boards_My/Boards_My';
-import Boards_Invite from './components/boards/Boards_Invite/Boards_Invite';
-import AdminPanel from './components/admin/AdminPanel';
-import Boards_Select from './components/boards/Boards_Select/Boards_Select';
-import Profile from './components/profile/Profile';
-import Boards_Favorites from './components/boards/Boards_Favorites/Boards_Favorites';
-import Boards_Public from './components/boards/Boards_Public/Boards_Public';
+import BoardSpace from './components/boards/Board_Space/BoardSpace.jsx';
+import AdminPanel from './components/admin_panel/AdminPanel.jsx';
+import Profile from './components/profile/Profile.jsx';
+import BoardsSelect from './components/boards/Boards_List/Boards_Select/BoardsSelect.jsx';
+import BoardsFavorites from './components/boards/Boards_List/Boards_Favorites/BoardsFavorites.jsx';
+import BoardsMy from './components/boards/Boards_List/Boards_My/BoardsMy.jsx';
+import BoardsInvite from './components/boards/Boards_List/Boards_Invite/BoardsInvite.jsx';
 
 
 function App() {
@@ -59,11 +56,10 @@ function App() {
           <Route path="/" element={<Login isAuth={isAuth} userId={userId} />} />
           <Route path="/login" element={<Login isAdmin={isAdmin} isAuth={isAuth} userId={userId} />} />
           <Route path="/profile" element={<Profile isAuth={isAuth} userId={userId} />} />
-          <Route path="/brs" element={<Boards_Select isAuth={isAuth} userId={userId}/>}>
-            <Route path="boards" element={<Boards_My isAuth={isAuth} userId={userId}/>} />
-            <Route path="invites" element={<Boards_Invite isAuth={isAuth} userId={userId}/>} />
-            <Route path="favorites" element={<Boards_Favorites isAuth={isAuth} userId={userId}/>} />
-            <Route path="public" element={<Boards_Public isAuth={isAuth} userId={userId}/>} />
+          <Route path="/brs" element={<BoardsSelect isAuth={isAuth} userId={userId}/>}>
+            <Route path="boards" element={<BoardsMy isAuth={isAuth} userId={userId}/>} />
+            <Route path="invites" element={<BoardsInvite isAuth={isAuth} userId={userId}/>} />
+            <Route path="favorites" element={<BoardsFavorites isAuth={isAuth} userId={userId}/>} />
           </Route>
           <Route path="/b" element={<BoardSpace isAuth={isAuth} userId={userId}/>} />
           <Route path="/adminpanel" element={<AdminPanel isAdmin={isAdmin} userId={userId} isAuth={isAuth} />} />

@@ -1,14 +1,13 @@
-import React, { useState } from 'react'
-import s from './header.module.css'
-import { Navigate, NavLink } from 'react-router-dom'
-import { AppBar, Typography, Container, Box, Button, Toolbar, Link, Divider, Avatar, IconButton, Menu, MenuItem, ListItemAvatar, ListItemIcon } from '@mui/material'
-import { useDispatch, useSelector } from 'react-redux';
-import { logoutAC } from '../../reducers/userReducer';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import EmailIcon from '@mui/icons-material/Email';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import { Avatar, Button, Divider, IconButton, ListItemAvatar, ListItemIcon, Menu, MenuItem, Typography } from '@mui/material';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Navigate, NavLink } from 'react-router-dom';
+import { logoutAC } from '../../reducers/userReducer';
+import s from './header.module.css';
 
 const Header = (props) => {
     const isAuth = useSelector(state => state.user.isAuth)

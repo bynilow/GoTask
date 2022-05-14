@@ -1,15 +1,9 @@
-import { Button, Card, Container, Paper, Typography } from "@mui/material";
+import { Button, Container, Typography } from "@mui/material";
 import React from "react";
-import s from "./main.module.css"
-import phone from "../../images/phones.jpg"
 import { NavLink } from "react-router-dom";
-import { color } from "@mui/system";
-import { createTheme } from '@mui/material/styles';
+import s from "./main.module.css";
 
 const Main = () => {
-
-
-
 
     return (
         <div className={s.main}>

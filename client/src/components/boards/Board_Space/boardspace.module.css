@@ -20,10 +20,6 @@
     top: 0;
 }
 
-.btn_new_column{
-
-}
-
 .create{
     position: relative;
     overflow: hidden;
@@ -45,7 +41,6 @@
 
 .createcardActive{
     top: 0;
-
 }
 
 .btn_new_column_hidden{

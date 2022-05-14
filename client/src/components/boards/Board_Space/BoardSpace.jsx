@@ -1,33 +1,34 @@
-import React, { useEffect, useState } from "react";
-import s from './boardspace.module.css'
-import { useSelector, useDispatch } from "react-redux";
-import Card from "./Cards/Card";
-import { Navigate, useSearchParams } from 'react-router-dom'
-import { createCard, getAllTasks, getBoardFromId, getCards, getCardsFromBoardId, getOutputDoc, inviteUser, removeBoard, removeCard, renameBoard, renameTask, setFalseInvite, setFavorite, setFavoriteInBoard, uploadBoard } from '../../../actions/boards'
-import { Button, Divider, IconButton, ListItemIcon, Menu, MenuItem, TextField, Typography, Snackbar, Alert, Input } from "@mui/material";
-import Preloader from '../../common/Preloader'
-import CreateCard from "./Cards/CreateCard";
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import GroupIcon from '@mui/icons-material/Group';
-import MenuIcon from '@mui/icons-material/Menu';
 import AddIcon from '@mui/icons-material/Add';
-import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import ArticleIcon from '@mui/icons-material/Article';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { saveAs } from "file-saver";
-import axios from "axios";
-import { NavLink } from "react-router-dom";
-import { deleteTasksAC, toggleIsFetchingAC } from "../../../reducers/boardsReducer";
-import GroupAddIcon from '@mui/icons-material/GroupAdd';
-import Group_Info from "./Group_Info/Group_Info.jsx";
-import { actionLog } from "../../../actions/user";
-import Board_Logs from "./Board_Logs/Board_Logs";
-import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
 import DownloadIcon from '@mui/icons-material/Download';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import GroupIcon from '@mui/icons-material/Group';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
+import MenuIcon from '@mui/icons-material/Menu';
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
+import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
 import PublishIcon from '@mui/icons-material/Publish';
+import { Alert, Button, Divider, IconButton, ListItemIcon, Menu, MenuItem, Snackbar, TextField, Typography } from "@mui/material";
+import axios from "axios";
+import { saveAs } from "file-saver";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Navigate, NavLink, useSearchParams } from 'react-router-dom';
+import { createCard, getBoardFromId, inviteUser, removeBoard, renameBoard, 
+    renameTask, setFalseInvite, setFavoriteInBoard, uploadBoard } from '../../../actions/boards';
+import { actionLog } from "../../../actions/user";
+import Preloader from '../../common/Preloader.jsx';
+import s from './boardSpace.module.css';
+import BoardLogs from "./Board_Logs/BoardLogs.jsx";
+import Card from "./Cards/Card.jsx";
+import GroupList from "./Group_List/GroupList.jsx";
 
 let BoardSpace = (props) => {
+
+    if(!props.isAuth) return <Navigate to='/login' />
+
     const [searchParams, setSearchParams] = useSearchParams();
     const [clickedCreate, setClickedCreate] = useState(false);
     const [updater, setUpdater] = useState(0)
@@ -336,7 +337,7 @@ let BoardSpace = (props) => {
         <div className={s.boardspace}>
             {
                 isGroupInfoOpened
-                ? <Group_Info setCloseGroup={() => setIsGroupInfoOpened(false)} myId={userId} boardId={postQuery}/>
+                ? <GroupList setCloseGroup={() => setIsGroupInfoOpened(false)} myId={userId} boardId={postQuery}/>
                 : <></>
             }
             
@@ -505,7 +506,7 @@ let BoardSpace = (props) => {
             </div>
             {
                 isLogsOpen
-                ? <Board_Logs closeLogs={() => onClickCloseLogs()} boardId={postQuery} />
+                ? <BoardLogs closeLogs={() => onClickCloseLogs()} boardId={postQuery} />
                 : <></>
             }
             <div style={{ backgroundImage: mybg}} className={s.bg}></div>

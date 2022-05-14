@@ -1,13 +1,12 @@
+import Visibility from '@mui/icons-material/Visibility'
+import VisibilityOff from '@mui/icons-material/VisibilityOff'
+import { Button, Card, FormControl, FormHelperText, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField, Typography } from '@mui/material'
 import React, { useState } from 'react'
-import s from './Registration.module.css'
-import { Typography, TextField, Button, Card, Input, InputAdornment, IconButton, OutlinedInput, FormControl, InputLabel, FormHelperText } from '@mui/material'
-import { getUserByEmail, registration } from '../../actions/user'
-import MyInput from '../utils/MyInput'
-import { Navigate } from 'react-router-dom'
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useDispatch, useSelector } from 'react-redux'
+import { Navigate } from 'react-router-dom'
+import { getUserByEmail, registration } from '../../actions/user'
 import { setFoundUserAC } from '../../reducers/userReducer'
+import s from './Registration.module.css'
 
 
 

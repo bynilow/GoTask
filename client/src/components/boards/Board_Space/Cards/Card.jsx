@@ -1,15 +1,16 @@
-import { Button, Checkbox, IconButton, LinearProgress, ListItemIcon, Menu, MenuItem, TextField, Typography } from "@mui/material";
-import React, { useEffect, useRef } from "react";
-import s from './card.module.css'
-import MenuIcon from '@mui/icons-material/Menu';
-import { addTask, changeCardName, getCardsFromBoardId, moveCard, moveTask, removeCard, removeTask, renameTask, toggleTaskDone } from "../../../../actions/boards";
-import { useDispatch, useSelector } from "react-redux";
-import { deleteTasks, setCardIdDndAC, setDragCardIdAC, setDraggableTask, setRenameTaskAC } from "../../../../reducers/boardsReducer";
-import EditIcon from '@mui/icons-material/Edit';
-import { actionLog } from "../../../../actions/user";
-
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import EditIcon from '@mui/icons-material/Edit';
+import MenuIcon from '@mui/icons-material/Menu';
+import { Button, Checkbox, IconButton, LinearProgress, Menu, MenuItem, TextField, Typography } from "@mui/material";
+import React, { useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addTask, changeCardName, moveCard, moveTask, removeCard, 
+    removeTask, renameTask, toggleTaskDone } from "../../../../actions/boards";
+import { actionLog } from "../../../../actions/user";
+import { setCardIdDndAC, setDragCardIdAC, setDraggableTask } from "../../../../reducers/boardsReducer";
+import s from './card.module.css';
+
 
 let Card = (props) => {
 

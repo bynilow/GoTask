@@ -1,17 +1,17 @@
+import SaveIcon from '@mui/icons-material/Save'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
-import { Alert, AlertTitle, Avatar, Box, Button, Divider, FormControl, FormHelperText, IconButton, Input, InputAdornment, InputLabel, OutlinedInput, Snackbar, TextField, Typography } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import { Alert, Avatar, Box, Divider, FormHelperText, IconButton, Input, InputAdornment, Snackbar, TextField, Typography } from '@mui/material'
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { changeEmail, changePassword, changeUserName, getUserByEmail, setUserPhoto } from '../../actions/user'
-import s from './profile.module.css'
-import SaveIcon from '@mui/icons-material/Save';
-import { setFoundUserAC } from '../../reducers/userReducer'
-import axios from 'axios'
 import { Navigate } from 'react-router-dom'
+import { changeEmail, changePassword, changeUserName, setUserPhoto } from '../../actions/user'
+import { setFoundUserAC } from '../../reducers/userReducer'
+import s from './profile.module.css'
 
 const Profile = (props) => {
-
+    
+    if(!props.isAuth) return <Navigate to='/login' />
     // if(!props.isAuth) return <Navigate to='/login' />
 
     const user = useSelector(state => state.user.currentUser)

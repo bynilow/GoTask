@@ -1,10 +1,10 @@
+import { Button, Card, Link, Typography } from '@mui/material'
 import React, { useState } from 'react'
-import s from './login.module.css'
-import { Typography, Button, Card, Link } from '@mui/material'
-import MyInput from '../utils/MyInput'
 import { useDispatch, useSelector } from "react-redux"
-import { login } from '../../actions/user'
 import { Navigate } from 'react-router-dom'
+import { login } from '../../actions/user'
+import MyInput from '../utils/MyInput'
+import s from './login.module.css'
 
 
 const Login = (props) => {
