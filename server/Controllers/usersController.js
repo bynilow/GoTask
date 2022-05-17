@@ -111,7 +111,7 @@ exports.signup = async(req, res) => {
 
 exports.signin = (req, res) => {
 
-    db.query(`SELECT id, email, password, login, user_type FROM diplom_node.users WHERE email = '${req.body.email}'`, (err, rows, fields) => {
+    db.query(`SELECT id, email, password, login, user_type, photo FROM diplom_node.users WHERE email = '${req.body.email}'`, (err, rows, fields) => {
         if (err) {
             response.status(400, err, res)
             console.log(err);

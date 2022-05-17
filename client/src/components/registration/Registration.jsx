@@ -8,12 +8,10 @@ import { getUserByEmail, registration } from '../../actions/user'
 import { setFoundUserAC } from '../../reducers/userReducer'
 import s from './Registration.module.css'
 
-
-
 const Registration = (props) => {
 
     const dispatch = useDispatch()
-    let fu = useSelector(state => state.user.foundUser)
+    let fu = useSelector(state => state.user.foundUser.found)
 
     const [values, setValues] = useState({
         email: '',

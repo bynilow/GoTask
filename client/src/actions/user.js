@@ -65,7 +65,7 @@ export const login = (email, password) => {
                 
                 dispatch(setUserAC(loginInfo.data.values.user))
                 localStorage.setItem('token', loginInfo.data.values.token)
-                localStorage.setItem('avatar', 'http://localhost:4850/img/'+loginInfo.data.user.photo)
+                localStorage.setItem('avatar', 'http://localhost:4850/img/'+loginInfo.data.values.user.photo)
             }
             else{
                 dispatch(setSigninTextAC(loginInfo.data.values.message))

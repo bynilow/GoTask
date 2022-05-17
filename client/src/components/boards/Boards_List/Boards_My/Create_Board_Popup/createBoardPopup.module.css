@@ -75,35 +75,35 @@
     filter: brightness(70%);
 }
 
-.purple{
-    background: #b867c6;
-}
-.indigo{
-    background: #7b88cc;
-}
-.blue{
-    background: #4fc3f7;
-}
-.teal{
-    background: #4db6ac;
-}
-.green{
-    background: #81c784;
-}
-.lime{
-    background: #dce775;
-}
-.yellow{
-    background: #ffd54f;
-}
 .orange{
-    background: #ff8a65;
+    background: #FFCC66;
 }
 .brown{
-    background: #a1887f;
+    background: #CC9966;
 }
-.gray{
-    background: #e0e0e0;
+.red{
+    background: #990000;
+}
+.purple{
+    background: #FF66CC;
+}
+.violet{
+    background: #CC33FF;
+}
+.blue{
+    background: #9999FF;
+}
+.aqua{
+    background: #0099CC;
+}
+.lime{
+    background: #66CC99;
+}
+.green{
+    background: #66CC66;
+}
+.white{
+    background: #CCCCCC;
 }
 
 .color_active{

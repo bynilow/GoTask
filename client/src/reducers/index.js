@@ -3,10 +3,12 @@ import thunk from 'redux-thunk'
 import {composeWithDevTools } from 'redux-devtools-extension'
 import userReducer from "./userReducer";
 import boardsReducer from "./boardsReducer";
+import cardsReducer from "./cardsReducer";
 
 const rootReducer = combineReducers({
     user: userReducer,
-    boards: boardsReducer
+    boards: boardsReducer,
+    cards: cardsReducer
 })
 
 

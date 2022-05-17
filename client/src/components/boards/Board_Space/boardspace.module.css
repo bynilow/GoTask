@@ -17,6 +17,7 @@
     height: 100%;
     position: fixed;
     z-index: -2;
+    filter:grayscale(20%);
     top: 0;
 }
 

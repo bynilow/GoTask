@@ -16,8 +16,12 @@ import { saveAs } from "file-saver";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, NavLink, useSearchParams } from 'react-router-dom';
-import { createCard, getBoardFromId, inviteUser, removeBoard, renameBoard, 
-    renameTask, setFalseInvite, setFavoriteInBoard, uploadBoard } from '../../../actions/boards';
+
+import { getBoardFromId, inviteUser, removeBoard, renameBoard, setFalseInvite, setFavoriteInBoard, uploadBoard } 
+    from '../../../actions/boards';
+import { createCard } from '../../../actions/cards';
+import { renameTask } from '../../../actions/tasks';
+
 import { actionLog } from "../../../actions/user";
 import Preloader from '../../common/Preloader.jsx';
 import s from './boardSpace.module.css';
@@ -29,38 +33,27 @@ let BoardSpace = (props) => {
 
     if(!props.isAuth) return <Navigate to='/login' />
 
-    const [searchParams, setSearchParams] = useSearchParams();
-    const [clickedCreate, setClickedCreate] = useState(false);
-    const [updater, setUpdater] = useState(0)
-
-    const [nameInvite, setNameInvite] = React.useState("");
-
-    const [openSuccessInvite, setOpenSuccessInvite] = React.useState(false);
-
-    const postQuery = searchParams.get('id');
-    const userId = useSelector(state => state.user.currentUser.id)
-    const userName = useSelector(state => state.user.currentUser.login)
-
     const dispatch = useDispatch()
-    
-    const cards = useSelector(state => state.boards.cardsAndTasks)
-    const cardIdDND = useSelector(state => state.boards.cardIdDND);
 
-    const successInviteUser = useSelector(state => state.boards.invitedUserStatus);
-
-    
-    const [editingNameBoard, setEditingNameBoard] = React.useState(false);
-    const [isGroupInfoOpened, setIsGroupInfoOpened] = React.useState(false);
-    
+    const userName = useSelector(state => state.user.currentUser.login)
     const isFetching = useSelector(state => state.boards.isFetching)
-    
     const isAuth = useSelector(state => state.user.isAuth)
     const thisBoard = useSelector(state => state.boards.foundBoard)
-    
+    const cards = useSelector(state => state.cards.cardsAndTasks)
+    const successInviteUser = useSelector(state => state.boards.invitedUserStatus);
+
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [nameInvite, setNameInvite] = React.useState("");
+    const [openSuccessInvite, setOpenSuccessInvite] = React.useState(false);
+    const [editingNameBoard, setEditingNameBoard] = React.useState(false);
+    const [isGroupInfoOpened, setIsGroupInfoOpened] = React.useState(false);
     const [nameBoard, setNameBoard] = React.useState(thisBoard ? thisBoard.tittle : '');
     const [isFavorite, setIsFavorite] = React.useState(null);
     const [taskUpdater, setTaskUpdater] = React.useState(Date.now());
     const [isLogsOpen, setIsLogsOpen] = React.useState(false);
+
+    const postQuery = searchParams.get('id');
+    const userId = props.userId;
 
     useEffect(() => {
         const checkBoard = userId && (typeof cards.findTasks === 'undefined' || cards.findTasks != postQuery) && (!cards.length || cards[0].boardId != postQuery) && (!thisBoard || thisBoard.boardsId)
@@ -522,6 +515,7 @@ let BoardSpace = (props) => {
                                         key={card.id}
                                         cardIdRed={ind}
                                         cardId={card.id}
+                                        userId={userId}
                                         roleId={thisBoard.roleId}
                                         boardId={postQuery}
                                         name={card.name}

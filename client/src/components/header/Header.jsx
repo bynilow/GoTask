@@ -11,6 +11,7 @@ import s from './header.module.css';
 
 const Header = (props) => {
     const isAuth = useSelector(state => state.user.isAuth)
+    const isAdmin = props.isAdmin;
     const userName = useSelector(state => state.user.currentUser.login)
     const userId = useSelector(state => state.user.currentUser.id)
     const dispatch = useDispatch()
@@ -94,25 +95,33 @@ const Header = (props) => {
                             Профиль
                         </MenuItem>
                         <Divider />
-                        <MenuItem component={NavLink} to={boardLink}>
-                            <ListItemIcon>
-                                <DashboardIcon />
-                            </ListItemIcon>
-                            Все доски
-                        </MenuItem>
-                        <MenuItem component={NavLink} to={favoriteLink}>
-                            <ListItemIcon>
-                                <FavoriteIcon />
-                            </ListItemIcon>
-                            Избранное
-                        </MenuItem>
-                        <MenuItem component={NavLink} to={inviteLink}>
-                            <ListItemIcon>
-                                <EmailIcon />
-                            </ListItemIcon>
-                            Приглашения
-                        </MenuItem>
-                        <Divider />
+                        {
+                            !isAdmin
+                                ? <div>
+                                    <MenuItem component={NavLink} to={boardLink}>
+                                        <ListItemIcon>
+                                            <DashboardIcon />
+                                        </ListItemIcon>
+                                        Все доски
+                                    </MenuItem>
+                                    <MenuItem component={NavLink} to={favoriteLink}>
+                                        <ListItemIcon>
+                                            <FavoriteIcon />
+                                        </ListItemIcon>
+                                        Избранное
+                                    </MenuItem>
+                                    <MenuItem component={NavLink} to={inviteLink}>
+                                        <ListItemIcon>
+                                            <EmailIcon />
+                                        </ListItemIcon>
+                                        Приглашения
+                                    </MenuItem>
+                                    <Divider />
+                                </div>
+
+                                : <></>
+                        }
+                        
                         <MenuItem onClick={logOut}>
                             <ListItemIcon>
                                 <ExitToAppIcon />

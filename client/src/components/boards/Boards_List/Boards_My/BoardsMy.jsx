@@ -15,19 +15,19 @@ import Create_Board_Popup from "./Create_Board_Popup/CreateBoardPopup";
 
 let BoardsMy = (props) => {
 
-
     if (!props.isAuth) return <Navigate to='/login' />
+
+    const dispatch = useDispatch()
 
     const [selectBoards, setSelectBoards] = React.useState(1);
     const [nameBoardText, setNameBoardText] = React.useState('');
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const userId = useSelector(state => state.user.currentUser.id)
     const boards = useSelector(state => state.boards.boards)
-    const dispatch = useDispatch()
+    const isFetching = useSelector(state => state.boards.isFetching)
 
-    const [searchParams, setSearchParams] = useSearchParams();
     const postQuery = searchParams.get('user');
-    const isAuth = useSelector(state => state.user.isAuth)
 
     let thisUser;
 
@@ -38,18 +38,17 @@ let BoardsMy = (props) => {
         dispatch(getBoards(postQuery))
     }, [])
 
-    const isFetching = useSelector(state => state.boards.isFetching)
+    
 
-    const [isPopupOpen, setIsPopupOpen] = React.useState(false);
+    const [isCreateBoardOpen, setIsCreateBoardOpen] = React.useState(false);
     const onClosePopup = () => {
-        setIsPopupOpen(false)
+        setIsCreateBoardOpen(false)
     }
     const onClickCreate = () => {
-        setIsPopupOpen(true)
+        setIsCreateBoardOpen(true)
 
     }
 
-    console.log(boards)
     if (!thisUser) {
         return (
             <div>
@@ -127,7 +126,7 @@ let BoardsMy = (props) => {
                     </div>
                 </div>}
             {
-                isPopupOpen
+                isCreateBoardOpen
                     ? <div className={s.popup}>
                         <div className={s.popup_bg} />
                         <Create_Board_Popup closePopup={() => onClosePopup()} userId={postQuery} />

@@ -5,42 +5,39 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { Button, Checkbox, IconButton, LinearProgress, Menu, MenuItem, TextField, Typography } from "@mui/material";
 import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addTask, changeCardName, moveCard, moveTask, removeCard, 
-    removeTask, renameTask, toggleTaskDone } from "../../../../actions/boards";
+
+import { addTask, moveTask, removeTask, renameTask, toggleTaskDone } from "../../../../actions/tasks";
+import { changeCardName, moveCard, removeCard } from "../../../../actions/cards";
+
 import { actionLog } from "../../../../actions/user";
-import { setCardIdDndAC, setDragCardIdAC, setDraggableTask } from "../../../../reducers/boardsReducer";
+import { setCardIdDndAC, setDragCardIdAC, setDraggableTask } from "../../../../reducers/cardsReducer";
 import s from './card.module.css';
 
 
 let Card = (props) => {
 
     const dispatch = useDispatch();
-    const [nameCard, setNameCard] = React.useState(props.name);
 
+    const [nameCard, setNameCard] = React.useState(props.name);
     const [createTaskText, setCreateTaskText] = React.useState("");
     const [isInputNameCard, setIsInputNameCard] = React.useState(true);
     const [toggleCreateTask, setToggleCreateTask] = React.useState(true);
     const [isHoveredWithTask, setIsHoveredWithTask] = React.useState(true);
-
     const [isTitleEdit, setIsTitleEdit] = React.useState(true);
     const [titleEditText, setTitleEditText] = React.useState("");
     const [idTaskEditText, setIdTaskEditText] = React.useState(-1);
-
-    let [currentTask, setCurrentTask] = React.useState(-1);
-
+    const [currentTask, setCurrentTask] = React.useState(-1);
     const [tasksDoned, setTasksDoned] = React.useState(0);
 
-    const userId = useSelector(state => state.user.currentUser.id);
-    const draggableTask = useSelector(state => state.boards.draggableTask);
-    const cardIdDND = useSelector(state => state.boards.cardIdDND);
-
-    const draggableCard = useSelector(state => state.boards.dragCardId);
-
-    const myTasks = useSelector(state => state.boards.cardsAndTasks[props.cardIdRed].task);
-
+    
+    const draggableTask = useSelector(state => state.cards.draggableTask);
+    const cardIdDND = useSelector(state => state.cards.cardIdDND);
+    const draggableCard = useSelector(state => state.cards.dragCardId);
+    const myTasks = useSelector(state => state.cards.cardsAndTasks[props.cardIdRed].task);
     const divRef = useRef(null);
+    const cardRef = useRef(null);
 
-    const cardRef = useRef(null)
+    const userId = props.userId;
 
     useEffect(() => {
         setNameCard(props.name)
@@ -106,14 +103,12 @@ let Card = (props) => {
     /// drag events
     const dragOverHandler = (e, card, task) => {
         e.preventDefault();
-        if (e.target.className == s.task || e.target.parentNode.className == s.task) {
-            if(draggableCard.id == -1){
-                if(e.target.className == s.task){
-                    e.target.style.borderBottom = '.5rem solid #ff9100';
-                }
-                if(e.target.className.indexOf(s.name_title) > -1){
-                    e.target.parentNode.style.borderBottom = '.5rem solid #ff9100';
-                }
+        
+        const isTask = e.target.parentNode.className == s.task;
+        if (isTask) {
+            console.log(draggableCard)
+            if(currentTask){
+                e.target.parentNode.style.borderBottom = '.5rem solid #ff9100';
             }
         }
         const dragLeft = e.target.className == s.dragCard_left && draggableCard.id != -1 &&

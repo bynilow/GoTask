@@ -1,20 +1,20 @@
-import React, { useEffect } from 'react'
-import { Routes, Route, BrowserRouter } from 'react-router-dom';
-import Registration from './components/registration/Registration'
-import Login from './components/login/Login'
-import Header from './components/header/Header'
-import { useDispatch, useSelector } from 'react-redux';
-import { auth } from './actions/user';
-import Main from './components/main/Main';
 import { createTheme } from '@mui/material';
 import { ThemeProvider } from '@mui/system';
-import BoardSpace from './components/boards/Board_Space/BoardSpace.jsx';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { auth } from './actions/user';
 import AdminPanel from './components/admin_panel/AdminPanel.jsx';
-import Profile from './components/profile/Profile.jsx';
-import BoardsSelect from './components/boards/Boards_List/Boards_Select/BoardsSelect.jsx';
 import BoardsFavorites from './components/boards/Boards_List/Boards_Favorites/BoardsFavorites.jsx';
-import BoardsMy from './components/boards/Boards_List/Boards_My/BoardsMy.jsx';
 import BoardsInvite from './components/boards/Boards_List/Boards_Invite/BoardsInvite.jsx';
+import BoardsMy from './components/boards/Boards_List/Boards_My/BoardsMy.jsx';
+import BoardsSelect from './components/boards/Boards_List/Boards_Select/BoardsSelect.jsx';
+import BoardSpace from './components/boards/Board_Space/BoardSpace.jsx';
+import Header from './components/header/Header';
+import Login from './components/login/Login';
+import Main from './components/main/Main';
+import Profile from './components/profile/Profile.jsx';
+import Registration from './components/registration/Registration';
 
 
 function App() {
@@ -50,7 +50,7 @@ function App() {
   return (
     <BrowserRouter>
       <ThemeProvider theme={theme}>
-        <Header />
+        <Header isAdmin={isAdmin} />
         <Routes>
           <Route path="/reg" element={<Registration isAuth={isAuth} userId={userId} />} />
           <Route path="/" element={<Login isAuth={isAuth} userId={userId} />} />
