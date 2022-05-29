@@ -7,15 +7,15 @@ import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { addTask, moveTask, removeTask, renameTask, toggleTaskDone } from "../../../../actions/tasks";
-import { changeCardName, moveCard, removeCard } from "../../../../actions/cards";
+import { changeCardName, deleteDeadlineCard, moveCard, removeCard, setDeadlineCard } from "../../../../actions/cards";
 
 import { actionLog } from "../../../../actions/user";
 import { setCardIdDndAC, setDragCardIdAC, setDraggableTask } from "../../../../reducers/cardsReducer";
 import s from './card.module.css';
+import CardDeadlinePicker from './CardDeadlinePicker';
 
 
 let Card = (props) => {
-
     const dispatch = useDispatch();
 
     const [nameCard, setNameCard] = React.useState(props.name);
@@ -28,6 +28,7 @@ let Card = (props) => {
     const [idTaskEditText, setIdTaskEditText] = React.useState(-1);
     const [currentTask, setCurrentTask] = React.useState(-1);
     const [tasksDoned, setTasksDoned] = React.useState(0);
+    const [isDeadPickerOpened, setIsDeadPickerOpened] = React.useState(false);
 
     
     const draggableTask = useSelector(state => state.cards.draggableTask);
@@ -287,6 +288,63 @@ let Card = (props) => {
         dispatch(toggleTaskDone(checkTaskId, taskChecked, props.boardId ))
     }
 
+    const openDeadPicker = () => {
+        setIsDeadPickerOpened(true);
+        handleCloseCard();
+        
+    }
+
+    const savePicker = (date) => {
+        closeDeadPicker();
+        dispatch(setDeadlineCard(props.boardId, props.cardId, date))
+    }
+
+    const closeDeadPicker = () => {
+        setIsDeadPickerOpened(false);
+    }
+
+    const deleteDeadline = () => {
+        handleCloseCard();
+        dispatch(deleteDeadlineCard(props.boardId, props.cardId));
+    }
+
+    let daysLost = 0;
+    let textDaysLost = '';
+    let isDateExpired = false;
+    if(props.deadline){
+        const startDate = new Date().toISOString().split('T')[0];
+        const endDate = props.deadline;
+    
+        const diffInMs = new Date(endDate) - new Date(startDate)
+        let daysLost = diffInMs / (1000 * 60 * 60 * 24);
+        if(daysLost >= 0){
+            
+            switch(daysLost){
+                case 0:
+                    textDaysLost = 'сегодня';
+                    break;
+                case 1: 
+                    textDaysLost = 'завтра';
+                    break;
+                default:
+                    textDaysLost = 'через '+daysLost+' дней';
+            }
+        }
+        else{
+            isDateExpired = true;
+            switch(daysLost){
+                case -1:
+                    textDaysLost = 'вчера'
+                    break;
+                case -2: 
+                    textDaysLost = 'позавчера'
+                    break;
+                default:
+                    textDaysLost = (daysLost*-1)+' дней назад'
+            }
+        }
+    }
+    console.log(isDateExpired)
     return (
             <div
                 id={props.cardId}
@@ -337,7 +395,7 @@ let Card = (props) => {
                                 sx={{zIndex: '999'}}
                                 placeholder="" />
                     }
-
+                
                 <Button className={s.menucard}
                     onDrop={e => dropTaskToCardElementsHandler(e)}
                     id="card-button"
@@ -357,8 +415,22 @@ let Card = (props) => {
                     }}
                     className={s.menu_edit}>
                     <MenuItem onClick={() => cardDelete(anchorElCard)}>Удалить карточку</MenuItem>
+                    {
+                        props.deadline
+                        ? <MenuItem onClick={deleteDeadline}>Удалить срок выполнения</MenuItem>
+                        : <MenuItem onClick={openDeadPicker}>Установить срок выполнения</MenuItem>
+                    }
+                    
+                    
                 </Menu>
                 </div>
+            {
+                props.deadline
+                    ? (!isDateExpired)
+                        ? <Typography>Срок закончится {textDaysLost}</Typography>
+                        : <Typography>Срок истек {textDaysLost}</Typography>
+                    : <></>
+            }
             <div className={s.progress}>
                 <LinearProgress
                     variant="determinate"
@@ -378,7 +450,11 @@ let Card = (props) => {
                     {Math.round((tasksDoned / props.tasks.length)*100)}%
                 </Typography>
             </div>
-                
+            {
+                    isDeadPickerOpened
+                    ? <CardDeadlinePicker closeDeadPicker={() => closeDeadPicker()} savePicker={(date) => savePicker(date)} />
+                    : <></>
+                }
                 <div className={s.tasks} ref={divRef} updater={myTasks}>
                     {
                         props.tasks.map((c, ind) =>

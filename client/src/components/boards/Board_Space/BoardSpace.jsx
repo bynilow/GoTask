@@ -17,7 +17,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, NavLink, useSearchParams } from 'react-router-dom';
 
-import { getBoardFromId, inviteUser, removeBoard, renameBoard, setFalseInvite, setFavoriteInBoard, uploadBoard } 
+import { getBoardFromId, inviteUser, removeBoard, renameBoard, setFalseInvite, setFavoriteInBoard, uploadBoard }
     from '../../../actions/boards';
 import { createCard } from '../../../actions/cards';
 import { renameTask } from '../../../actions/tasks';
@@ -31,7 +31,7 @@ import GroupList from "./Group_List/GroupList.jsx";
 
 let BoardSpace = (props) => {
 
-    if(!props.isAuth) return <Navigate to='/login' />
+    if (!props.isAuth) return <Navigate to='/login' />
 
     const dispatch = useDispatch()
 
@@ -57,10 +57,10 @@ let BoardSpace = (props) => {
 
     useEffect(() => {
         const checkBoard = userId && (typeof cards.findTasks === 'undefined' || cards.findTasks != postQuery) && (!cards.length || cards[0].boardId != postQuery) && (!thisBoard || thisBoard.boardsId)
-        if(checkBoard) dispatch(getBoardFromId(postQuery, userId))
+        if (checkBoard) dispatch(getBoardFromId(postQuery, userId))
         setNameBoard(thisBoard ? thisBoard.tittle : "")
     }, [isAuth, thisBoard, cards])
-    
+
 
 
     let cardCreate = () => {
@@ -71,41 +71,41 @@ let BoardSpace = (props) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
-      setAnchorEl(event.currentTarget);
+        setAnchorEl(event.currentTarget);
     };
     const handleClose = () => {
-      setAnchorEl(null);
+        setAnchorEl(null);
     };
 
     const [anchorElInvite, setAnchorElInvite] = React.useState(null);
     const openInvite = Boolean(anchorElInvite);
     const handleClickInvite = (event) => {
-      setAnchorElInvite(event.currentTarget);
+        setAnchorElInvite(event.currentTarget);
     };
     const handleCloseInvite = () => {
-      setAnchorElInvite(null);
+        setAnchorElInvite(null);
     };
 
     const handleClickSuccesInvite = (event) => {
         setOpenSuccessInvite(true)
-      };
+    };
     const handleCloseSuccessInvite = () => {
         setOpenSuccessInvite(false)
     };
-    const convertDeckJson = async() => {
+    const convertDeckJson = async () => {
         const response = await axios.post("http://localhost:4850/api/board/output_doc", {
             boardId: postQuery
         })
         const res = response.data.values
         const jsonData = JSON.stringify(res)
         console.log(jsonData)
-        var blob = new Blob([jsonData], {type: "text/plain"});
+        var blob = new Blob([jsonData], { type: "text/plain" });
         const fs = require('file-saver')
-        const nameFile = 'board_'+postQuery+'.json'
+        const nameFile = 'board_' + postQuery + '.json'
         fs.saveAs(blob, nameFile)
     }
-    const uploadDeckJson = async() => {
-        
+    const uploadDeckJson = async () => {
+
     }
     const uploadJsonHandler = (e) => {
         const file = e.target.files[0];
@@ -144,32 +144,32 @@ let BoardSpace = (props) => {
             docs.sections[0].children.push(
                 new docx.Paragraph({
                     children: [
-                        new docx.TextRun({ text: 'Название карточки:\t' + res[i].name, size: 24})
+                        new docx.TextRun({ text: 'Название карточки:\t' + res[i].name, size: 24 })
                     ]
                 }),
                 new docx.Paragraph({
                     children: [
-                        new docx.TextRun({ text: 'Номер карточки:\t ' + res[i].id, size: 24})
+                        new docx.TextRun({ text: 'Номер карточки:\t ' + res[i].id, size: 24 })
                     ],
                 }),
                 new docx.Paragraph({
                     children: [
-                        new docx.TextRun({ text: 'Описание карточки:\t', size: 24})
+                        new docx.TextRun({ text: 'Описание карточки:\t', size: 24 })
                     ],
                 }),
                 new docx.Paragraph({
                     children: [
-                        new docx.TextRun({text: 'Номер создателя карточки:\t' + res[i].creatorId, size: 24})
+                        new docx.TextRun({ text: 'Номер создателя карточки:\t' + res[i].creatorId, size: 24 })
                     ],
                 }),
                 new docx.Paragraph({
                     children: [
-                        new docx.TextRun({ text: 'Дата создания карточки:\t' + res[i].createdDate, size: 24})
+                        new docx.TextRun({ text: 'Дата создания карточки:\t' + res[i].createdDate, size: 24 })
                     ],
                 }),
                 new docx.Paragraph({
                     children: [
-                        new docx.TextRun({ text: 'Задачи:', size: 24})
+                        new docx.TextRun({ text: 'Задачи:', size: 24 })
                     ]
                 }),
             );
@@ -225,24 +225,24 @@ let BoardSpace = (props) => {
                 }),
             )
         }
-        
+
         console.log(docs)
 
         let doc = new docx.Document(docs)
 
         docx.Packer.toBlob(doc).then(blob => {
             saveAs(blob, `board_${postQuery}.docx`)
-            
+
         });
 
     }
 
-   
+
 
     const boardRemove = () => {
         actionLog(userId, postQuery, `Удалил доску`)
         removeBoard(postQuery, userId);
-        
+
     }
 
     // const cardRemove = (card) => {
@@ -284,7 +284,7 @@ let BoardSpace = (props) => {
         dispatch(inviteUser(nameInvite, postQuery, userId))
         actionLog(userId, postQuery, `Пригласил пользователя "${nameInvite}"`)
     }
-    if(successInviteUser === true){
+    if (successInviteUser === true) {
         handleCloseInvite()
         handleClickSuccesInvite()
         setNameInvite('')
@@ -293,17 +293,17 @@ let BoardSpace = (props) => {
 
     const blurNameBoard = () => {
         console.log(nameBoard.length)
-        if(nameBoard.length == 0 || !nameBoard.trim()){
+        if (nameBoard.length == 0 || !nameBoard.trim()) {
             renameBoard(postQuery, 'Доска')
             setNameBoard('Доска');
             actionLog(userId, postQuery, `Поменял название доски на "Доска"`)
         }
-        else{
+        else {
             renameBoard(postQuery, nameBoard)
             actionLog(userId, postQuery, `Поменял название доски на "${nameBoard}"`)
         }
         setEditingNameBoard(false)
-        
+
     }
 
     const onTaskNameChanged = (idTask, nameTask, cardId, cardIdRed, taskIdRed, oldNameTask) => {
@@ -314,7 +314,7 @@ let BoardSpace = (props) => {
     }
 
     const onHandleFavoriteClick = () => {
-        dispatch(setFavoriteInBoard(postQuery,userId, thisBoard.favoriteId))
+        dispatch(setFavoriteInBoard(postQuery, userId, thisBoard.favoriteId))
     }
 
     const onClickCloseLogs = () => {
@@ -330,14 +330,14 @@ let BoardSpace = (props) => {
         <div className={s.boardspace}>
             {
                 isGroupInfoOpened
-                ? <GroupList setCloseGroup={() => setIsGroupInfoOpened(false)} myId={userId} boardId={postQuery}/>
-                : <></>
+                    ? <GroupList setCloseGroup={() => setIsGroupInfoOpened(false)} myId={userId} boardId={postQuery} />
+                    : <></>
             }
-            
+
             <div className={s.board_header}>
                 <div className={s.container_bg}></div>
                 <div className={s.container} >
-                    
+
                     <div className={s.board_header_left} color="white">
                         <TextField
                             value={nameBoard}
@@ -351,14 +351,14 @@ let BoardSpace = (props) => {
                             autoComplete="off"
                             onClick={() => setEditingNameBoard(true)}
                             onBlur={blurNameBoard}
-                            sx={{input: {color: '#fff'}}} />
-                        <Button 
+                            sx={{ input: { color: '#fff' } }} />
+                        <Button
                             startIcon={iconFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
                             color="white"
                             size="small"
-                            sx={{ display: { xs: 'none', md: 'inline-flex'} }}
+                            sx={{ display: { xs: 'none', md: 'inline-flex' } }}
                             onClick={onHandleFavoriteClick}>
-                            Избранное 
+                            Избранное
                         </Button>
                         <Divider orientation="vertical" flexItem />
                         <Button
@@ -398,20 +398,20 @@ let BoardSpace = (props) => {
                             onClose={handleCloseInvite}
                             MenuListProps={{ 'aria-labelledby': 'basic-button', }}
                             sx={{ padding: '10px' }}>
-                            <TextField 
-                                autoComplete="off" 
-                                placeholder="Имя пользователя" 
-                                size="small" 
+                            <TextField
+                                autoComplete="off"
+                                placeholder="Имя пользователя"
+                                size="small"
                                 value={nameInvite}
                                 onChange={e => onChangeNameInvite(e)}
                                 sx={{ m: '5px 10px' }}
-                                error={successInviteUser===false || successInviteUser=='exist'}
+                                error={successInviteUser === false || successInviteUser == 'exist'}
                                 helperText={
-                                    successInviteUser==false
-                                    ? "Пользователя не существует"
-                                    : successInviteUser=='exist'
-                                        ? "Пользователь уже приглашен / участвует"
-                                        : ""
+                                    successInviteUser == false
+                                        ? "Пользователя не существует"
+                                        : successInviteUser == 'exist'
+                                            ? "Пользователь уже приглашен / участвует"
+                                            : ""
                                 } />
 
                             <IconButton onClick={sendInvite} sx={{ m: '5px 10px' }}>
@@ -422,7 +422,7 @@ let BoardSpace = (props) => {
                                 Приглашенному пользователю будет выдана роль "Участник"
                             </Typography>
                         </Menu>
-                        
+
                         <Snackbar open={openSuccessInvite} autoHideDuration={6000} onClose={handleCloseSuccessInvite}>
                             <Alert onClose={handleCloseSuccessInvite} severity="success" sx={{ width: '100%' }}>
                                 Приглашение успешно отправленно!
@@ -442,13 +442,13 @@ let BoardSpace = (props) => {
                             Меню
                         </Button>
                     </div>
-                    
+
                     <Menu
                         id="menu_task"
                         anchorEl={anchorEl}
                         open={open}
                         onClose={handleClose}
-                        MenuListProps={{'aria-labelledby': 'basic-button',}}>
+                        MenuListProps={{ 'aria-labelledby': 'basic-button', }}>
                         <MenuItem onClick={outputDoc}>
                             <ListItemIcon>
                                 <ArticleIcon />
@@ -477,14 +477,14 @@ let BoardSpace = (props) => {
                                 Загрузить доску из JSON
                             </MenuItem>
                         </label>
-                        
+
                         <MenuItem onClick={() => onClickOpenLogs()}>
                             <ListItemIcon>
                                 <PlaylistAddCheckIcon />
                             </ListItemIcon>
                             Посмотреть журнал активности
                         </MenuItem>
-                        
+
                         <Divider />
                         <MenuItem onClick={boardRemove} component={NavLink} to={myboardsForLink}>
                             <ListItemIcon>
@@ -499,15 +499,15 @@ let BoardSpace = (props) => {
             </div>
             {
                 isLogsOpen
-                ? <BoardLogs closeLogs={() => onClickCloseLogs()} boardId={postQuery} />
-                : <></>
+                    ? <BoardLogs closeLogs={() => onClickCloseLogs()} boardId={postQuery} />
+                    : <></>
             }
-            <div style={{ backgroundImage: mybg}} className={s.bg}></div>
-            
+            <div style={{ backgroundImage: mybg }} className={s.bg}></div>
+
             {
                 isFetching
-                ? <Preloader />
-                : <div className={s.cards}>
+                    ? <Preloader />
+                    : <div className={s.cards}>
                         {cards.length
                             ? cards.map((card, ind) => {
                                 return (
@@ -519,6 +519,7 @@ let BoardSpace = (props) => {
                                         roleId={thisBoard.roleId}
                                         boardId={postQuery}
                                         name={card.name}
+                                        deadline={card.deadline}
                                         username={userName}
                                         updater={taskUpdater}
                                         tasks={card.task}
@@ -528,7 +529,7 @@ let BoardSpace = (props) => {
                             : null}
                     </div>
             }
-            
+
         </div>
     )
 }

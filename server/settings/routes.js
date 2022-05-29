@@ -94,6 +94,10 @@ module.exports = (app) => {
 
     app.route('/api/logsGet').post(usersController.getLogs)
 
+    app.route('/api/card/setDeadline').post(boardsController.setDeadline)
+
+    app.route('/api/card/removeDeadline').post(boardsController.removeDeadline)
+
     app.route('/api/logsGetAdminPanel').post(usersController.getLogsAdminPanel)
 
     app.route('/api/user/activate/:link').post(usersController.userActivate)

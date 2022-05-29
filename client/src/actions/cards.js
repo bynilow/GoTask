@@ -73,3 +73,29 @@ export const moveCard = (cardId, selectedOrder, dir, boardId) => {
         
     }
 }
+
+export const setDeadlineCard = (boardId, cardId, deadline) => {
+    return async dispatch => {
+        const setDeadlineRes = await axios.post("http://localhost:4850/api/card/setDeadline", {
+            cardId, deadline
+        });
+        const cardsRes = await axios.post("http://localhost:4850/api/board", {
+            boardId
+        });
+        dispatch(setCardsAndTasksAC(cardsRes.data.values))
+        
+    }
+}
+
+export const deleteDeadlineCard = (boardId, cardId) => {
+    return async dispatch => {
+        const setDeadlineRes = await axios.post("http://localhost:4850/api/card/removeDeadline", {
+            cardId
+        });
+        const cardsRes = await axios.post("http://localhost:4850/api/board", {
+            boardId
+        });
+        dispatch(setCardsAndTasksAC(cardsRes.data.values))
+        
+    }
+}

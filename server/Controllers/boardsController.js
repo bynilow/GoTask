@@ -672,7 +672,6 @@ exports.getBoard = async (req,res) =>{
         db.query(`SELECT * FROM diplom_node.cards WHERE boardId = ${req.body.boardId} ORDER BY \`order\``, (err,rowsCard,fields) => {
             if(rowsCard){
                 let idCards = ``;
-                
                 cards = rowsCard.map((card,ind) => {
                     if(rowsCard.length-1 !== ind){
                         idCards = idCards + `cardId = ${card.id} OR `;
@@ -702,9 +701,6 @@ exports.getBoard = async (req,res) =>{
                         response.status(200, {cards, findTasks: req.body.boardId}, res)
                     }
                 })
-            
-
-                
             }
             else{
                 response.status(200, {findCards: null}, res)
@@ -837,6 +833,40 @@ exports.toggleTaskDone = async (req,res) =>{
             }
             else{
                 response.status(400, { message: "TASKS NOT CHECKED" }, res)
+            }
+        })
+    }
+    catch(e){
+        console.log(e)
+    }
+}
+
+exports.setDeadline = async (req,res) =>{
+    try{
+        db.query(`UPDATE diplom_node.cards SET deadline = '${req.body.deadline}' WHERE (id = ${req.body.cardId});`, (err,rows,fields) => {
+            console.log(err)
+            if(rows){
+                response.status(200, rows, res)
+            }
+            else{
+                response.status(400, { message: "ERROR SET DEADLINE" }, res)
+            }
+        })
+    }
+    catch(e){
+        console.log(e)
+    }
+}
+
+exports.removeDeadline = async (req,res) =>{
+    try{
+        db.query(`UPDATE diplom_node.cards SET deadline = '' WHERE (id = ${req.body.cardId});`, (err,rows,fields) => {
+            console.log(err)
+            if(rows){
+                response.status(200, rows, res)
+            }
+            else{
+                response.status(400, { message: "ERROR SET DEADLINE" }, res)
             }
         })
     }

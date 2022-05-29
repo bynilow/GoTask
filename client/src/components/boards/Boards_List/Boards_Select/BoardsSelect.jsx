@@ -29,9 +29,6 @@ let BoardsSelect = (props) =>{
                     <Button component={NavLink} to={inviteLink}>
                         Приглашения
                     </Button>
-                    <Button component={NavLink} to={publicLink}>
-                        Публичные
-                    </Button>
                 </div>
                 <Divider className={s.divid} />
                 <div className={s.boards_out}>
